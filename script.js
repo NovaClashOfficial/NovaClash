@@ -1,4 +1,4 @@
-console.log("VERSION GRUPOS V2");
+console.log("VERSION OCTAVOS");
 
 import {
   collection,
@@ -8,13 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 import { db } from "./firebase.js";
-import { grupos, nombresGrupos } from "./equipos.js";
-
-/* =========================
-   VARIABLES
-========================= */
-
-let bloqueActivo = 1;
+import { octavos } from "./equipos.js";
 
 /* =========================
    VERIFICAR SI LAS PREDICCIONES ESTÁN ABIERTAS
@@ -41,50 +35,7 @@ async function verificarEstadoPredicciones() {
 }
 
 /* =========================
-   OBTENER GRUPOS DEL BLOQUE ACTIVO
-========================= */
-
-function obtenerGruposActivos() {
-
-  if (bloqueActivo === 1) {
-    return ["A", "B"];
-  }
-
-  return ["C", "D"];
-}
-
-/* =========================
-   CONTROLAR SELECCIÓN DE 3 EQUIPOS
-========================= */
-
-function controlarSeleccion(grupo) {
-
-    const checks = document.querySelectorAll(
-        `input[name="grupo-${grupo}"]`
-    );
-
-    const seleccionados = [...checks].filter(c => c.checked);
-
-    // Actualiza el contador
-    document.getElementById(
-        `contador-${grupo}`
-    ).textContent = `${seleccionados.length} / 3`;
-
-    // Bloquea o desbloquea los demás equipos
-    checks.forEach(check => {
-
-        if (seleccionados.length >= 3 && !check.checked) {
-            check.disabled = true;
-        } else {
-            check.disabled = false;
-        }
-
-    });
-
-}
-
-/* =========================
-   CARGAR GRUPOS
+   CARGAR OCTAVOS
 ========================= */
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -93,72 +44,54 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   if (!abiertas) return;
 
-  // Leer bloque activo desde Firebase
-  const torneoSnap = await getDoc(
-    doc(db, "configuracion", "torneo")
-  );
-
-  if (torneoSnap.exists()) {
-    bloqueActivo = torneoSnap.data().bloqueActivo || 1;
-  }
-
-  const gruposActivos = obtenerGruposActivos();
-
   const contenedor = document.getElementById("partidos");
 
   contenedor.innerHTML = "";
 
-  gruposActivos.forEach(grupo => {
-
-    const equipos = grupos[grupo];
+  octavos.forEach((partido, i) => {
 
     contenedor.innerHTML += `
 
-<div class="grupo-card">
+<div class="partido">
 
-  <div class="grupo-header">
-    GRUPO ${grupo}
-  </div>
+  <h2>🏆 OCTAVOS - Partido ${i + 1}</h2>
 
-  <div class="grupo-equipos">
+  <div class="versus">
 
-    ${equipos.map((equipo) => `
-<label class="equipo-card">
+    <div class="team">${partido[0]}</div>
 
-<input
-type="checkbox"
-name="grupo-${grupo}"
-value="${equipo}"
-onchange="controlarSeleccion('${grupo}')">
+    <div class="vs">VS</div>
 
-<div class="equipo-nombre">
-
-🏆 ${equipo}
-
-</div>
-
-</label>
-`).join("")}
+    <div class="team">${partido[1]}</div>
 
   </div>
 
-<div class="grupo-info">
+  <label>
+    <input type="radio" name="g${i}" value="${partido[0]}">
+    ${partido[0]}
+  </label>
 
-Clasificados:
-<span id="contador-${grupo}">
+  <label>
+    <input type="radio" name="g${i}" value="${partido[1]}">
+    ${partido[1]}
+  </label>
 
-0 / 3
+  <br>
 
-</span>
+  <label>
+    <input type="radio" name="r${i}" value="2-0">
+    2 - 0
+  </label>
 
-</div>
+  <label>
+    <input type="radio" name="r${i}" value="2-1">
+    2 - 1
+  </label>
 
 </div>
 
 `;
-
   });
-
 });
 
 /* =========================
@@ -172,11 +105,8 @@ async function enviarPredicciones() {
   if (nombre === "") {
 
     alert("Escribe tu nombre o Nick");
-
     return;
   }
-
-  const gruposActivos = obtenerGruposActivos();
 
   const datos = {
 
@@ -184,30 +114,28 @@ async function enviarPredicciones() {
 
     fecha: new Date().toLocaleString(),
 
-    bloque: bloqueActivo,
+    fase: "octavos",
 
-    fase: "grupos",
-
-    predicciones: {}
-
+    predicciones: []
   };
 
-  for (const grupo of gruposActivos) {
+  for (let i = 0; i < octavos.length; i++) {
 
-    const seleccionados = [
-      ...document.querySelectorAll(
-        `input[name="grupo-${grupo}"]:checked`
-      )
-    ].map(c => c.value);
+    const ganador = document.querySelector(`input[name="g${i}"]:checked`);
+    const resultado = document.querySelector(`input[name="r${i}"]:checked`);
 
-    if (seleccionados.length !== 3) {
+    if (!ganador || !resultado) {
 
-      alert(`Debes seleccionar exactamente 3 equipos en el Grupo ${grupo}`);
-
+      alert(`Completa el Partido ${i + 1}`);
       return;
     }
 
-    datos.predicciones[grupo] = seleccionados;
+    datos.predicciones.push({
+
+      partido: i + 1,
+      ganador: ganador.value,
+      resultado: resultado.value
+    });
   }
 
   try {
@@ -219,27 +147,19 @@ async function enviarPredicciones() {
 
     alert("✅ Predicciones enviadas correctamente.");
 
+    location.reload();
+
   } catch (error) {
 
     console.error(error);
-
     alert("❌ Error al enviar las predicciones.");
   }
 }
 
-document.getElementById("nombre").value = "";
-
-document
-.querySelectorAll('input[type="checkbox"]')
-.forEach(c => {
-    c.checked = false;
-    c.disabled = false;
-});
 /* =========================
    FUNCIONES GLOBALES
 ========================= */
 
 window.enviarPredicciones = enviarPredicciones;
-window.controlarSeleccion = controlarSeleccion;
 
-console.log("SCRIPT GRUPOS LISTO");
+console.log("SCRIPT OCTAVOS LISTO");
