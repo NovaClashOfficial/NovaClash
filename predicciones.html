@@ -13,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-
 </head>
 
 <body>
@@ -25,27 +24,20 @@ NOVA CLASH
 </div>
 
 <div class="nav-links">
-
 <a href="index.html">Inicio</a>
-
 <a href="predicciones.html">Pick'Em</a>
-
 <a href="ranking.html">Ranking</a>
-
 <a href="reglas.html">Reglas</a>
-
 </div>
 
 </nav>
 
-<div class="contenedor">
+<main class="contenedor">
 
 <h1>🏆 PICK'EM</h1>
 
 <p class="descripcion">
-
-Predice qué equipos clasificarán a la siguiente fase y consigue la mayor cantidad de puntos posible.
-
+Elige al ganador de cada partido de Octavos de Final y predice si ganará 2-0 o 2-1.
 </p>
 
 <div id="partidos"></div>
@@ -53,15 +45,17 @@ Predice qué equipos clasificarán a la siguiente fase y consigue la mayor canti
 <input
 type="text"
 id="nombre"
-placeholder="Escribe tu nombre">
+placeholder="Escribe tu nombre"
+autocomplete="off"
+maxlength="30">
 
-<button onclick="enviarPredicciones()">
-
+<button id="btn-enviar" type="button" onclick="enviarPredicciones()">
 ENVIAR PREDICCIONES
-
 </button>
 
-</div>
+<p id="mensaje-prediccion"></p>
+
+</main>
 
 <script type="module" src="script.js"></script>
 
