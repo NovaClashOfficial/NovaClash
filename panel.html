@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Nova Clash | Panel</title>
+  <title>Nova Clash | Panel Admin</title>
 
   <link rel="stylesheet" href="style.css">
 
@@ -24,32 +24,49 @@
     <div class="nav-logo">
       NOVA CLASH ADMIN
     </div>
+
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="ranking.html">Ranking</a>
+    </div>
   </nav>
 
   <main class="contenedor">
 
-    <img src="logo.png" class="logo" alt="Logo de Nova Clash">
+    <img
+      src="logo.png"
+      class="logo"
+      alt="Logo Nova Clash"
+    >
 
     <h1>Panel de Administración</h1>
 
     <p class="descripcion">
-      Controla las predicciones y carga los resultados oficiales de Octavos.
+      Controla el Pick'Em y carga los resultados oficiales de Octavos.
     </p>
 
     <hr>
 
-    <section class="admin-seccion">
+    <section>
 
       <h2>Estado de las predicciones</h2>
 
       <label class="estado-predicciones">
-        <input type="checkbox" id="estadoPredicciones">
+        <input
+          type="checkbox"
+          id="estadoPredicciones"
+        >
+
         Predicciones abiertas
       </label>
 
       <br>
 
-      <button id="btn-estado" type="button" onclick="guardarEstado()">
+      <button
+        type="button"
+        id="btn-estado"
+        onclick="guardarEstado()"
+      >
         GUARDAR ESTADO
       </button>
 
@@ -57,20 +74,20 @@
 
     <hr>
 
-    <section class="admin-seccion">
+    <section>
 
       <h2>Resultados de Octavos</h2>
 
       <p class="descripcion">
-        Selecciona el ganador y el marcador real de cada partido.
-        Puedes guardar resultados parciales.
+        Selecciona el ganador y el resultado real de cada partido.
+        Puedes guardar partidos de forma parcial.
       </p>
 
       <div id="adminPartidos"></div>
 
       <button
-        id="btn-resultados"
         type="button"
+        id="btn-resultados"
         onclick="guardarResultados()"
       >
         GUARDAR RESULTADOS
