@@ -430,570 +430,337 @@ border:none;
 
 }
 
-/*=============================
-PICK'EM V2
-=============================*/
+/* =======================================
+   PICK'EM OCTAVOS - NOVA CLASH
+======================================= */
 
 #partidos{
-    display:flex;
-    flex-direction:column;
-    gap:35px;
-    margin-top:45px;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:24px;
+    margin-top:40px;
 }
 
-.grupo-card{
-
-    background:rgba(25,20,45,.75);
-
-    backdrop-filter:blur(12px);
-
-    border:1px solid rgba(170,80,255,.35);
-
+.partido{
+    position:relative;
+    overflow:hidden;
+    padding:24px;
+    border:1px solid rgba(164,94,255,.45);
     border-radius:22px;
-
-    padding:30px;
-
-    box-shadow:
-    0 0 30px rgba(120,40,255,.20);
-
-    transition:.35s;
-
+    background:linear-gradient(145deg,rgba(29,24,56,.96),rgba(13,13,28,.94));
+    box-shadow:0 0 30px rgba(123,44,255,.22);
+    backdrop-filter:blur(12px);
+    transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
 }
 
-.grupo-card:hover{
-
-    transform:translateY(-6px);
-
-    box-shadow:
-    0 0 45px rgba(170,80,255,.45);
-
+.partido::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:3px;
+    background:linear-gradient(90deg,#5b2cff,#aa3fff,#00bfff);
 }
 
-.grupo-header{
-
-    font-size:34px;
-
-    font-weight:900;
-
-    letter-spacing:2px;
-
-    color:white;
-
-    margin-bottom:25px;
-
-    text-shadow:
-    0 0 20px #7b2cff;
-
+.partido:hover{
+    transform:translateY(-5px);
+    border-color:#a962ff;
+    box-shadow:0 0 42px rgba(151,71,255,.42);
 }
 
-.grupo-equipos{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:15px;
-
+.partido h2,
+.partido h3{
+    margin:0 0 18px;
+    font-size:20px;
+    letter-spacing:1px;
+    color:#cba8ff;
+    text-transform:uppercase;
 }
 
-.equipo-option{
-
-    display:flex;
-
+.enfrentamiento,
+.versus-contenedor{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
     align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
 
-    gap:18px;
-
-    padding:18px;
-
-    border-radius:14px;
-
-    background:rgba(255,255,255,.05);
-
-    border:1px solid rgba(255,255,255,.08);
-
+.team,
+.equipo-seleccionable{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:72px;
+    padding:14px;
+    border:2px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    background:rgba(255,255,255,.045);
+    color:#fff;
+    font-family:'Orbitron',sans-serif;
+    font-size:17px;
+    font-weight:800;
+    text-align:center;
     cursor:pointer;
-
-    transition:.25s;
-
+    transition:.22s ease;
 }
 
-.equipo-option:hover{
-
-    background:rgba(123,44,255,.20);
-
+.team:hover,
+.equipo-seleccionable:hover{
     border-color:#9d5cff;
-
-    transform:translateX(8px);
-
+    background:rgba(123,44,255,.18);
+    box-shadow:0 0 18px rgba(123,44,255,.28);
 }
 
-.equipo-option input{
-
-    width:22px;
-
-    height:22px;
-
-    accent-color:#9d5cff;
-
+.team input,
+.equipo-seleccionable input{
+    display:none;
 }
 
-.nombre-equipo{
+.team:has(input:checked),
+.equipo-seleccionable:has(input:checked),
+.team.seleccionado,
+.equipo-seleccionable.seleccionado{
+    border-color:#d39aff;
+    background:linear-gradient(135deg,#6030db,#9d45ff);
+    box-shadow:0 0 26px rgba(170,78,255,.55);
+    transform:scale(1.02);
+}
 
-    font-size:22px;
+.vs,
+.versus{
+    color:#ffdf55;
+    font-size:20px;
+    font-weight:900;
+    text-shadow:0 0 12px rgba(255,223,85,.6);
+}
 
-    font-weight:700;
+.resultado-titulo{
+    margin:4px 0 12px;
+    color:#bbbbdf;
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
 
+.resultados,
+.opciones-resultado{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.resultado,
+.resultado-option{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:48px;
+    padding:12px 18px;
+    border:2px solid rgba(255,255,255,.09);
+    border-radius:14px;
+    background:rgba(255,255,255,.045);
+    color:#e9e4ff;
+    font-family:'Orbitron',sans-serif;
+    font-size:17px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.22s ease;
+}
+
+.resultado:hover,
+.resultado-option:hover{
+    border-color:#00bfff;
+    background:rgba(0,191,255,.12);
+}
+
+.resultado input,
+.resultado-option input{
+    display:none;
+}
+
+.resultado:has(input:checked),
+.resultado-option:has(input:checked),
+.resultado.seleccionado,
+.resultado-option.seleccionado{
+    border-color:#65d8ff;
+    background:linear-gradient(135deg,#006f9d,#00a9e6);
     color:white;
-
-}
-
-.grupo-info{
-
-    margin-top:25px;
-
-    padding-top:20px;
-
-    border-top:1px solid rgba(255,255,255,.10);
-
-    color:#bbbbff;
-
-    font-size:18px;
-
-    font-weight:bold;
-
+    box-shadow:0 0 22px rgba(0,191,255,.42);
 }
 
 #nombre{
-
     width:100%;
-
-    max-width:420px;
-
-    margin-top:40px;
-
-    padding:18px;
-
-    border:none;
-
+    max-width:460px;
+    margin-top:38px;
+    padding:17px 20px;
+    border:2px solid rgba(157,92,255,.35);
     border-radius:15px;
-
-    background:#1d1838;
-
-    color:white;
-
-    font-size:18px;
-
-    font-family:'Orbitron';
-
     outline:none;
-
-    border:2px solid transparent;
-
+    background:#1d1838;
+    color:white;
+    font-family:'Orbitron',sans-serif;
+    font-size:17px;
     transition:.25s;
+}
 
+#nombre::placeholder{
+    color:#918ba9;
 }
 
 #nombre:focus{
-
     border-color:#9d5cff;
-
-    box-shadow:0 0 25px rgba(150,70,255,.45);
-
+    box-shadow:0 0 25px rgba(150,70,255,.42);
 }
 
-button{
-
-    margin-top:35px;
-
-    width:100%;
-
-    max-width:420px;
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:50px;
-
-    font-family:'Orbitron';
-
-    font-size:20px;
-
-    font-weight:900;
-
-    letter-spacing:2px;
-
-    cursor:pointer;
-
-    color:white;
-
-    background:linear-gradient(90deg,#6b2dff,#b54dff);
-
-    transition:.30s;
-
-    box-shadow:0 0 30px rgba(123,44,255,.40);
-
-}
-
-button:hover{
-
-    transform:scale(1.04);
-
-    box-shadow:
-    0 0 50px rgba(180,90,255,.70);
-
-}
-
-.equipo-card{
-
-display:flex;
-
-align-items:center;
-
-gap:18px;
-
-padding:18px 22px;
-
-background:rgba(255,255,255,.05);
-
-border:2px solid transparent;
-
-border-radius:16px;
-
-cursor:pointer;
-
-transition:.25s;
-
-}
-
-.equipo-card:hover{
-
-background:rgba(123,44,255,.18);
-
-border-color:#9b5cff;
-
-transform:translateX(8px);
-
-}
-
-.equipo-card input{
-
-width:22px;
-
-height:22px;
-
-accent-color:#9b5cff;
-
-}
-
-.equipo-nombre{
-
-font-size:22px;
-
-font-weight:bold;
-
-color:white;
-
-}
-
-/*==========================
-TARJETAS SELECCIONABLES
-==========================*/
-
-.equipo-card{
-
-position:relative;
-
-overflow:hidden;
-
-}
-
-.equipo-card input{
-
-display:none;
-
-}
-
-.equipo-card .equipo-nombre{
-
-width:100%;
-
-padding:5px 0;
-
-transition:.25s;
-
-}
-
-.equipo-card:has(input:checked){
-
-background:linear-gradient(90deg,#6b2dff,#9d4dff);
-
-border-color:#c487ff;
-
-box-shadow:
-
-0 0 25px rgba(180,90,255,.6);
-
-transform:scale(1.02);
-
-}
-
-.equipo-card:has(input:checked)::after{
-
-content:"✔";
-
-position:absolute;
-
-right:22px;
-
-top:50%;
-
-transform:translateY(-50%);
-
-font-size:24px;
-
-font-weight:bold;
-
-color:white;
-
+.mensaje,
+#mensaje{
+    min-height:24px;
+    margin-top:18px;
+    color:#d7c5ff;
+    font-weight:700;
 }
 
 /* =======================================
    RESPONSIVE NOVA CLASH
 ======================================= */
 
-@media screen and (max-width: 768px){
+@media screen and (max-width:768px){
+    .navbar{
+        flex-direction:column;
+        padding:15px;
+        gap:15px;
+    }
 
-/* Navbar */
+    .nav-logo{font-size:28px;}
 
-.navbar{
-    flex-direction:column;
-    padding:15px;
-    gap:15px;
+    .nav-links{
+        width:100%;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:15px;
+    }
+
+    .nav-links a{font-size:17px;}
+
+    .contenedor{
+        width:95%;
+        padding:28px 14px;
+    }
+
+    .logo{
+        width:220px;
+        max-width:90%;
+    }
+
+    h1{
+        font-size:36px;
+        letter-spacing:2px;
+    }
+
+    h2{font-size:24px;}
+
+    .descripcion{
+        font-size:16px;
+        line-height:1.6;
+    }
+
+    #partidos{
+        grid-template-columns:1fr;
+        gap:18px;
+        margin-top:28px;
+    }
+
+    .partido,
+    .card,
+    .premio{
+        width:100%;
+        max-width:100%;
+        margin:14px auto;
+    }
+
+    .partido{padding:18px;}
+
+    .enfrentamiento,
+    .versus-contenedor{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .vs,
+    .versus{
+        font-size:17px;
+    }
+
+    .team,
+    .equipo-seleccionable{
+        min-height:58px;
+        font-size:16px;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    #nombre{
+        width:100%;
+        font-size:16px;
+        padding:15px;
+    }
+
+    button{
+        width:100%;
+        max-width:100%;
+        padding:17px;
+        font-size:18px;
+    }
+
+    .bracket{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .columna,
+    .match,
+    .card{
+        width:100%;
+    }
+
+    .estadisticas{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    table{
+        display:block;
+        overflow-x:auto;
+    }
+
+    img{
+        max-width:100%;
+        height:auto;
+    }
 }
-
-.nav-logo{
-    font-size:28px;
-}
-
-.nav-links{
-    width:100%;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:15px;
-}
-
-.nav-links a{
-    font-size:18px;
-}
-
-/* Contenedor */
-
-.contenedor{
-    width:95%;
-    padding:25px 15px;
-}
-
-/* Logo */
-
-.logo{
-    width:220px;
-    max-width:90%;
-}
-
-/* Titulos */
-
-h1{
-    font-size:36px;
-    letter-spacing:2px;
-}
-
-h2{
-    font-size:24px;
-}
-
-.descripcion{
-    font-size:16px;
-    line-height:1.6;
-}
-
-/* Tarjetas */
-
-.grupo-card,
-.partido,
-.card,
-.premio{
-
-    width:100%;
-    max-width:100%;
-
-    margin:20px auto;
-
-    padding:18px;
-
-}
-
-/* Encabezado grupo */
-
-.grupo-header{
-    font-size:26px;
-}
-
-/* Equipos */
-
-.grupo-equipos{
-    gap:10px;
-}
-
-.equipo-option{
-
-    padding:14px;
-
-    font-size:18px;
-
-}
-
-.equipo-option input{
-
-    width:22px;
-    height:22px;
-
-}
-
-/* Inputs */
-
-input[type=text],
-input[type=email],
-input[type=password],
-#nombre{
-
-    width:100%;
-
-    font-size:18px;
-
-    padding:16px;
-
-}
-
-/* Botones */
-
-button{
-
-    width:100%;
-
-    padding:18px;
-
-    font-size:20px;
-
-}
-
-/* Ranking */
-
-.partido h2{
-    font-size:22px;
-}
-
-.partido p{
-    font-size:18px;
-}
-
-/* Versus */
-
-.team{
-    font-size:22px;
-}
-
-.vs{
-    font-size:28px;
-}
-
-/* Bracket */
-
-.bracket{
-
-    flex-direction:column;
-
-    align-items:center;
-
-}
-
-.columna{
-
-    width:100%;
-
-}
-
-.match{
-
-    width:100%;
-
-}
-
-/* Estadísticas */
-
-.estadisticas{
-
-    flex-direction:column;
-
-    align-items:center;
-
-}
-
-.card{
-
-    width:100%;
-
-}
-
-/* Tablas */
-
-table{
-
-    display:block;
-
-    overflow-x:auto;
-
-}
-
-/* Imágenes */
-
-img{
-
-    max-width:100%;
-
-    height:auto;
-
-}
-
-}
-
-/* Celulares pequeños */
 
 @media screen and (max-width:480px){
+    h1{font-size:29px;}
+    h2{font-size:21px;}
+    .nav-logo{font-size:23px;}
 
-h1{
-    font-size:30px;
-}
+    .partido h2,
+    .partido h3{
+        font-size:17px;
+    }
 
-h2{
-    font-size:22px;
-}
+    .resultados,
+    .opciones-resultado{
+        gap:8px;
+    }
 
-.nav-logo{
-    font-size:24px;
-}
+    .resultado,
+    .resultado-option{
+        min-height:44px;
+        padding:10px;
+        font-size:15px;
+    }
 
-.grupo-header{
-    font-size:22px;
-}
-
-.equipo-option{
-    font-size:16px;
-}
-
-button{
-    font-size:18px;
-}
-
+    button{font-size:17px;}
 }
