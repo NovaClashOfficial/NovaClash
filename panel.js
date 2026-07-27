@@ -1,3 +1,5 @@
+console.log("PANEL OCTAVOS V2");
+
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
@@ -11,51 +13,34 @@ import {
 import { auth, db } from "./firebase.js";
 import { octavos } from "./equipos.js";
 
+const contenedor = document.getElementById("adminPartidos");
+const mensajePanel = document.getElementById("mensaje-panel");
+
 /* =========================
    PROTEGER PANEL
 ========================= */
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
+onAuthStateChanged(auth, (usuario) => {
+  if (!usuario) {
     window.location.href = "login.html";
   }
 });
 
 /* =========================
-   REFERENCIAS
-========================= */
-
-const contenedor = document.getElementById("adminPartidos");
-const mensajePanel = document.getElementById("mensaje-panel");
-
-/* =========================
-   ESCAPAR TEXTO
-========================= */
-
-function escaparHTML(texto) {
-  return String(texto)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-/* =========================
-   CARGAR PARTIDOS
+   CREAR PARTIDOS
 ========================= */
 
 function cargarPartidos() {
   contenedor.innerHTML = "";
 
   octavos.forEach((partido, i) => {
-    const equipo1 = escaparHTML(partido[0]);
-    const equipo2 = escaparHTML(partido[1]);
+    const equipo1 = partido[0];
+    const equipo2 = partido[1];
 
     contenedor.insertAdjacentHTML("beforeend", `
       <article class="partido admin-partido">
 
-        <h2 class="partido-titulo">
+        <h2>
           🏆 OCTAVOS - PARTIDO ${i + 1}
         </h2>
 
@@ -63,67 +48,67 @@ function cargarPartidos() {
           Ganador oficial
         </p>
 
-        <div class="seleccion-equipos">
+        <div class="enfrentamiento">
 
-          <label class="team-card">
+          <label class="team">
+
             <input
               type="radio"
               name="admin-g${i}"
               value="${equipo1}"
             >
 
-            <span class="team-card-nombre">
-              ${equipo1}
-            </span>
+            <span>${equipo1}</span>
+
           </label>
 
           <div class="vs">
             VS
           </div>
 
-          <label class="team-card">
+          <label class="team">
+
             <input
               type="radio"
               name="admin-g${i}"
               value="${equipo2}"
             >
 
-            <span class="team-card-nombre">
-              ${equipo2}
-            </span>
+            <span>${equipo2}</span>
+
           </label>
 
         </div>
 
-        <div class="resultado-contenedor">
+        <p class="resultado-titulo">
+          Resultado oficial
+        </p>
 
-          <p class="resultado-titulo">
-            Marcador oficial
-          </p>
+        <div class="resultados">
 
-          <div class="resultado-opciones">
+          <label class="resultado">
 
-            <label class="score-card">
-              <input
-                type="radio"
-                name="admin-r${i}"
-                value="2-0"
-              >
+            <input
+              type="radio"
+              name="admin-r${i}"
+              value="2-0"
+            >
 
-              <span>2 - 0</span>
-            </label>
+            <span>2 - 0</span>
 
-            <label class="score-card">
-              <input
-                type="radio"
-                name="admin-r${i}"
-                value="2-1"
-              >
+          </label>
 
-              <span>2 - 1</span>
-            </label>
+          <label class="resultado">
 
-          </div>
+            <input
+              type="radio"
+              name="admin-r${i}"
+              value="2-1"
+            >
+
+            <span>2 - 1</span>
+
+          </label>
 
         </div>
 
@@ -133,47 +118,77 @@ function cargarPartidos() {
 }
 
 /* =========================
+   MARCAR RADIO GUARDADO
+========================= */
+
+function marcarRadio(nombre, valor) {
+  const opciones = document.querySelectorAll(
+    `input[name="${nombre}"]`
+  );
+
+  opciones.forEach((opcion) => {
+    if (opcion.value === valor) {
+      opcion.checked = true;
+    }
+  });
+}
+
+/* =========================
    CARGAR RESULTADOS GUARDADOS
 ========================= */
 
 async function cargarResultadosGuardados() {
   try {
-    const referencia = doc(db, "resultados", "octavos");
+    const referencia = doc(
+      db,
+      "resultados",
+      "octavos"
+    );
+
     const snap = await getDoc(referencia);
 
-    if (!snap.exists()) return;
+    if (!snap.exists()) {
+      return;
+    }
 
-    const resultados = snap.data().resultados;
+    const datos = snap.data();
 
-    if (!Array.isArray(resultados)) return;
+    if (!Array.isArray(datos.resultados)) {
+      return;
+    }
 
-    resultados.forEach((resultado) => {
+    datos.resultados.forEach((resultado) => {
       const indice = Number(resultado.partido) - 1;
 
-      if (indice < 0 || indice >= octavos.length) return;
-
-      const ganadorInput = document.querySelector(
-        `input[name="admin-g${indice}"][value="${CSS.escape(resultado.ganador)}"]`
-      );
-
-      const resultadoInput = document.querySelector(
-        `input[name="admin-r${indice}"][value="${CSS.escape(resultado.resultado)}"]`
-      );
-
-      if (ganadorInput) {
-        ganadorInput.checked = true;
+      if (
+        indice < 0 ||
+        indice >= octavos.length
+      ) {
+        return;
       }
 
-      if (resultadoInput) {
-        resultadoInput.checked = true;
-      }
+      marcarRadio(
+        `admin-g${indice}`,
+        resultado.ganador
+      );
+
+      marcarRadio(
+        `admin-r${indice}`,
+        resultado.resultado
+      );
     });
 
+    mensajePanel.textContent =
+      "✅ Resultados guardados cargados.";
+
   } catch (error) {
-    console.error("Error al cargar resultados:", error);
+    console.error(
+      "Error al cargar resultados:",
+      error
+    );
 
     mensajePanel.textContent =
-      "No se pudieron cargar los resultados guardados.";
+      "❌ No se pudieron cargar los resultados.";
   }
 }
 
@@ -182,7 +197,10 @@ async function cargarResultadosGuardados() {
 ========================= */
 
 async function guardarResultados() {
-  const boton = document.getElementById("btn-resultados");
+  const boton = document.getElementById(
+    "btn-resultados"
+  );
+
   const resultados = [];
 
   for (let i = 0; i < octavos.length; i++) {
@@ -190,23 +208,26 @@ async function guardarResultados() {
       `input[name="admin-g${i}"]:checked`
     );
 
-    const marcador = document.querySelector(
+    const resultado = document.querySelector(
       `input[name="admin-r${i}"]:checked`
     );
 
     /*
-      Permite dejar partidos todavía no jugados.
-      Pero si se completa uno de los dos campos,
-      exige completar ambos.
+      Si ambos están vacíos, el partido todavía
+      no fue jugado y simplemente se ignora.
     */
 
-    if (!ganador && !marcador) {
+    if (!ganador && !resultado) {
       continue;
     }
 
-    if (!ganador || !marcador) {
+    /*
+      Si eliges solamente uno, se detiene.
+    */
+
+    if (!ganador || !resultado) {
       alert(
-        `Completa ganador y marcador del Partido ${i + 1}, o deja ambos vacíos.`
+        `Completa ganador y resultado del Partido ${i + 1}.`
       );
 
       document
@@ -223,12 +244,14 @@ async function guardarResultados() {
     resultados.push({
       partido: i + 1,
       ganador: ganador.value,
-      resultado: marcador.value
+      resultado: resultado.value
     });
   }
 
   if (resultados.length === 0) {
-    alert("Todavía no seleccionaste ningún resultado.");
+    alert(
+      "Selecciona al menos un resultado."
+    );
 
     return;
   }
@@ -242,22 +265,30 @@ async function guardarResultados() {
       {
         fase: "octavos",
         resultados,
-        actualizado: new Date().toLocaleString("es-AR")
+        actualizado:
+          new Date().toLocaleString("es-AR")
       }
     );
 
     mensajePanel.textContent =
-      "✅ Resultados guardados correctamente.";
+      `✅ ${resultados.length} resultado(s) guardado(s).`;
 
-    alert("✅ Resultados oficiales actualizados.");
+    alert(
+      "✅ Resultados oficiales guardados."
+    );
 
   } catch (error) {
-    console.error("Error al guardar resultados:", error);
+    console.error(
+      "Error al guardar resultados:",
+      error
+    );
 
     mensajePanel.textContent =
-      "❌ No se pudieron guardar los resultados.";
+      "❌ Error al guardar resultados.";
 
-    alert("❌ Error al guardar los resultados.");
+    alert(
+      "❌ No se pudieron guardar los resultados."
+    );
 
   } finally {
     boton.disabled = false;
@@ -266,37 +297,60 @@ async function guardarResultados() {
 }
 
 /* =========================
-   ESTADO DE PREDICCIONES
+   CARGAR ESTADO DEL PICK'EM
 ========================= */
 
 async function cargarEstado() {
   try {
-    const snap = await getDoc(
-      doc(db, "configuracion", "predicciones")
+    const referencia = doc(
+      db,
+      "configuracion",
+      "predicciones"
     );
 
-    if (snap.exists()) {
-      document.getElementById("estadoPredicciones").checked =
-        snap.data().abiertas === true;
+    const snap = await getDoc(referencia);
+
+    if (!snap.exists()) {
+      return;
     }
 
+    document.getElementById(
+      "estadoPredicciones"
+    ).checked = snap.data().abiertas === true;
+
   } catch (error) {
-    console.error("Error al cargar estado:", error);
+    console.error(
+      "Error al cargar estado:",
+      error
+    );
   }
 }
 
-async function guardarEstado() {
-  const boton = document.getElementById("btn-estado");
+/* =========================
+   GUARDAR ESTADO DEL PICK'EM
+========================= */
 
-  const abiertas =
-    document.getElementById("estadoPredicciones").checked;
+async function guardarEstado() {
+  const checkbox = document.getElementById(
+    "estadoPredicciones"
+  );
+
+  const boton = document.getElementById(
+    "btn-estado"
+  );
+
+  const abiertas = checkbox.checked;
 
   try {
     boton.disabled = true;
     boton.textContent = "GUARDANDO...";
 
     await setDoc(
-      doc(db, "configuracion", "predicciones"),
+      doc(
+        db,
+        "configuracion",
+        "predicciones"
+      ),
       {
         abiertas
       }
@@ -309,9 +363,14 @@ async function guardarEstado() {
     );
 
   } catch (error) {
-    console.error("Error al guardar estado:", error);
+    console.error(
+      "Error al guardar estado:",
+      error
+    );
 
-    alert("❌ No se pudo actualizar el estado.");
+    alert(
+      "❌ No se pudo cambiar el estado."
+    );
 
   } finally {
     boton.disabled = false;
@@ -327,9 +386,11 @@ window.guardarEstado = guardarEstado;
 window.guardarResultados = guardarResultados;
 
 /* =========================
-   INICIAR PANEL
+   INICIAR
 ========================= */
 
 cargarPartidos();
 cargarEstado();
 cargarResultadosGuardados();
+
+console.log("PANEL OCTAVOS LISTO");
