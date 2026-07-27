@@ -1,270 +1,89 @@
-import {
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="es">
 
-import { auth } from "./firebase.js";
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-onAuthStateChanged(auth,(user)=>{
+  <title>Nova Clash | Panel</title>
 
-if(!user){
+  <link rel="stylesheet" href="style.css">
 
-window.location.href="login.html";
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-}
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet"
+  >
+</head>
 
-});
+<body>
 
-import {
-doc,
-setDoc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  <nav class="navbar">
+    <div class="nav-logo">
+      NOVA CLASH ADMIN
+    </div>
+  </nav>
 
-import { db } from "./firebase.js";
-import { grupos } from "./equipos.js";
+  <main class="contenedor">
 
-let bloqueActivo = 1;
+    <img src="logo.png" class="logo" alt="Logo de Nova Clash">
 
-const contenedor = document.getElementById("adminPartidos");
+    <h1>Panel de Administración</h1>
 
-/*==========================
-CARGAR BLOQUE
-==========================*/
+    <p class="descripcion">
+      Controla las predicciones y carga los resultados oficiales de Octavos.
+    </p>
 
-async function cargarBloque(){
+    <hr>
 
-const snap=await getDoc(
-doc(db,"configuracion","torneo")
-);
+    <section class="admin-seccion">
 
-if(snap.exists()){
+      <h2>Estado de las predicciones</h2>
 
-bloqueActivo=snap.data().bloqueActivo || 1;
+      <label class="estado-predicciones">
+        <input type="checkbox" id="estadoPredicciones">
+        Predicciones abiertas
+      </label>
 
-document.getElementById("bloqueActivo").value=bloqueActivo;
+      <br>
 
-}
+      <button id="btn-estado" type="button" onclick="guardarEstado()">
+        GUARDAR ESTADO
+      </button>
 
-cargarGrupos();
+    </section>
 
-}
+    <hr>
 
-window.guardarBloque=async()=>{
+    <section class="admin-seccion">
 
-bloqueActivo=Number(
-document.getElementById("bloqueActivo").value
-);
+      <h2>Resultados de Octavos</h2>
 
-await setDoc(
-doc(db,"configuracion","torneo"),
-{
-bloqueActivo
-}
-);
+      <p class="descripcion">
+        Selecciona el ganador y el marcador real de cada partido.
+        Puedes guardar resultados parciales.
+      </p>
 
-cargarGrupos();
+      <div id="adminPartidos"></div>
 
-alert("Bloque actualizado");
+      <button
+        id="btn-resultados"
+        type="button"
+        onclick="guardarResultados()"
+      >
+        GUARDAR RESULTADOS
+      </button>
 
-};
+      <p id="mensaje-panel"></p>
 
-/*==========================
-MOSTRAR GRUPOS
-==========================*/
+    </section>
 
-function cargarGrupos(){
+  </main>
 
-contenedor.innerHTML="";
+  <script type="module" src="panel.js"></script>
 
-const mostrar=
+</body>
 
-bloqueActivo===1
-?["A","B"]
-:["C","D"];
-
-mostrar.forEach(grupo=>{
-
-contenedor.innerHTML+=`
-
-<div class="grupo-card">
-
-<div class="grupo-header">
-
-🏆 GRUPO ${grupo}
-
-</div>
-
-<div class="grupo-equipos">
-
-${grupos[grupo].map(e=>`
-
-<label class="equipo-card">
-
-<input
-type="checkbox"
-name="grupo-${grupo}"
-value="${e}"
-onchange="controlarSeleccion('${grupo}')">
-
-<div class="equipo-nombre">
-
-${e}
-
-</div>
-
-</label>
-
-`).join("")}
-
-</div>
-
-<div class="grupo-info">
-
-Seleccionados:
-
-<span id="contador-${grupo}">
-
-0 / 3
-
-</span>
-
-</div>
-
-<br>
-
-<button onclick="guardarGrupo('${grupo}')">
-
-Guardar Grupo ${grupo}
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-/*==========================
-CONTADOR
-==========================*/
-
-window.controlarSeleccion=(grupo)=>{
-
-const checks=document.querySelectorAll(
-`input[name="grupo-${grupo}"]`
-);
-
-const seleccionados=[...checks].filter(c=>c.checked);
-
-document.getElementById(
-`contador-${grupo}`
-).textContent=
-
-`${seleccionados.length} / 3`;
-
-checks.forEach(c=>{
-
-if(seleccionados.length>=3 && !c.checked){
-
-c.disabled=true;
-
-}else{
-
-c.disabled=false;
-
-}
-
-});
-
-};
-
-/*==========================
-GUARDAR CLASIFICADOS
-==========================*/
-
-window.guardarGrupo=async(grupo)=>{
-
-const clasificados=[
-
-...document.querySelectorAll(
-`input[name="grupo-${grupo}"]:checked`
-)
-
-].map(c=>c.value);
-
-if(clasificados.length!==3){
-
-alert("Debes elegir exactamente 3 equipos.");
-
-return;
-
-}
-
-await setDoc(
-
-doc(db,"clasificados",grupo),
-
-{
-
-grupo,
-
-clasificados
-
-}
-
-);
-
-alert(`Grupo ${grupo} guardado correctamente.`);
-
-};
-
-/*==========================
-PREDICCIONES
-==========================*/
-
-async function cargarEstado(){
-
-const snap=await getDoc(
-
-doc(db,"configuracion","predicciones")
-
-);
-
-if(snap.exists()){
-
-document.getElementById(
-"estadoPredicciones"
-).checked=snap.data().abiertas;
-
-}
-
-}
-
-window.guardarEstado=async()=>{
-
-const abiertas=
-
-document.getElementById(
-"estadoPredicciones"
-).checked;
-
-await setDoc(
-
-doc(db,"configuracion","predicciones"),
-
-{
-
-abiertas
-
-}
-
-);
-
-alert("Estado actualizado");
-
-};
-
-cargarEstado();
-cargarBloque();
+</html>
