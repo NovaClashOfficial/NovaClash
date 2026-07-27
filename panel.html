@@ -2,89 +2,87 @@
 <html lang="es">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Clash | Panel</title>
 
-<title>Nova Clash | Panel</title>
+  <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet"
+  >
 </head>
 
 <body>
 
-<nav class="navbar">
+  <nav class="navbar">
+    <div class="nav-logo">
+      NOVA CLASH ADMIN
+    </div>
+  </nav>
 
-<div class="nav-logo">
-NOVA CLASH ADMIN
-</div>
+  <main class="contenedor">
 
-</nav>
+    <img src="logo.png" class="logo" alt="Logo de Nova Clash">
 
-<div class="contenedor">
+    <h1>Panel de Administración</h1>
 
-<img src="logo.png" class="logo">
+    <p class="descripcion">
+      Controla las predicciones y carga los resultados oficiales de Octavos.
+    </p>
 
-<h1>Panel de Administración</h1>
+    <hr>
 
-<p class="descripcion">
-Controla el torneo desde aquí.
-</p>
+    <section class="admin-seccion">
 
-<hr>
+      <h2>Estado de las predicciones</h2>
 
-<h2>Estado de las predicciones</h2>
+      <label class="estado-predicciones">
+        <input type="checkbox" id="estadoPredicciones">
+        Predicciones abiertas
+      </label>
 
-<label>
-<input type="checkbox" id="estadoPredicciones">
-Predicciones abiertas
-</label>
+      <br>
 
-<br><br>
+      <button id="btn-estado" type="button" onclick="guardarEstado()">
+        GUARDAR ESTADO
+      </button>
 
-<button onclick="guardarEstado()">
-Guardar Estado
-</button>
+    </section>
 
-<hr>
+    <hr>
 
-<h2>Fase de Grupos</h2>
+    <section class="admin-seccion">
 
-<p>Selecciona qué grupos estarán visibles en el Pick'Em.</p>
+      <h2>Resultados de Octavos</h2>
 
-<select id="bloqueActivo">
+      <p class="descripcion">
+        Selecciona el ganador y el marcador real de cada partido.
+        Puedes guardar resultados parciales.
+      </p>
 
-<option value="1">
-Bloque 1 (Grupos A y B)
-</option>
+      <div id="adminPartidos"></div>
 
-<option value="2">
-Bloque 2 (Grupos C y D)
-</option>
+      <button
+        id="btn-resultados"
+        type="button"
+        onclick="guardarResultados()"
+      >
+        GUARDAR RESULTADOS
+      </button>
 
-</select>
+      <p id="mensaje-panel"></p>
 
-<br><br>
+    </section>
 
-<button onclick="guardarBloque()">
-Guardar Bloque
-</button>
+  </main>
 
-<hr>
-
-<h2>Resultados de la Fase de Grupos</h2>
-
-<div id="adminPartidos"></div>
-
-</div>
-
-<script type="module" src="panel.js"></script>
+  <script type="module" src="panel.js"></script>
 
 </body>
 
