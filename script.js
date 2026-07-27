@@ -1,4 +1,4 @@
-console.log("VERSION OCTAVOS");
+console.log("VERSION OCTAVOS - TARJETAS");
 
 import {
   collection,
@@ -11,27 +11,42 @@ import { db } from "./firebase.js";
 import { octavos } from "./equipos.js";
 
 /* =========================
-   VERIFICAR SI LAS PREDICCIONES ESTÁN ABIERTAS
+   VERIFICAR ESTADO
 ========================= */
 
 async function verificarEstadoPredicciones() {
+  try {
+    const ref = doc(db, "configuracion", "predicciones");
+    const snap = await getDoc(ref);
 
-  const ref = doc(db, "configuracion", "predicciones");
-  const snap = await getDoc(ref);
+    if (snap.exists() && snap.data().abiertas === false) {
+      document.getElementById("partidos").innerHTML = `
+        <div class="predicciones-cerradas">
+          <h2>🔒 Las predicciones están cerradas</h2>
+          <p>Ya no se pueden enviar nuevas predicciones.</p>
+        </div>
+      `;
 
-  if (snap.exists() && snap.data().abiertas === false) {
+      document.getElementById("nombre").style.display = "none";
 
-    document.getElementById("partidos").innerHTML =
-      "<h2>🔒 Las predicciones están cerradas.</h2>";
+      const boton = document.getElementById("btn-enviar");
 
-    document.getElementById("nombre").style.display = "none";
+      if (boton) {
+        boton.style.display = "none";
+      }
 
-    document.querySelector("button").style.display = "none";
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+    console.error("Error al comprobar el estado:", error);
+
+    alert("No se pudo comprobar el estado de las predicciones.");
 
     return false;
   }
-
-  return true;
 }
 
 /* =========================
@@ -39,7 +54,6 @@ async function verificarEstadoPredicciones() {
 ========================= */
 
 window.addEventListener("DOMContentLoaded", async () => {
-
   const abiertas = await verificarEstadoPredicciones();
 
   if (!abiertas) return;
@@ -49,48 +63,94 @@ window.addEventListener("DOMContentLoaded", async () => {
   contenedor.innerHTML = "";
 
   octavos.forEach((partido, i) => {
+    const equipo1 = partido[0];
+    const equipo2 = partido[1];
 
-    contenedor.innerHTML += `
+    contenedor.insertAdjacentHTML("beforeend", `
+      <article class="partido">
 
-<div class="partido">
+        <h2 class="partido-titulo">
+          🏆 OCTAVOS - PARTIDO ${i + 1}
+        </h2>
 
-  <h2>🏆 OCTAVOS - Partido ${i + 1}</h2>
+        <div class="seleccion-equipos">
 
-  <div class="versus">
+          <label class="team-card">
 
-    <div class="team">${partido[0]}</div>
+            <input
+              type="radio"
+              name="g${i}"
+              value="${equipo1}"
+            >
 
-    <div class="vs">VS</div>
+            <span class="team-card-nombre">
+              ${equipo1}
+            </span>
 
-    <div class="team">${partido[1]}</div>
+          </label>
 
-  </div>
+          <div class="vs">
+            VS
+          </div>
 
-  <label>
-    <input type="radio" name="g${i}" value="${partido[0]}">
-    ${partido[0]}
-  </label>
+          <label class="team-card">
 
-  <label>
-    <input type="radio" name="g${i}" value="${partido[1]}">
-    ${partido[1]}
-  </label>
+            <input
+              type="radio"
+              name="g${i}"
+              value="${equipo2}"
+            >
 
-  <br>
+            <span class="team-card-nombre">
+              ${equipo2}
+            </span>
 
-  <label>
-    <input type="radio" name="r${i}" value="2-0">
-    2 - 0
-  </label>
+          </label>
 
-  <label>
-    <input type="radio" name="r${i}" value="2-1">
-    2 - 1
-  </label>
+        </div>
 
-</div>
+        <div class="resultado-contenedor">
 
-`;
+          <p class="resultado-titulo">
+            Resultado
+          </p>
+
+          <div class="resultado-opciones">
+
+            <label class="score-card">
+
+              <input
+                type="radio"
+                name="r${i}"
+                value="2-0"
+              >
+
+              <span>
+                2 - 0
+              </span>
+
+            </label>
+
+            <label class="score-card">
+
+              <input
+                type="radio"
+                name="r${i}"
+                value="2-1"
+              >
+
+              <span>
+                2 - 1
+              </span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+      </article>
+    `);
   });
 });
 
@@ -99,39 +159,64 @@ window.addEventListener("DOMContentLoaded", async () => {
 ========================= */
 
 async function enviarPredicciones() {
+  const inputNombre = document.getElementById("nombre");
+  const botonEnviar = document.getElementById("btn-enviar");
 
-  const nombre = document.getElementById("nombre").value.trim();
+  const nombre = inputNombre.value.trim();
 
   if (nombre === "") {
+    alert("Escribe tu nombre o Nick.");
 
-    alert("Escribe tu nombre o Nick");
+    inputNombre.focus();
+
     return;
   }
 
   const datos = {
-
     nombre,
-
-    fecha: new Date().toLocaleString(),
-
+    fecha: new Date().toLocaleString("es-AR"),
     fase: "octavos",
-
     predicciones: []
   };
 
   for (let i = 0; i < octavos.length; i++) {
+    const ganador = document.querySelector(
+      `input[name="g${i}"]:checked`
+    );
 
-    const ganador = document.querySelector(`input[name="g${i}"]:checked`);
-    const resultado = document.querySelector(`input[name="r${i}"]:checked`);
+    const resultado = document.querySelector(
+      `input[name="r${i}"]:checked`
+    );
 
-    if (!ganador || !resultado) {
+    if (!ganador) {
+      alert(`Elige al ganador del Partido ${i + 1}.`);
 
-      alert(`Completa el Partido ${i + 1}`);
+      document
+        .querySelectorAll(".partido")
+        [i]
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      return;
+    }
+
+    if (!resultado) {
+      alert(`Elige el resultado del Partido ${i + 1}.`);
+
+      document
+        .querySelectorAll(".partido")
+        [i]
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
       return;
     }
 
     datos.predicciones.push({
-
       partido: i + 1,
       ganador: ganador.value,
       resultado: resultado.value
@@ -139,6 +224,8 @@ async function enviarPredicciones() {
   }
 
   try {
+    botonEnviar.disabled = true;
+    botonEnviar.textContent = "ENVIANDO...";
 
     await addDoc(
       collection(db, "predicciones"),
@@ -150,16 +237,19 @@ async function enviarPredicciones() {
     location.reload();
 
   } catch (error) {
+    console.error("Error al enviar:", error);
 
-    console.error(error);
     alert("❌ Error al enviar las predicciones.");
+
+    botonEnviar.disabled = false;
+    botonEnviar.textContent = "ENVIAR PREDICCIONES";
   }
 }
 
 /* =========================
-   FUNCIONES GLOBALES
+   FUNCIÓN GLOBAL
 ========================= */
 
 window.enviarPredicciones = enviarPredicciones;
 
-console.log("SCRIPT OCTAVOS LISTO");
+console.log("SCRIPT OCTAVOS CON TARJETAS LISTO");
