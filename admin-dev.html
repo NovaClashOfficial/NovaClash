@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Laboratorio | Nova Clash</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dev-contenedor {
+            width: min(1100px, 92%);
+            margin: 40px auto;
+        }
+
+        .dev-aviso {
+            padding: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #ffcc00;
+            border-radius: 14px;
+            background: rgba(255, 204, 0, 0.08);
+            text-align: center;
+        }
+
+        .dev-controles {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .dev-control {
+            padding: 15px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .dev-control label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .dev-control select,
+        .dev-control button {
+            width: 100%;
+            min-height: 45px;
+            border-radius: 10px;
+        }
+
+        .dev-boton {
+            padding: 12px 18px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dev-peligro {
+            background: #9e1c1c;
+            color: white;
+        }
+
+        .dev-partidos {
+            display: grid;
+            gap: 18px;
+        }
+
+        .dev-partido {
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .dev-enfrentamiento {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .dev-equipo {
+            padding: 14px 10px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .dev-equipo:has(input:checked) {
+            border-color: #00eaff;
+            box-shadow: 0 0 14px rgba(0, 234, 255, 0.7);
+        }
+
+        .dev-equipo input {
+            display: none;
+        }
+
+        .dev-marcadores {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .dev-marcador {
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .dev-marcador:has(input:checked) {
+            border-color: #a855f7;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.7);
+        }
+
+        .dev-marcador input {
+            display: none;
+        }
+
+        .dev-estado {
+            margin-top: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .dev-campeon {
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px solid gold;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.55);
+            text-align: center;
+        }
+
+        .dev-campeon h2 {
+            margin: 5px 0;
+        }
+
+        .dev-oculto {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .dev-enfrentamiento {
+                grid-template-columns: 1fr;
+            }
+
+            .dev-vs {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="dev-contenedor">
+
+        <section class="dev-aviso">
+            <h1>🧪 Laboratorio Nova Clash</h1>
+
+            <p>
+                Esta página es únicamente para hacer pruebas.
+                No modifica las predicciones ni los resultados oficiales.
+            </p>
+        </section>
+
+        <section class="dev-controles">
+
+            <div class="dev-control">
+                <label for="faseDev">
+                    Fase para probar
+                </label>
+
+                <select id="faseDev">
+                    <option value="cuartos">Cuartos</option>
+                    <option value="semifinal">Semifinal</option>
+                    <option value="final">Final</option>
+                </select>
+            </div>
+
+            <div class="dev-control">
+                <label for="estadoDev">
+                    Estado visual
+                </label>
+
+                <select id="estadoDev">
+                    <option value="abiertas">
+                        Predicciones abiertas
+                    </option>
+
+                    <option value="cerradas">
+                        Predicciones cerradas
+                    </option>
+                </select>
+            </div>
+
+            <div class="dev-control">
+                <label>
+                    Guardar simulación
+                </label>
+
+                <button
+                    id="guardarDev"
+                    class="dev-boton"
+                    type="button"
+                >
+                    💾 Guardar prueba
+                </button>
+            </div>
+
+            <div class="dev-control">
+                <label>
+                    Reiniciar
+                </label>
+
+                <button
+                    id="reiniciarDev"
+                    class="dev-boton dev-peligro"
+                    type="button"
+                >
+                    🗑️ Borrar prueba
+                </button>
+            </div>
+
+        </section>
+
+        <section id="vistaEstado" class="partido"></section>
+
+        <section id="partidosDev" class="dev-partidos"></section>
+
+        <section
+            id="campeonDev"
+            class="dev-campeon dev-oculto"
+        ></section>
+
+    </main>
+
+    <script type="module" src="admin-dev.js"></script>
+
+</body>
+</html>
