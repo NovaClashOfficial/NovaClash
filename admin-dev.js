@@ -1,27 +1,88 @@
-console.log("LABORATORIO NOVA CLASH");
+console.log("LABORATORIO NOVA CLASH - PREDICCIONES ESPECIALES");
 
 const CLAVE_LOCAL = "novaClashLaboratorio";
 
-/*
-    Equipos de prueba.
-
-    Cuando terminen los Octavos podés reemplazarlos
-    por los 8 ganadores reales.
-*/
+/* =========================================
+   EQUIPOS Y JUGADORES DE CUARTOS
+   Cambialos cuando estén definidos.
+========================================= */
 
 const equiposIniciales = [
-    "Ganador Octavos 1",
-    "Ganador Octavos 2",
-    "Ganador Octavos 3",
-    "Ganador Octavos 4",
-    "Ganador Octavos 5",
-    "Ganador Octavos 6",
-    "Ganador Octavos 7",
-    "Ganador Octavos 8"
+    {
+        nombre: "Ganador Octavos 1",
+        jugadores: [
+            "Jugador 1A",
+            "Jugador 1B",
+            "Jugador 1C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 2",
+        jugadores: [
+            "Jugador 2A",
+            "Jugador 2B",
+            "Jugador 2C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 3",
+        jugadores: [
+            "Jugador 3A",
+            "Jugador 3B",
+            "Jugador 3C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 4",
+        jugadores: [
+            "Jugador 4A",
+            "Jugador 4B",
+            "Jugador 4C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 5",
+        jugadores: [
+            "Jugador 5A",
+            "Jugador 5B",
+            "Jugador 5C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 6",
+        jugadores: [
+            "Jugador 6A",
+            "Jugador 6B",
+            "Jugador 6C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 7",
+        jugadores: [
+            "Jugador 7A",
+            "Jugador 7B",
+            "Jugador 7C"
+        ]
+    },
+    {
+        nombre: "Ganador Octavos 8",
+        jugadores: [
+            "Jugador 8A",
+            "Jugador 8B",
+            "Jugador 8C"
+        ]
+    }
 ];
 
-const faseDev = document.getElementById("faseDev");
-const estadoDev = document.getElementById("estadoDev");
+/* =========================================
+   ELEMENTOS DEL HTML
+========================================= */
+
+const faseDev =
+    document.getElementById("faseDev");
+
+const estadoDev =
+    document.getElementById("estadoDev");
 
 const partidosDev =
     document.getElementById("partidosDev");
@@ -38,30 +99,52 @@ const guardarDev =
 const reiniciarDev =
     document.getElementById("reiniciarDev");
 
-/* =========================
-   ESTADO INICIAL
-========================= */
+/* =========================================
+   ESTADO DEL LABORATORIO
+========================================= */
 
-let laboratorio = cargarLaboratorio() || {
-    fase: "cuartos",
-    estado: "abiertas",
+let laboratorio = cargarLaboratorio() || crearEstadoInicial();
 
-    resultados: {
-        cuartos: [],
-        semifinal: [],
-        final: []
-    }
+/*
+    Esto completa propiedades faltantes si ya tenías
+    una simulación guardada con la versión anterior.
+*/
+
+laboratorio.fase ||= "cuartos";
+laboratorio.estado ||= "abiertas";
+
+laboratorio.resultados ||= {
+    cuartos: [],
+    semifinal: [],
+    final: []
 };
+
+laboratorio.resultados.cuartos ||= [];
+laboratorio.resultados.semifinal ||= [];
+laboratorio.resultados.final ||= [];
 
 faseDev.value = laboratorio.fase;
 estadoDev.value = laboratorio.estado;
 
-/* =========================
-   UTILIDADES
-========================= */
+/* =========================================
+   FUNCIONES GENERALES
+========================================= */
+
+function crearEstadoInicial() {
+    return {
+        fase: "cuartos",
+        estado: "abiertas",
+
+        resultados: {
+            cuartos: [],
+            semifinal: [],
+            final: []
+        }
+    };
+}
 
 function escaparHTML(texto) {
-    return String(texto)
+    return String(texto ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -74,7 +157,10 @@ function cargarLaboratorio() {
         const datos =
             localStorage.getItem(CLAVE_LOCAL);
 
-        return datos ? JSON.parse(datos) : null;
+        return datos
+            ? JSON.parse(datos)
+            : null;
+
     } catch (error) {
         console.error(
             "No se pudo cargar el laboratorio:",
@@ -92,6 +178,16 @@ function guardarLaboratorio() {
     );
 }
 
+function nombreFase(fase) {
+    const nombres = {
+        cuartos: "Cuartos de Final",
+        semifinal: "Semifinal",
+        final: "Final"
+    };
+
+    return nombres[fase] || fase;
+}
+
 function obtenerResultado(fase, partido) {
     return laboratorio.resultados[fase].find(
         (resultado) =>
@@ -100,9 +196,27 @@ function obtenerResultado(fase, partido) {
     );
 }
 
-/* =========================
-   GENERAR ENFRENTAMIENTOS
-========================= */
+function buscarEquipo(nombreEquipo) {
+    return equiposIniciales.find(
+        (equipo) =>
+            equipo.nombre === nombreEquipo
+    );
+}
+
+function equipoProvisional(nombre) {
+    return {
+        nombre,
+        jugadores: [
+            "Jugador por definir 1",
+            "Jugador por definir 2",
+            "Jugador por definir 3"
+        ]
+    };
+}
+
+/* =========================================
+   CREAR PARTIDOS
+========================================= */
 
 function obtenerPartidosCuartos() {
     return [
@@ -116,14 +230,35 @@ function obtenerPartidosCuartos() {
 function obtenerGanadores(faseAnterior, cantidad) {
     const ganadores = [];
 
-    for (let i = 1; i <= cantidad; i++) {
+    for (
+        let numeroPartido = 1;
+        numeroPartido <= cantidad;
+        numeroPartido++
+    ) {
         const resultado =
-            obtenerResultado(faseAnterior, i);
+            obtenerResultado(
+                faseAnterior,
+                numeroPartido
+            );
 
-        ganadores.push(
-            resultado?.ganador ||
-            `Ganador ${faseAnterior} ${i}`
-        );
+        if (resultado?.ganador) {
+            const equipo =
+                buscarEquipo(resultado.ganador);
+
+            ganadores.push(
+                equipo ||
+                equipoProvisional(resultado.ganador)
+            );
+
+        } else {
+            ganadores.push(
+                equipoProvisional(
+                    `Ganador ${nombreFase(
+                        faseAnterior
+                    )} ${numeroPartido}`
+                )
+            );
+        }
     }
 
     return ganadores;
@@ -164,9 +299,9 @@ function obtenerPartidos(fase) {
     return [];
 }
 
-/* =========================
-   MOSTRAR ESTADO
-========================= */
+/* =========================================
+   ESTADO DE LA PÁGINA
+========================================= */
 
 function mostrarEstado() {
     const estaAbierto =
@@ -182,7 +317,7 @@ function mostrarEstado() {
         </h2>
 
         <p>
-            Vista de prueba:
+            Fase de prueba:
             <strong>
                 ${escaparHTML(
                     nombreFase(laboratorio.fase)
@@ -191,24 +326,127 @@ function mostrarEstado() {
         </p>
 
         <p>
-            Nada de esta página se guarda en Firebase.
+            Esta simulación se guarda solamente
+            en tu navegador. No modifica Firebase.
         </p>
     `;
 }
 
-function nombreFase(fase) {
-    const nombres = {
-        cuartos: "Cuartos de Final",
-        semifinal: "Semifinal",
-        final: "Final"
-    };
+/* =========================================
+   OPCIONES DE HIPERCARGAS
+========================================= */
 
-    return nombres[fase] || fase;
+function crearOpcionesHipercargas(
+    numeroPartido,
+    resultadoGuardado,
+    estaCerrado
+) {
+    const opciones = [
+        {
+            valor: "0-2",
+            texto: "0 a 2"
+        },
+        {
+            valor: "3-5",
+            texto: "3 a 5"
+        },
+        {
+            valor: "6-10",
+            texto: "6 a 10"
+        },
+        {
+            valor: "mas-10",
+            texto: "Más de 10"
+        }
+    ];
+
+    return opciones.map((opcion) => `
+        <label class="dev-marcador">
+
+            <input
+                type="radio"
+                name="hipercargas-${numeroPartido}"
+                value="${opcion.valor}"
+
+                ${
+                    resultadoGuardado?.hipercargas ===
+                    opcion.valor
+                        ? "checked"
+                        : ""
+                }
+
+                ${estaCerrado ? "disabled" : ""}
+            >
+
+            <span>
+                ⚡ ${opcion.texto}
+            </span>
+
+        </label>
+    `).join("");
 }
 
-/* =========================
-   RENDERIZAR PARTIDOS
-========================= */
+/* =========================================
+   OPCIONES DE MVP
+========================================= */
+
+function crearOpcionesMVP(
+    numeroPartido,
+    equipo1,
+    equipo2,
+    resultadoGuardado,
+    estaCerrado
+) {
+    const jugadores = [
+        ...equipo1.jugadores.map((jugador) => ({
+            nombre: jugador,
+            equipo: equipo1.nombre
+        })),
+
+        ...equipo2.jugadores.map((jugador) => ({
+            nombre: jugador,
+            equipo: equipo2.nombre
+        }))
+    ];
+
+    return jugadores.map((jugador) => `
+        <label class="dev-marcador">
+
+            <input
+                type="radio"
+                name="mvp-${numeroPartido}"
+                value="${escaparHTML(jugador.nombre)}"
+
+                ${
+                    resultadoGuardado?.mvp ===
+                    jugador.nombre
+                        ? "checked"
+                        : ""
+                }
+
+                ${estaCerrado ? "disabled" : ""}
+            >
+
+            <span>
+                ⭐ ${escaparHTML(jugador.nombre)}
+                <small
+                    style="
+                        display:block;
+                        margin-top:4px;
+                        opacity:0.7;
+                    "
+                >
+                    ${escaparHTML(jugador.equipo)}
+                </small>
+            </span>
+
+        </label>
+    `).join("");
+}
+
+/* =========================================
+   RENDERIZAR LOS PARTIDOS
+========================================= */
 
 function renderizarPartidos() {
     mostrarEstado();
@@ -221,8 +459,12 @@ function renderizarPartidos() {
     const estaCerrado =
         laboratorio.estado === "cerradas";
 
+    const esCuartos =
+        laboratorio.fase === "cuartos";
+
     partidos.forEach((partido, indice) => {
         const numeroPartido = indice + 1;
+
         const [equipo1, equipo2] = partido;
 
         const resultadoGuardado =
@@ -244,22 +486,26 @@ function renderizarPartidos() {
             <div class="dev-enfrentamiento">
 
                 <label class="dev-equipo">
+
                     <input
                         type="radio"
                         name="ganador-${numeroPartido}"
-                        value="${escaparHTML(equipo1)}"
+                        value="${escaparHTML(equipo1.nombre)}"
+
                         ${
                             resultadoGuardado?.ganador ===
-                            equipo1
+                            equipo1.nombre
                                 ? "checked"
                                 : ""
                         }
+
                         ${estaCerrado ? "disabled" : ""}
                     >
 
                     <span>
-                        ${escaparHTML(equipo1)}
+                        ${escaparHTML(equipo1.nombre)}
                     </span>
+
                 </label>
 
                 <strong class="dev-vs">
@@ -267,63 +513,130 @@ function renderizarPartidos() {
                 </strong>
 
                 <label class="dev-equipo">
+
                     <input
                         type="radio"
                         name="ganador-${numeroPartido}"
-                        value="${escaparHTML(equipo2)}"
+                        value="${escaparHTML(equipo2.nombre)}"
+
                         ${
                             resultadoGuardado?.ganador ===
-                            equipo2
+                            equipo2.nombre
                                 ? "checked"
                                 : ""
                         }
+
                         ${estaCerrado ? "disabled" : ""}
                     >
 
                     <span>
-                        ${escaparHTML(equipo2)}
+                        ${escaparHTML(equipo2.nombre)}
                     </span>
+
                 </label>
 
             </div>
 
+            <h3>
+                🎯 Marcador final
+            </h3>
+
             <div class="dev-marcadores">
 
                 <label class="dev-marcador">
+
                     <input
                         type="radio"
                         name="marcador-${numeroPartido}"
                         value="2-0"
+
                         ${
                             resultadoGuardado?.resultado ===
                             "2-0"
                                 ? "checked"
                                 : ""
                         }
+
                         ${estaCerrado ? "disabled" : ""}
                     >
 
                     <span>2-0</span>
+
                 </label>
 
                 <label class="dev-marcador">
+
                     <input
                         type="radio"
                         name="marcador-${numeroPartido}"
                         value="2-1"
+
                         ${
                             resultadoGuardado?.resultado ===
                             "2-1"
                                 ? "checked"
                                 : ""
                         }
+
                         ${estaCerrado ? "disabled" : ""}
                     >
 
                     <span>2-1</span>
+
                 </label>
 
             </div>
+
+            ${
+                esCuartos
+                    ? `
+                        <hr style="margin:25px 0;">
+
+                        <h3>
+                            ⚡ Hipercargas activadas
+                        </h3>
+
+                        <p>
+                            Elegí la cantidad total de
+                            hipercargas activadas durante
+                            todo el partido.
+                        </p>
+
+                        <div class="dev-marcadores">
+
+                            ${crearOpcionesHipercargas(
+                                numeroPartido,
+                                resultadoGuardado,
+                                estaCerrado
+                            )}
+
+                        </div>
+
+                        <hr style="margin:25px 0;">
+
+                        <h3>
+                            ⭐ MVP del partido
+                        </h3>
+
+                        <p>
+                            Elegí uno de los tres jugadores
+                            de cada equipo.
+                        </p>
+
+                        <div class="dev-marcadores">
+
+                            ${crearOpcionesMVP(
+                                numeroPartido,
+                                equipo1,
+                                equipo2,
+                                resultadoGuardado,
+                                estaCerrado
+                            )}
+
+                        </div>
+                    `
+                    : ""
+            }
 
             <p
                 class="dev-estado"
@@ -331,16 +644,36 @@ function renderizarPartidos() {
             >
                 ${
                     resultadoGuardado
-                        ? `Ganador simulado: ${
-                            escaparHTML(
+                        ? `
+                            Predicción guardada:
+                            ${escaparHTML(
                                 resultadoGuardado.ganador
-                            )
-                        } ${
-                            escaparHTML(
+                            )}
+                            ${escaparHTML(
                                 resultadoGuardado.resultado
-                            )
-                        }`
-                        : "Sin resultado simulado"
+                            )}
+
+                            ${
+                                resultadoGuardado.hipercargas
+                                    ? `• ⚡ ${
+                                        escaparHTML(
+                                            resultadoGuardado.hipercargas
+                                        )
+                                    }`
+                                    : ""
+                            }
+
+                            ${
+                                resultadoGuardado.mvp
+                                    ? `• ⭐ ${
+                                        escaparHTML(
+                                            resultadoGuardado.mvp
+                                        )
+                                    }`
+                                    : ""
+                            }
+                        `
+                        : "Sin predicción simulada"
                 }
             </p>
         `;
@@ -351,15 +684,18 @@ function renderizarPartidos() {
     mostrarCampeon();
 }
 
-/* =========================
-   LEER SELECCIONES
-========================= */
+/* =========================================
+   LEER PREDICCIONES
+========================================= */
 
 function leerResultadosActuales() {
     const partidos =
         obtenerPartidos(laboratorio.fase);
 
     const resultados = [];
+
+    const esCuartos =
+        laboratorio.fase === "cuartos";
 
     for (
         let indice = 0;
@@ -380,29 +716,60 @@ function leerResultadosActuales() {
 
         if (!ganador || !resultado) {
             throw new Error(
-                `Completa el partido ${numeroPartido}.`
+                `Completa el ganador y el marcador del partido ${numeroPartido}.`
             );
         }
 
-        resultados.push({
+        const prediccion = {
             partido: numeroPartido,
             ganador,
             resultado
-        });
+        };
+
+        if (esCuartos) {
+            const hipercargas =
+                document.querySelector(
+                    `input[name="hipercargas-${numeroPartido}"]:checked`
+                )?.value;
+
+            const mvp =
+                document.querySelector(
+                    `input[name="mvp-${numeroPartido}"]:checked`
+                )?.value;
+
+            if (!hipercargas) {
+                throw new Error(
+                    `Selecciona las hipercargas del partido ${numeroPartido}.`
+                );
+            }
+
+            if (!mvp) {
+                throw new Error(
+                    `Selecciona el MVP del partido ${numeroPartido}.`
+                );
+            }
+
+            prediccion.hipercargas =
+                hipercargas;
+
+            prediccion.mvp = mvp;
+        }
+
+        resultados.push(prediccion);
     }
 
     return resultados;
 }
 
-/* =========================
-   CAMPEÓN
-========================= */
+/* =========================================
+   MOSTRAR CAMPEÓN
+========================================= */
 
 function mostrarCampeon() {
-    const final =
+    const resultadoFinal =
         obtenerResultado("final", 1);
 
-    if (!final?.ganador) {
+    if (!resultadoFinal?.ganador) {
         campeonDev.classList.add("dev-oculto");
         campeonDev.innerHTML = "";
         return;
@@ -411,12 +778,14 @@ function mostrarCampeon() {
     campeonDev.classList.remove("dev-oculto");
 
     campeonDev.innerHTML = `
-        <div style="font-size: 42px;">
+        <div style="font-size:45px;">
             ⭐ 🏆 ⭐
         </div>
 
         <h2>
-            ${escaparHTML(final.ganador)}
+            ${escaparHTML(
+                resultadoFinal.ganador
+            )}
         </h2>
 
         <h3>
@@ -426,15 +795,17 @@ function mostrarCampeon() {
         <p>
             Resultado de la final:
             <strong>
-                ${escaparHTML(final.resultado)}
+                ${escaparHTML(
+                    resultadoFinal.resultado
+                )}
             </strong>
         </p>
     `;
 }
 
-/* =========================
+/* =========================================
    EVENTOS
-========================= */
+========================================= */
 
 faseDev.addEventListener("change", () => {
     laboratorio.fase = faseDev.value;
@@ -453,8 +824,7 @@ estadoDev.addEventListener("change", () => {
 guardarDev.addEventListener("click", () => {
     if (laboratorio.estado === "cerradas") {
         alert(
-            "La vista está en modo cerrado. " +
-            "Cambiá el estado a abiertas para editar."
+            "La vista está cerrada. Cambiala a predicciones abiertas para editar."
         );
 
         return;
@@ -468,46 +838,5 @@ guardarDev.addEventListener("click", () => {
             laboratorio.fase
         ] = resultados;
 
-        guardarLaboratorio();
-        renderizarPartidos();
-
-        alert(
-            `${nombreFase(laboratorio.fase)} ` +
-            "guardada solamente en modo prueba."
-        );
-    } catch (error) {
-        alert(error.message);
-    }
-});
-
-reiniciarDev.addEventListener("click", () => {
-    const confirmar = confirm(
-        "¿Querés borrar toda la simulación?"
-    );
-
-    if (!confirmar) return;
-
-    localStorage.removeItem(CLAVE_LOCAL);
-
-    laboratorio = {
-        fase: "cuartos",
-        estado: "abiertas",
-
-        resultados: {
-            cuartos: [],
-            semifinal: [],
-            final: []
-        }
-    };
-
-    faseDev.value = "cuartos";
-    estadoDev.value = "abiertas";
-
-    renderizarPartidos();
-});
-
-/* =========================
-   INICIAR
-========================= */
-
-renderizarPartidos();
+        /*
+          
