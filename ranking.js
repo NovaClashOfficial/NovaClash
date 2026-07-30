@@ -300,18 +300,15 @@ async function cargarRanking() {
 
     /* Ordenar */
 
-   const BONO_COMPENSACION = 3;
-
-const listaJugadores = Object.values(jugadores)
+  const listaJugadores = Object.values(jugadores)
     .map((jugador) => ({
         ...jugador,
 
-        bonoCompensacion: BONO_COMPENSACION,
+        bonoCompensacion: 0,
 
         puntosTotales:
             jugador.puntosGrupos +
-            jugador.puntosOctavos +
-            BONO_COMPENSACION
+            jugador.puntosOctavos
     }))
       .sort((a, b) => {
         if (b.puntosTotales !== a.puntosTotales) {
@@ -369,11 +366,7 @@ const listaJugadores = Object.values(jugadores)
               Octavos:
               <strong>${jugador.puntosOctavos}</strong>
             </p>
-            <p>
-    Bono compensación:
-    <strong>+${jugador.bonoCompensacion}</strong>
-</p>
-
+          
           </article>
         `
       );
