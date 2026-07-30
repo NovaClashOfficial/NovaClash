@@ -266,6 +266,11 @@ marcadoresExactos: 0
     /* Calcular puntos */
 
     Object.values(jugadores).forEach((jugador) => {
+      const claveJugador =
+  normalizarNombre(jugador.nombre);
+
+jugador.bonoCompensacion =
+  bonusReclamados.get(claveJugador) || 0;
       /* Fase de grupos */
 
       ["A", "B", "C", "D"].forEach((grupo) => {
@@ -325,15 +330,15 @@ marcadoresExactos: 0
 
     /* Ordenar */
 
-  const listaJugadores = Object.values(jugadores)
+const listaJugadores =
+  Object.values(jugadores)
     .map((jugador) => ({
-        ...jugador,
+      ...jugador,
 
-        bonoCompensacion: 0,
-
-        puntosTotales:
-            jugador.puntosGrupos +
-            jugador.puntosOctavos
+      puntosTotales:
+        jugador.puntosGrupos +
+        jugador.puntosOctavos +
+        jugador.bonoCompensacion
     }))
       .sort((a, b) => {
         if (b.puntosTotales !== a.puntosTotales) {
