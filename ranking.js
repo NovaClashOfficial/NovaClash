@@ -133,6 +133,31 @@ async function cargarRanking() {
         octavosSnap.data().resultados;
     }
 
+    /* Bonus reclamados */
+
+const bonusSnap = await getDocs(
+  collection(db, "bonusOctavos")
+);
+
+const bonusReclamados = new Map();
+
+bonusSnap.forEach((documento) => {
+  const datos = documento.data();
+
+  const nombreNormalizado =
+    normalizarNombre(
+      datos.nombreNormalizado ||
+      datos.nombre
+    );
+
+  if (!nombreNormalizado) return;
+
+  bonusReclamados.set(
+    nombreNormalizado,
+    Number(datos.puntos) || 3
+  );
+});
+    
     /* Leer predicciones */
 
     const prediccionesSnap = await getDocs(
@@ -158,12 +183,12 @@ async function cargarRanking() {
           prediccionesGrupos: {},
 
           prediccionesOctavos: {},
+puntosGrupos: 0,
+puntosOctavos: 0,
+bonoCompensacion: 0,
 
-          puntosGrupos: 0,
-          puntosOctavos: 0,
-
-          ganadoresOctavos: 0,
-          marcadoresExactos: 0
+ganadoresOctavos: 0,
+marcadoresExactos: 0
         };
       }
 
