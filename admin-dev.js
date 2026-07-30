@@ -839,4 +839,65 @@ guardarDev.addEventListener("click", () => {
         ] = resultados;
 
         /*
-          
+            Si se cambian los Cuartos,
+            se eliminan las Semifinales
+            y la Final anteriores.
+        */
+
+        if (laboratorio.fase === "cuartos") {
+            laboratorio.resultados.semifinal = [];
+            laboratorio.resultados.final = [];
+        }
+
+        /*
+            Si se cambian las Semifinales,
+            se elimina la Final anterior.
+        */
+
+        if (laboratorio.fase === "semifinal") {
+            laboratorio.resultados.final = [];
+        }
+
+        guardarLaboratorio();
+        renderizarPartidos();
+
+        alert(
+            `${nombreFase(
+                laboratorio.fase
+            )} guardada en modo prueba.`
+        );
+
+    } catch (error) {
+        console.error(
+            "Error al guardar la simulación:",
+            error
+        );
+
+        alert(error.message);
+    }
+});
+
+reiniciarDev.addEventListener("click", () => {
+    const confirmar = confirm(
+        "¿Querés borrar toda la simulación?"
+    );
+
+    if (!confirmar) return;
+
+    localStorage.removeItem(CLAVE_LOCAL);
+
+    laboratorio = crearEstadoInicial();
+
+    faseDev.value = "cuartos";
+    estadoDev.value = "abiertas";
+
+    renderizarPartidos();
+
+    alert("La simulación fue borrada.");
+});
+
+/* =========================================
+   INICIAR
+========================================= */
+
+renderizarPartidos();
