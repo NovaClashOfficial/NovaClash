@@ -369,6 +369,10 @@ const listaJugadores = Object.values(jugadores)
               Octavos:
               <strong>${jugador.puntosOctavos}</strong>
             </p>
+            <p>
+    Bono compensación:
+    <strong>+${jugador.bonoCompensacion}</strong>
+</p>
 
           </article>
         `
