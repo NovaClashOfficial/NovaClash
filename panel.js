@@ -1,4 +1,4 @@
-console.log("PANEL OCTAVOS V2");
+console.log("PANEL CUARTOS V1");
 
 import {
   onAuthStateChanged
@@ -11,10 +11,18 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 import { auth, db } from "./firebase.js";
-import { octavos } from "./equipos.js";
 
-const contenedor = document.getElementById("adminPartidos");
-const mensajePanel = document.getElementById("mensaje-panel");
+import {
+  cuartos,
+  opcionesHipercargas,
+  rondasCuartos
+} from "./equipos.js";
+
+const contenedor =
+  document.getElementById("adminPartidos");
+
+const mensajePanel =
+  document.getElementById("mensaje-panel");
 
 /* =========================
    PROTEGER PANEL
@@ -27,107 +35,286 @@ onAuthStateChanged(auth, (usuario) => {
 });
 
 /* =========================
+   ESCAPAR TEXTO
+========================= */
+
+function escaparHTML(texto) {
+  return String(texto ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/* =========================
+   OPCIONES DE MVP
+========================= */
+
+function crearOpcionesMVP(
+  numeroPartido,
+  rondaId,
+  equipo1,
+  equipo2
+) {
+  const jugadores = [
+    ...equipo1.jugadores.map((jugador) => ({
+      nombre: jugador,
+      equipo: equipo1.nombre
+    })),
+
+    ...equipo2.jugadores.map((jugador) => ({
+      nombre: jugador,
+      equipo: equipo2.nombre
+    }))
+  ];
+
+  return jugadores.map((jugador) => `
+    <label class="mvp-card">
+
+      <input
+        type="radio"
+        name="admin-mvp-${numeroPartido}-${rondaId}"
+        value="${escaparHTML(jugador.nombre)}"
+      >
+
+      <span class="mvp-nombre">
+        ⭐ ${escaparHTML(jugador.nombre)}
+
+        <small class="mvp-equipo">
+          ${escaparHTML(jugador.equipo)}
+        </small>
+      </span>
+
+    </label>
+  `).join("");
+}
+
+/* =========================
+   OPCIONES DE HIPERCARGAS
+========================= */
+
+function crearOpcionesHipercargas(
+  numeroPartido,
+  rondaId
+) {
+  return opcionesHipercargas.map((opcion) => `
+    <label class="hipercarga-card">
+
+      <input
+        type="radio"
+        name="admin-hipercargas-${numeroPartido}-${rondaId}"
+        value="${escaparHTML(opcion.valor)}"
+      >
+
+      <span>
+        ⚡ ${escaparHTML(opcion.texto)}
+      </span>
+
+    </label>
+  `).join("");
+}
+
+/* =========================
+   CREAR RONDAS
+========================= */
+
+function crearRondasAdmin(
+  numeroPartido,
+  equipo1,
+  equipo2
+) {
+  return rondasCuartos.map((ronda) => `
+    <section
+      class="ronda-prediccion ${
+        ronda.sumaPuntos
+          ? ""
+          : "ronda-desempate"
+      }"
+    >
+
+      <div class="ronda-encabezado">
+
+        <h3>
+          ${escaparHTML(ronda.nombre)}
+        </h3>
+
+        ${
+          ronda.sumaPuntos
+            ? `
+              <span class="ronda-puntos">
+                Resultado puntuable
+              </span>
+            `
+            : `
+              <span class="ronda-sin-puntos">
+                Opcional · No suma puntos
+              </span>
+            `
+        }
+
+      </div>
+
+      <p class="opcion-titulo">
+        ⭐ MVP oficial de la ronda
+      </p>
+
+      <div class="mvp-opciones">
+
+        ${crearOpcionesMVP(
+          numeroPartido,
+          ronda.id,
+          equipo1,
+          equipo2
+        )}
+
+      </div>
+
+      <p class="opcion-titulo">
+        ⚡ Hipercargas oficiales de la ronda
+      </p>
+
+      <div class="hipercargas-opciones">
+
+        ${crearOpcionesHipercargas(
+          numeroPartido,
+          ronda.id
+        )}
+
+      </div>
+
+    </section>
+  `).join("");
+}
+
+/* =========================
    CREAR PARTIDOS
 ========================= */
 
 function cargarPartidos() {
   contenedor.innerHTML = "";
 
-  octavos.forEach((partido, i) => {
+  cuartos.forEach((partido, indice) => {
+    const numeroPartido = indice + 1;
+
     const equipo1 = partido[0];
     const equipo2 = partido[1];
 
-    contenedor.insertAdjacentHTML("beforeend", `
-      <article class="partido admin-partido">
+    contenedor.insertAdjacentHTML(
+      "beforeend",
+      `
+        <article
+          class="partido partido-cuartos admin-partido"
+          data-partido="${numeroPartido}"
+        >
 
-        <h2>
-          🏆 OCTAVOS - PARTIDO ${i + 1}
-        </h2>
+          <h2 class="partido-titulo">
+            🏆 CUARTOS — PARTIDO ${numeroPartido}
+          </h2>
 
-        <p class="resultado-titulo">
-          Ganador oficial
-        </p>
+          <p class="opcion-titulo">
+            Ganador oficial
+          </p>
 
-        <div class="enfrentamiento">
+          <div class="seleccion-equipos">
 
-          <label class="team">
+            <label class="team-card">
 
-            <input
-              type="radio"
-              name="admin-g${i}"
-              value="${equipo1}"
-            >
+              <input
+                type="radio"
+                name="admin-ganador-${numeroPartido}"
+                value="${escaparHTML(equipo1.nombre)}"
+              >
 
-            <span>${equipo1}</span>
+              <span class="team-card-nombre">
+                ${escaparHTML(equipo1.nombre)}
+              </span>
 
-          </label>
+            </label>
 
-          <div class="vs">
-            VS
+            <div class="vs">
+              VS
+            </div>
+
+            <label class="team-card">
+
+              <input
+                type="radio"
+                name="admin-ganador-${numeroPartido}"
+                value="${escaparHTML(equipo2.nombre)}"
+              >
+
+              <span class="team-card-nombre">
+                ${escaparHTML(equipo2.nombre)}
+              </span>
+
+            </label>
+
           </div>
 
-          <label class="team">
+          <p class="opcion-titulo">
+            🎯 Marcador oficial
+          </p>
 
-            <input
-              type="radio"
-              name="admin-g${i}"
-              value="${equipo2}"
-            >
+          <div class="resultado-opciones">
 
-            <span>${equipo2}</span>
+            <label class="score-card">
 
-          </label>
+              <input
+                type="radio"
+                name="admin-resultado-${numeroPartido}"
+                value="2-0"
+              >
 
-        </div>
+              <span>2 - 0</span>
 
-        <p class="resultado-titulo">
-          Resultado oficial
-        </p>
+            </label>
 
-        <div class="resultados">
+            <label class="score-card">
 
-          <label class="resultado">
+              <input
+                type="radio"
+                name="admin-resultado-${numeroPartido}"
+                value="2-1"
+              >
 
-            <input
-              type="radio"
-              name="admin-r${i}"
-              value="2-0"
-            >
+              <span>2 - 1</span>
 
-            <span>2 - 0</span>
+            </label>
 
-          </label>
+          </div>
 
-          <label class="resultado">
+          <div class="rondas-contenedor">
 
-            <input
-              type="radio"
-              name="admin-r${i}"
-              value="2-1"
-            >
+            ${crearRondasAdmin(
+              numeroPartido,
+              equipo1,
+              equipo2
+            )}
 
-            <span>2 - 1</span>
+          </div>
 
-          </label>
-
-        </div>
-
-      </article>
-    `);
+        </article>
+      `
+    );
   });
 }
 
 /* =========================
-   MARCAR RADIO GUARDADO
+   MARCAR RADIO
 ========================= */
 
 function marcarRadio(nombre, valor) {
+  if (valor === undefined || valor === null) {
+    return;
+  }
+
   const opciones = document.querySelectorAll(
     `input[name="${nombre}"]`
   );
 
   opciones.forEach((opcion) => {
-    if (opcion.value === valor) {
+    if (opcion.value === String(valor)) {
       opcion.checked = true;
     }
   });
@@ -142,7 +329,7 @@ async function cargarResultadosGuardados() {
     const referencia = doc(
       db,
       "resultados",
-      "octavos"
+      "cuartos"
     );
 
     const snap = await getDoc(referencia);
@@ -158,28 +345,48 @@ async function cargarResultadosGuardados() {
     }
 
     datos.resultados.forEach((resultado) => {
-      const indice = Number(resultado.partido) - 1;
+      const numeroPartido =
+        Number(resultado.partido);
 
       if (
-        indice < 0 ||
-        indice >= octavos.length
+        numeroPartido < 1 ||
+        numeroPartido > cuartos.length
       ) {
         return;
       }
 
       marcarRadio(
-        `admin-g${indice}`,
+        `admin-ganador-${numeroPartido}`,
         resultado.ganador
       );
 
       marcarRadio(
-        `admin-r${indice}`,
+        `admin-resultado-${numeroPartido}`,
         resultado.resultado
       );
+
+      rondasCuartos.forEach((ronda) => {
+        const datosRonda =
+          resultado.rondas?.[ronda.id];
+
+        if (!datosRonda) {
+          return;
+        }
+
+        marcarRadio(
+          `admin-mvp-${numeroPartido}-${ronda.id}`,
+          datosRonda.mvp
+        );
+
+        marcarRadio(
+          `admin-hipercargas-${numeroPartido}-${ronda.id}`,
+          datosRonda.hipercargas
+        );
+      });
     });
 
     mensajePanel.textContent =
-      "✅ Resultados guardados cargados.";
+      "✅ Resultados de Cuartos cargados.";
 
   } catch (error) {
     console.error(
@@ -193,64 +400,174 @@ async function cargarResultadosGuardados() {
 }
 
 /* =========================
+   LEER RONDA
+========================= */
+
+function leerRonda(
+  numeroPartido,
+  rondaId
+) {
+  const mvp = document.querySelector(
+    `input[name="admin-mvp-${numeroPartido}-${rondaId}"]:checked`
+  );
+
+  const hipercargas = document.querySelector(
+    `input[name="admin-hipercargas-${numeroPartido}-${rondaId}"]:checked`
+  );
+
+  return {
+    mvp,
+    hipercargas
+  };
+}
+
+/* =========================
+   MOSTRAR PARTIDO CON ERROR
+========================= */
+
+function mostrarPartidoConError(indice) {
+  const tarjetas =
+    document.querySelectorAll(".admin-partido");
+
+  tarjetas[indice]?.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  tarjetas[indice]?.classList.add(
+    "partido-error"
+  );
+
+  setTimeout(() => {
+    tarjetas[indice]?.classList.remove(
+      "partido-error"
+    );
+  }, 1800);
+}
+
+/* =========================
    GUARDAR RESULTADOS
 ========================= */
 
 async function guardarResultados() {
-  const boton = document.getElementById(
-    "btn-resultados"
-  );
+  const boton =
+    document.getElementById("btn-resultados");
 
   const resultados = [];
 
-  for (let i = 0; i < octavos.length; i++) {
+  for (
+    let indice = 0;
+    indice < cuartos.length;
+    indice++
+  ) {
+    const numeroPartido = indice + 1;
+
     const ganador = document.querySelector(
-      `input[name="admin-g${i}"]:checked`
+      `input[name="admin-ganador-${numeroPartido}"]:checked`
     );
 
     const resultado = document.querySelector(
-      `input[name="admin-r${i}"]:checked`
+      `input[name="admin-resultado-${numeroPartido}"]:checked`
     );
 
     /*
-      Si ambos están vacíos, el partido todavía
-      no fue jugado y simplemente se ignora.
+      Si no se eligió ganador ni marcador,
+      el partido todavía no terminó.
     */
 
     if (!ganador && !resultado) {
       continue;
     }
 
-    /*
-      Si eliges solamente uno, se detiene.
-    */
-
     if (!ganador || !resultado) {
       alert(
-        `Completa ganador y resultado del Partido ${i + 1}.`
+        `Completa el ganador y el marcador del Partido ${numeroPartido}.`
       );
 
-      document
-        .querySelectorAll(".admin-partido")
-        [i]
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
+      mostrarPartidoConError(indice);
 
       return;
     }
 
+    const rondas = {};
+
+    for (const ronda of rondasCuartos) {
+      const seleccion = leerRonda(
+        numeroPartido,
+        ronda.id
+      );
+
+      /*
+        Ronda 1 y Ronda 2 son obligatorias.
+      */
+
+      if (ronda.sumaPuntos) {
+        if (!seleccion.mvp) {
+          alert(
+            `Selecciona el MVP oficial de ${ronda.nombre} en el Partido ${numeroPartido}.`
+          );
+
+          mostrarPartidoConError(indice);
+
+          return;
+        }
+
+        if (!seleccion.hipercargas) {
+          alert(
+            `Selecciona las hipercargas oficiales de ${ronda.nombre} en el Partido ${numeroPartido}.`
+          );
+
+          mostrarPartidoConError(indice);
+
+          return;
+        }
+
+        rondas[ronda.id] = {
+          mvp: seleccion.mvp.value,
+          hipercargas:
+            seleccion.hipercargas.value
+        };
+
+        continue;
+      }
+
+      /*
+        La Ronda 3 puede quedar completamente vacía.
+        Si se completa un dato, deben completarse ambos.
+      */
+
+      if (!seleccion.mvp && !seleccion.hipercargas) {
+        continue;
+      }
+
+      if (!seleccion.mvp || !seleccion.hipercargas) {
+        alert(
+          `Completa MVP e hipercargas de ${ronda.nombre}, o deja ambos vacíos.`
+        );
+
+        mostrarPartidoConError(indice);
+
+        return;
+      }
+
+      rondas[ronda.id] = {
+        mvp: seleccion.mvp.value,
+        hipercargas:
+          seleccion.hipercargas.value
+      };
+    }
+
     resultados.push({
-      partido: i + 1,
+      partido: numeroPartido,
       ganador: ganador.value,
-      resultado: resultado.value
+      resultado: resultado.value,
+      rondas
     });
   }
 
   if (resultados.length === 0) {
     alert(
-      "Selecciona al menos un resultado."
+      "Selecciona al menos un resultado oficial."
     );
 
     return;
@@ -261,20 +578,21 @@ async function guardarResultados() {
     boton.textContent = "GUARDANDO...";
 
     await setDoc(
-      doc(db, "resultados", "octavos"),
+      doc(db, "resultados", "cuartos"),
       {
-        fase: "octavos",
+        fase: "cuartos",
         resultados,
+
         actualizado:
           new Date().toLocaleString("es-AR")
       }
     );
 
     mensajePanel.textContent =
-      `✅ ${resultados.length} resultado(s) guardado(s).`;
+      `✅ ${resultados.length} resultado(s) de Cuartos guardado(s).`;
 
     alert(
-      "✅ Resultados oficiales guardados."
+      "✅ Resultados oficiales de Cuartos guardados."
     );
 
   } catch (error) {
@@ -292,12 +610,14 @@ async function guardarResultados() {
 
   } finally {
     boton.disabled = false;
-    boton.textContent = "GUARDAR RESULTADOS";
+
+    boton.textContent =
+      "GUARDAR RESULTADOS";
   }
 }
 
 /* =========================
-   CARGAR ESTADO DEL PICK'EM
+   CARGAR ESTADO
 ========================= */
 
 async function cargarEstado() {
@@ -316,7 +636,8 @@ async function cargarEstado() {
 
     document.getElementById(
       "estadoPredicciones"
-    ).checked = snap.data().abiertas === true;
+    ).checked =
+      snap.data().abiertas === true;
 
   } catch (error) {
     console.error(
@@ -327,17 +648,19 @@ async function cargarEstado() {
 }
 
 /* =========================
-   GUARDAR ESTADO DEL PICK'EM
+   GUARDAR ESTADO
 ========================= */
 
 async function guardarEstado() {
-  const checkbox = document.getElementById(
-    "estadoPredicciones"
-  );
+  const checkbox =
+    document.getElementById(
+      "estadoPredicciones"
+    );
 
-  const boton = document.getElementById(
-    "btn-estado"
-  );
+  const boton =
+    document.getElementById(
+      "btn-estado"
+    );
 
   const abiertas = checkbox.checked;
 
@@ -352,14 +675,18 @@ async function guardarEstado() {
         "predicciones"
       ),
       {
-        abiertas
+        abiertas,
+        faseActiva: "cuartos"
+      },
+      {
+        merge: true
       }
     );
 
     alert(
       abiertas
-        ? "✅ Predicciones abiertas."
-        : "🔒 Predicciones cerradas."
+        ? "✅ Predicciones de Cuartos abiertas."
+        : "🔒 Predicciones de Cuartos cerradas."
     );
 
   } catch (error) {
@@ -374,7 +701,9 @@ async function guardarEstado() {
 
   } finally {
     boton.disabled = false;
-    boton.textContent = "GUARDAR ESTADO";
+
+    boton.textContent =
+      "GUARDAR ESTADO";
   }
 }
 
@@ -393,4 +722,4 @@ cargarPartidos();
 cargarEstado();
 cargarResultadosGuardados();
 
-console.log("PANEL OCTAVOS LISTO");
+console.log("PANEL CUARTOS LISTO");
