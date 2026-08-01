@@ -99,12 +99,70 @@ async function verificarEstadoPredicciones() {
    CREAR OPCIONES DE MVP
 ========================= */
 
+function crearGrupoMVP(
+  numeroPartido,
+  rondaId,
+  equipo
+) {
+  return `
+    <div class="mvp-grupo">
+
+      <div class="mvp-equipo-titulo">
+        🛡 ${equipo.nombre}
+      </div>
+
+      <div class="mvp-jugadores">
+
+        ${equipo.jugadores.map(jugador => `
+
+          <label class="mvp-card">
+
+            <input
+              type="radio"
+              name="mvp-${numeroPartido}-${rondaId}"
+              value="${escaparHTML(jugador)}"
+            >
+
+            <span class="mvp-nombre">
+              ⭐ ${escaparHTML(jugador)}
+            </span>
+
+          </label>
+
+        `).join("")}
+
+      </div>
+
+    </div>
+  `;
+}
+
 function crearOpcionesMVP(
   numeroPartido,
   rondaId,
   equipo1,
   equipo2
 ) {
+  return `
+
+    ${crearGrupoMVP(
+      numeroPartido,
+      rondaId,
+      equipo1
+    )}
+
+    <div class="mvp-separador">
+      VS
+    </div>
+
+    ${crearGrupoMVP(
+      numeroPartido,
+      rondaId,
+      equipo2
+    )}
+
+  `;
+}
   const jugadores = [
     ...equipo1.jugadores.map((jugador) => ({
       nombre: jugador,
