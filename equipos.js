@@ -53,7 +53,7 @@ export const cuartos = [
 
       jugadores: [
         "Dvvnnel",
-        "NinoTeAmo",
+        "JC|Kalth",
         "JC|Michu"
       ]
     },
