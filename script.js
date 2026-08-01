@@ -163,9 +163,6 @@ function crearOpcionesMVP(
 
   `;
 }
- 
-}
-
 /* =========================
    CREAR OPCIONES DE HIPERCARGAS
 ========================= */
