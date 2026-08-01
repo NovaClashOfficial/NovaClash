@@ -62,9 +62,9 @@ export const cuartos = [
       nombre: "TPE",
 
       jugadores: [
-        "Jugador TPE 1",
-        "Jugador TPE 2",
-        "Jugador TPE 3"
+        "Dayron",
+        "George Pig",
+        "Flaxan"
       ]
     }
   ]
