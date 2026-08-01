@@ -163,37 +163,7 @@ function crearOpcionesMVP(
 
   `;
 }
-  const jugadores = [
-    ...equipo1.jugadores.map((jugador) => ({
-      nombre: jugador,
-      equipo: equipo1.nombre
-    })),
-
-    ...equipo2.jugadores.map((jugador) => ({
-      nombre: jugador,
-      equipo: equipo2.nombre
-    }))
-  ];
-
-  return jugadores.map((jugador) => `
-    <label class="mvp-card">
-
-      <input
-        type="radio"
-        name="mvp-${numeroPartido}-${rondaId}"
-        value="${escaparHTML(jugador.nombre)}"
-      >
-
-      <span class="mvp-nombre">
-        ⭐ ${escaparHTML(jugador.nombre)}
-
-        <small class="mvp-equipo">
-          ${escaparHTML(jugador.equipo)}
-        </small>
-      </span>
-
-    </label>
-  `).join("");
+ 
 }
 
 /* =========================
