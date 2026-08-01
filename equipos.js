@@ -8,9 +8,9 @@ export const cuartos = [
       nombre: "Black Cat",
 
       jugadores: [
-        "Jugador Black Cat 1",
-        "Jugador Black Cat 2",
-        "Jugador Black Cat 3"
+        "Jairo",
+        "Demi",
+        "Alex"
       ]
     },
 
@@ -18,8 +18,8 @@ export const cuartos = [
       nombre: "Gigachad",
 
       jugadores: [
-        "Jugador Gigachad 1",
-        "Jugador Gigachad 2",
+        "Josh",
+        "CPH|NLD",
         "Jugador Gigachad 3"
       ]
     }
@@ -30,9 +30,9 @@ export const cuartos = [
       nombre: "Shirin Ryu Gaming",
 
       jugadores: [
-        "Jugador Shirin 1",
-        "Jugador Shirin 2",
-        "Jugador Shirin 3"
+        "Wiso",
+        "Emmanuel",
+        "MVP|ZLegend"
       ]
     },
 
@@ -40,9 +40,9 @@ export const cuartos = [
       nombre: "Team Yetis",
 
       jugadores: [
-        "Jugador Yetis 1",
-        "Jugador Yetis 2",
-        "Jugador Yetis 3"
+        "YT|KUROO",
+        "Davss",
+        "Tofin"
       ]
     }
   ],
