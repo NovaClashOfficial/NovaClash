@@ -2,7 +2,7 @@
    CUARTOS DE FINAL - NOVA CLASH
 ========================================== */
 
-export const cuartos = [
+export const semifinales = [
   [
     {
       nombre: "Black Cat",
@@ -11,28 +11,6 @@ export const cuartos = [
         "Jairo",
         "Demi",
         "Alex"
-      ]
-    },
-
-    {
-      nombre: "Gigachad",
-
-      jugadores: [
-        "Josh",
-        "CPH|NLD",
-        "God Shadow"
-      ]
-    }
-  ],
-
-  [
-    {
-      nombre: "Shirin Ryu Gaming",
-
-      jugadores: [
-        "Wiso",
-        "Emmanuel",
-        "MVP|ZLegend"
       ]
     },
 
@@ -59,12 +37,12 @@ export const cuartos = [
     },
 
     {
-      nombre: "TPE",
+      nombre: "Community 8",
 
       jugadores: [
-        "Dayron",
-        "George Pig",
-        "Flaxan"
+        "RNG|NestDeadSol",
+        "JARAMILLO",
+        "C8|Moyita"
       ]
     }
   ]
