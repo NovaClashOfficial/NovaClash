@@ -3,14 +3,23 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Nova Clash | Panel Admin</title>
 
   <link rel="stylesheet" href="style.css">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
   <link
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap"
@@ -45,7 +54,8 @@
     <h1>Panel de Administración</h1>
 
     <p class="descripcion">
-      Controla el Pick'Em y carga los resultados oficiales de Cuartos.
+      Controla el Pick'Em y carga los resultados oficiales
+      de las Semifinales.
     </p>
 
     <hr>
@@ -55,12 +65,14 @@
       <h2>Estado de las predicciones</h2>
 
       <label class="estado-predicciones">
+
         <input
           type="checkbox"
           id="estadoPredicciones"
         >
 
         Predicciones abiertas
+
       </label>
 
       <br>
@@ -79,12 +91,18 @@
 
     <section>
 
-      <h2>Resultados de Cuartos</h2>
+      <h2>Resultados de Semifinales</h2>
 
       <p class="descripcion">
-        Carga el ganador, el marcador y los resultados reales de cada ronda.
-        La Ronda 3 solo se completa si hubo desempate.
+        Seleccioná el ganador, el marcador real y el jugador
+        estelar de cada ronda disputada.
       </p>
+
+      <div class="aviso-semifinales">
+        Marcador 3-0: completá 3 rondas.<br>
+        Marcador 3-1: completá 4 rondas.<br>
+        Marcador 3-2: completá las 5 rondas.
+      </div>
 
       <div id="adminPartidos"></div>
 
@@ -102,7 +120,10 @@
 
   </main>
 
-  <script type="module" src="panel.js"></script>
+  <script
+    type="module"
+    src="panel.js?v=semifinales1"
+  ></script>
 
 </body>
 
