@@ -1,4 +1,4 @@
-   console.log("PICK'EM CUARTOS V1");
+   console.log("PICK'EM semifinal V1");
 
 import {
   collection,
@@ -10,9 +10,9 @@ import {
 import { db } from "./firebase.js";
 
 import {
-  cuartos,
+  semifinal,
   opcionesHipercargas,
-  rondasCuartos
+  rondasSemifinal
 } from "./equipos.js";
 
 /* =========================
@@ -51,7 +51,7 @@ async function verificarEstadoPredicciones() {
           <h2>🔒 Las predicciones están cerradas</h2>
 
           <p>
-            Ya no se pueden enviar predicciones de Cuartos.
+            Ya no se pueden enviar predicciones de la Semifinal.
           </p>
         </div>
       `;
