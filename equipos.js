@@ -1,22 +1,20 @@
 /* ==========================================
-   Semifinal - NOVA CLASH
+   SEMIFINALES - NOVA CLASH
 ========================================== */
 
 export const semifinales = [
   [
     {
       nombre: "Black Cat",
-
       jugadores: [
         "Jairo",
-        "Demi",
-        "Alex"
+        "Alex",
+        "Demi"
       ]
     },
 
     {
       nombre: "Team Yetis",
-
       jugadores: [
         "YT|KUROO",
         "Davss",
@@ -28,7 +26,6 @@ export const semifinales = [
   [
     {
       nombre: "Jema Chicer",
-
       jugadores: [
         "Dvvnnel",
         "JC|Kalth",
@@ -38,7 +35,6 @@ export const semifinales = [
 
     {
       nombre: "Community 8",
-
       jugadores: [
         "RNG|NestDeadSol",
         "JARAMILLO",
@@ -49,51 +45,47 @@ export const semifinales = [
 ];
 
 /* ==========================================
-   OPCIONES DE HIPERCARGAS POR RONDA
+   MARCADORES POSIBLES
 ========================================== */
 
-export const opcionesHipercargas = [
-  {
-    valor: "0-2",
-    texto: "0 a 2"
-  },
-
-  {
-    valor: "3-5",
-    texto: "3 a 5"
-  },
-
-  {
-    valor: "6-10",
-    texto: "6 a 10"
-  },
-
-  {
-    valor: "mas-10",
-    texto: "Más de 10"
-  }
+export const marcadoresSemifinales = [
+  "3-0",
+  "3-1",
+  "3-2"
 ];
 
 /* ==========================================
-   CONFIGURACIÓN DE RONDAS
+   RONDAS DE SEMIFINALES
 ========================================== */
 
-export const rondassemifinal = [
+export const rondasSemifinales = [
   {
     id: "ronda1",
     nombre: "Ronda 1",
-    sumaPuntos: true
+    desempate: false
   },
 
   {
     id: "ronda2",
     nombre: "Ronda 2",
-    sumaPuntos: true
+    desempate: false
   },
 
   {
     id: "ronda3",
-    nombre: "Ronda 3 - Desempate",
-    sumaPuntos: false
+    nombre: "Ronda 3",
+    desempate: false
+  },
+
+  {
+    id: "ronda4",
+    nombre: "Ronda 4",
+    desempate: false
+  },
+
+  {
+    id: "ronda5",
+    nombre: "Ronda 5 (Desempate)",
+    desempate: true
   }
 ];
