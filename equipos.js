@@ -1,5 +1,5 @@
 /* ==========================================
-   CUARTOS DE FINAL - NOVA CLASH
+   Semifinal - NOVA CLASH
 ========================================== */
 
 export const semifinales = [
@@ -78,7 +78,7 @@ export const opcionesHipercargas = [
    CONFIGURACIÓN DE RONDAS
 ========================================== */
 
-export const rondasCuartos = [
+export const rondassemifinal = [
   {
     id: "ronda1",
     nombre: "Ronda 1",
