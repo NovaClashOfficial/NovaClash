@@ -1,4 +1,4 @@
-console.log("PANEL CUARTOS V1");
+console.log("PANEL SEMIFINALES V1");
 
 import {
   onAuthStateChanged
@@ -10,12 +10,15 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-import { auth, db } from "./firebase.js";
+import {
+  auth,
+  db
+} from "./firebase.js";
 
 import {
-  cuartos,
-  opcionesHipercargas,
-  rondasCuartos
+  semifinales,
+  marcadoresSemifinales,
+  rondasSemifinales
 } from "./equipos.js";
 
 const contenedor =
@@ -35,7 +38,7 @@ onAuthStateChanged(auth, (usuario) => {
 });
 
 /* =========================
-   ESCAPAR TEXTO
+   ESCAPAR HTML
 ========================= */
 
 function escaparHTML(texto) {
@@ -48,75 +51,78 @@ function escaparHTML(texto) {
 }
 
 /* =========================
-   OPCIONES DE MVP
+   CREAR GRUPO DE ESTELARES
 ========================= */
 
-function crearOpcionesMVP(
+function crearGrupoEstelar(
+  numeroPartido,
+  rondaId,
+  equipo
+) {
+  const jugadores = equipo.jugadores.map(
+    (jugador) => `
+      <label class="estelar-card">
+
+        <input
+          type="radio"
+          name="admin-estelar-${numeroPartido}-${rondaId}"
+          value="${escaparHTML(jugador)}"
+        >
+
+        <span>
+          ${escaparHTML(jugador)}
+        </span>
+
+      </label>
+    `
+  ).join("");
+
+  return `
+    <div class="estelar-grupo">
+
+      <div class="estelar-equipo-titulo">
+        ⭐ ${escaparHTML(equipo.nombre)}
+      </div>
+
+      <div class="estelar-jugadores">
+        ${jugadores}
+      </div>
+
+    </div>
+  `;
+}
+
+/* =========================
+   CREAR OPCIONES DE ESTELAR
+========================= */
+
+function crearOpcionesEstelar(
   numeroPartido,
   rondaId,
   equipo1,
   equipo2
 ) {
-  const jugadores = [
-    ...equipo1.jugadores.map((jugador) => ({
-      nombre: jugador,
-      equipo: equipo1.nombre
-    })),
+  return `
+    ${crearGrupoEstelar(
+      numeroPartido,
+      rondaId,
+      equipo1
+    )}
 
-    ...equipo2.jugadores.map((jugador) => ({
-      nombre: jugador,
-      equipo: equipo2.nombre
-    }))
-  ];
+    <div class="estelar-separador">
+      VS
+    </div>
 
-  return jugadores.map((jugador) => `
-    <label class="mvp-card">
-
-      <input
-        type="radio"
-        name="admin-mvp-${numeroPartido}-${rondaId}"
-        value="${escaparHTML(jugador.nombre)}"
-      >
-
-      <span class="mvp-nombre">
-        ⭐ ${escaparHTML(jugador.nombre)}
-
-        <small class="mvp-equipo">
-          ${escaparHTML(jugador.equipo)}
-        </small>
-      </span>
-
-    </label>
-  `).join("");
+    ${crearGrupoEstelar(
+      numeroPartido,
+      rondaId,
+      equipo2
+    )}
+  `;
 }
 
 /* =========================
-   OPCIONES DE HIPERCARGAS
-========================= */
-
-function crearOpcionesHipercargas(
-  numeroPartido,
-  rondaId
-) {
-  return opcionesHipercargas.map((opcion) => `
-    <label class="hipercarga-card">
-
-      <input
-        type="radio"
-        name="admin-hipercargas-${numeroPartido}-${rondaId}"
-        value="${escaparHTML(opcion.valor)}"
-      >
-
-      <span>
-        ⚡ ${escaparHTML(opcion.texto)}
-      </span>
-
-    </label>
-  `).join("");
-}
-
-/* =========================
-   CREAR RONDAS
+   CREAR RONDAS DEL PANEL
 ========================= */
 
 function crearRondasAdmin(
@@ -124,13 +130,15 @@ function crearRondasAdmin(
   equipo1,
   equipo2
 ) {
-  return rondasCuartos.map((ronda) => `
+  return rondasSemifinales.map((ronda) => `
     <section
-      class="ronda-prediccion ${
-        ronda.sumaPuntos
-          ? ""
-          : "ronda-desempate"
-      }"
+      class="
+        ronda-prediccion
+        ronda-admin
+        ${ronda.desempate ? "ronda-desempate" : ""}
+      "
+      data-partido="${numeroPartido}"
+      data-ronda="${ronda.id}"
     >
 
       <div class="ronda-encabezado">
@@ -140,15 +148,15 @@ function crearRondasAdmin(
         </h3>
 
         ${
-          ronda.sumaPuntos
+          ronda.desempate
             ? `
-              <span class="ronda-puntos">
-                Resultado puntuable
+              <span class="ronda-sin-puntos">
+                Solo si hubo desempate
               </span>
             `
             : `
-              <span class="ronda-sin-puntos">
-                Opcional · No suma puntos
+              <span class="ronda-puntos">
+                Resultado oficial
               </span>
             `
         }
@@ -156,29 +164,16 @@ function crearRondasAdmin(
       </div>
 
       <p class="opcion-titulo">
-        ⭐ MVP oficial de la ronda
+        ⭐ Jugador estelar oficial
       </p>
 
-      <div class="mvp-opciones">
+      <div class="estelar-opciones">
 
-        ${crearOpcionesMVP(
+        ${crearOpcionesEstelar(
           numeroPartido,
           ronda.id,
           equipo1,
           equipo2
-        )}
-
-      </div>
-
-      <p class="opcion-titulo">
-        ⚡ Hipercargas oficiales de la ronda
-      </p>
-
-      <div class="hipercargas-opciones">
-
-        ${crearOpcionesHipercargas(
-          numeroPartido,
-          ronda.id
         )}
 
       </div>
@@ -194,7 +189,7 @@ function crearRondasAdmin(
 function cargarPartidos() {
   contenedor.innerHTML = "";
 
-  cuartos.forEach((partido, indice) => {
+  semifinales.forEach((partido, indice) => {
     const numeroPartido = indice + 1;
 
     const equipo1 = partido[0];
@@ -204,12 +199,12 @@ function cargarPartidos() {
       "beforeend",
       `
         <article
-          class="partido partido-cuartos admin-partido"
+          class="partido partido-semifinal admin-partido"
           data-partido="${numeroPartido}"
         >
 
           <h2 class="partido-titulo">
-            🏆 CUARTOS — PARTIDO ${numeroPartido}
+            🔥 SEMIFINAL — PARTIDO ${numeroPartido}
           </h2>
 
           <p class="opcion-titulo">
@@ -252,35 +247,33 @@ function cargarPartidos() {
 
           </div>
 
-          <p class="opcion-titulo">
-            🎯 Marcador oficial
-          </p>
+          <div class="resultado-contenedor">
 
-          <div class="resultado-opciones">
+            <p class="opcion-titulo">
+              🎯 Marcador oficial
+            </p>
 
-            <label class="score-card">
+            <div class="resultado-opciones">
 
-              <input
-                type="radio"
-                name="admin-resultado-${numeroPartido}"
-                value="2-0"
-              >
+              ${marcadoresSemifinales.map(
+                (marcador) => `
+                  <label class="score-card">
 
-              <span>2 - 0</span>
+                    <input
+                      type="radio"
+                      name="admin-resultado-${numeroPartido}"
+                      value="${escaparHTML(marcador)}"
+                    >
 
-            </label>
+                    <span>
+                      ${escaparHTML(marcador)}
+                    </span>
 
-            <label class="score-card">
+                  </label>
+                `
+              ).join("")}
 
-              <input
-                type="radio"
-                name="admin-resultado-${numeroPartido}"
-                value="2-1"
-              >
-
-              <span>2 - 1</span>
-
-            </label>
+            </div>
 
           </div>
 
@@ -301,23 +294,81 @@ function cargarPartidos() {
 }
 
 /* =========================
-   MARCAR RADIO
+   MARCAR RADIO GUARDADO
 ========================= */
 
 function marcarRadio(nombre, valor) {
-  if (valor === undefined || valor === null) {
+  if (
+    valor === undefined ||
+    valor === null
+  ) {
     return;
   }
 
-  const opciones = document.querySelectorAll(
-    `input[name="${nombre}"]`
-  );
+  const opciones =
+    document.querySelectorAll(
+      `input[name="${nombre}"]`
+    );
 
   opciones.forEach((opcion) => {
-    if (opcion.value === String(valor)) {
-      opcion.checked = true;
-    }
+    opcion.checked =
+      opcion.value === String(valor);
   });
+}
+
+/* =========================
+   RONDAS SEGÚN EL MARCADOR
+========================= */
+
+function cantidadRondasJugadas(marcador) {
+  const cantidades = {
+    "3-0": 3,
+    "3-1": 4,
+    "3-2": 5
+  };
+
+  return cantidades[marcador] || 0;
+}
+
+/* =========================
+   LEER ESTELAR
+========================= */
+
+function leerEstelar(
+  numeroPartido,
+  rondaId
+) {
+  return document.querySelector(
+    `input[name="admin-estelar-${numeroPartido}-${rondaId}"]:checked`
+  );
+}
+
+/* =========================
+   RESALTAR PARTIDO CON ERROR
+========================= */
+
+function mostrarPartidoConError(indice) {
+  const tarjetas =
+    document.querySelectorAll(
+      ".admin-partido"
+    );
+
+  const tarjeta = tarjetas[indice];
+
+  tarjeta?.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  tarjeta?.classList.add(
+    "partido-error"
+  );
+
+  setTimeout(() => {
+    tarjeta?.classList.remove(
+      "partido-error"
+    );
+  }, 1800);
 }
 
 /* =========================
@@ -329,10 +380,11 @@ async function cargarResultadosGuardados() {
     const referencia = doc(
       db,
       "resultados",
-      "cuartos"
+      "semifinales"
     );
 
-    const snap = await getDoc(referencia);
+    const snap =
+      await getDoc(referencia);
 
     if (!snap.exists()) {
       return;
@@ -350,7 +402,7 @@ async function cargarResultadosGuardados() {
 
       if (
         numeroPartido < 1 ||
-        numeroPartido > cuartos.length
+        numeroPartido > semifinales.length
       ) {
         return;
       }
@@ -365,28 +417,23 @@ async function cargarResultadosGuardados() {
         resultado.resultado
       );
 
-      rondasCuartos.forEach((ronda) => {
-        const datosRonda =
+      rondasSemifinales.forEach((ronda) => {
+        const resultadoRonda =
           resultado.rondas?.[ronda.id];
 
-        if (!datosRonda) {
+        if (!resultadoRonda?.estelar) {
           return;
         }
 
         marcarRadio(
-          `admin-mvp-${numeroPartido}-${ronda.id}`,
-          datosRonda.mvp
-        );
-
-        marcarRadio(
-          `admin-hipercargas-${numeroPartido}-${ronda.id}`,
-          datosRonda.hipercargas
+          `admin-estelar-${numeroPartido}-${ronda.id}`,
+          resultadoRonda.estelar
         );
       });
     });
 
     mensajePanel.textContent =
-      "✅ Resultados de Cuartos cargados.";
+      "✅ Resultados guardados cargados.";
 
   } catch (error) {
     console.error(
@@ -400,88 +447,47 @@ async function cargarResultadosGuardados() {
 }
 
 /* =========================
-   LEER RONDA
-========================= */
-
-function leerRonda(
-  numeroPartido,
-  rondaId
-) {
-  const mvp = document.querySelector(
-    `input[name="admin-mvp-${numeroPartido}-${rondaId}"]:checked`
-  );
-
-  const hipercargas = document.querySelector(
-    `input[name="admin-hipercargas-${numeroPartido}-${rondaId}"]:checked`
-  );
-
-  return {
-    mvp,
-    hipercargas
-  };
-}
-
-/* =========================
-   MOSTRAR PARTIDO CON ERROR
-========================= */
-
-function mostrarPartidoConError(indice) {
-  const tarjetas =
-    document.querySelectorAll(".admin-partido");
-
-  tarjetas[indice]?.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-  });
-
-  tarjetas[indice]?.classList.add(
-    "partido-error"
-  );
-
-  setTimeout(() => {
-    tarjetas[indice]?.classList.remove(
-      "partido-error"
-    );
-  }, 1800);
-}
-
-/* =========================
    GUARDAR RESULTADOS
 ========================= */
 
 async function guardarResultados() {
   const boton =
-    document.getElementById("btn-resultados");
+    document.getElementById(
+      "btn-resultados"
+    );
 
-  const resultados = [];
+  const resultadosOficiales = [];
 
   for (
     let indice = 0;
-    indice < cuartos.length;
+    indice < semifinales.length;
     indice++
   ) {
-    const numeroPartido = indice + 1;
+    const numeroPartido =
+      indice + 1;
 
-    const ganador = document.querySelector(
-      `input[name="admin-ganador-${numeroPartido}"]:checked`
-    );
+    const ganador =
+      document.querySelector(
+        `input[name="admin-ganador-${numeroPartido}"]:checked`
+      );
 
-    const resultado = document.querySelector(
-      `input[name="admin-resultado-${numeroPartido}"]:checked`
-    );
+    const marcador =
+      document.querySelector(
+        `input[name="admin-resultado-${numeroPartido}"]:checked`
+      );
 
     /*
-      Si no se eligió ganador ni marcador,
-      el partido todavía no terminó.
+      Permite guardar una semifinal primero
+      y dejar la otra completamente vacía.
     */
 
-    if (!ganador && !resultado) {
+    if (!ganador && !marcador) {
       continue;
     }
 
-    if (!ganador || !resultado) {
+    if (!ganador || !marcador) {
       alert(
-        `Completa el ganador y el marcador del Partido ${numeroPartido}.`
+        `Completá el ganador y el marcador de la Semifinal ${numeroPartido}.`
       );
 
       mostrarPartidoConError(indice);
@@ -489,60 +495,30 @@ async function guardarResultados() {
       return;
     }
 
-    const rondas = {};
-
-    for (const ronda of rondasCuartos) {
-      const seleccion = leerRonda(
-        numeroPartido,
-        ronda.id
+    const rondasJugadas =
+      cantidadRondasJugadas(
+        marcador.value
       );
 
-      /*
-        Ronda 1 y Ronda 2 son obligatorias.
-      */
+    const rondas = {};
 
-      if (ronda.sumaPuntos) {
-        if (!seleccion.mvp) {
-          alert(
-            `Selecciona el MVP oficial de ${ronda.nombre} en el Partido ${numeroPartido}.`
-          );
+    for (
+      let numeroRonda = 1;
+      numeroRonda <= rondasJugadas;
+      numeroRonda++
+    ) {
+      const rondaId =
+        `ronda${numeroRonda}`;
 
-          mostrarPartidoConError(indice);
+      const estelar =
+        leerEstelar(
+          numeroPartido,
+          rondaId
+        );
 
-          return;
-        }
-
-        if (!seleccion.hipercargas) {
-          alert(
-            `Selecciona las hipercargas oficiales de ${ronda.nombre} en el Partido ${numeroPartido}.`
-          );
-
-          mostrarPartidoConError(indice);
-
-          return;
-        }
-
-        rondas[ronda.id] = {
-          mvp: seleccion.mvp.value,
-          hipercargas:
-            seleccion.hipercargas.value
-        };
-
-        continue;
-      }
-
-      /*
-        La Ronda 3 puede quedar completamente vacía.
-        Si se completa un dato, deben completarse ambos.
-      */
-
-      if (!seleccion.mvp && !seleccion.hipercargas) {
-        continue;
-      }
-
-      if (!seleccion.mvp || !seleccion.hipercargas) {
+      if (!estelar) {
         alert(
-          `Completa MVP e hipercargas de ${ronda.nombre}, o deja ambos vacíos.`
+          `Seleccioná el jugador estelar de la Ronda ${numeroRonda} en la Semifinal ${numeroPartido}.`
         );
 
         mostrarPartidoConError(indice);
@@ -550,24 +526,22 @@ async function guardarResultados() {
         return;
       }
 
-      rondas[ronda.id] = {
-        mvp: seleccion.mvp.value,
-        hipercargas:
-          seleccion.hipercargas.value
+      rondas[rondaId] = {
+        estelar: estelar.value
       };
     }
 
-    resultados.push({
+    resultadosOficiales.push({
       partido: numeroPartido,
       ganador: ganador.value,
-      resultado: resultado.value,
+      resultado: marcador.value,
       rondas
     });
   }
 
-  if (resultados.length === 0) {
+  if (resultadosOficiales.length === 0) {
     alert(
-      "Selecciona al menos un resultado oficial."
+      "Seleccioná al menos un resultado oficial."
     );
 
     return;
@@ -575,24 +549,34 @@ async function guardarResultados() {
 
   try {
     boton.disabled = true;
-    boton.textContent = "GUARDANDO...";
+
+    boton.textContent =
+      "GUARDANDO...";
 
     await setDoc(
-      doc(db, "resultados", "cuartos"),
+      doc(
+        db,
+        "resultados",
+        "semifinales"
+      ),
       {
-        fase: "cuartos",
-        resultados,
+        fase: "semifinales",
+
+        resultados:
+          resultadosOficiales,
 
         actualizado:
-          new Date().toLocaleString("es-AR")
+          new Date().toLocaleString(
+            "es-AR"
+          )
       }
     );
 
     mensajePanel.textContent =
-      `✅ ${resultados.length} resultado(s) de Cuartos guardado(s).`;
+      `✅ ${resultadosOficiales.length} semifinal(es) guardada(s).`;
 
     alert(
-      "✅ Resultados oficiales de Cuartos guardados."
+      "✅ Resultados oficiales de Semifinales guardados."
     );
 
   } catch (error) {
@@ -602,7 +586,7 @@ async function guardarResultados() {
     );
 
     mensajePanel.textContent =
-      "❌ Error al guardar resultados.";
+      "❌ Error al guardar los resultados.";
 
     alert(
       "❌ No se pudieron guardar los resultados."
@@ -628,20 +612,24 @@ async function cargarEstado() {
       "predicciones"
     );
 
-    const snap = await getDoc(referencia);
+    const snap =
+      await getDoc(referencia);
 
     if (!snap.exists()) {
       return;
     }
 
-    document.getElementById(
-      "estadoPredicciones"
-    ).checked =
+    const checkbox =
+      document.getElementById(
+        "estadoPredicciones"
+      );
+
+    checkbox.checked =
       snap.data().abiertas === true;
 
   } catch (error) {
     console.error(
-      "Error al cargar estado:",
+      "Error al cargar el estado:",
       error
     );
   }
@@ -662,11 +650,14 @@ async function guardarEstado() {
       "btn-estado"
     );
 
-  const abiertas = checkbox.checked;
+  const abiertas =
+    checkbox.checked;
 
   try {
     boton.disabled = true;
-    boton.textContent = "GUARDANDO...";
+
+    boton.textContent =
+      "GUARDANDO...";
 
     await setDoc(
       doc(
@@ -676,7 +667,7 @@ async function guardarEstado() {
       ),
       {
         abiertas,
-        faseActiva: "cuartos"
+        faseActiva: "semifinales"
       },
       {
         merge: true
@@ -685,13 +676,13 @@ async function guardarEstado() {
 
     alert(
       abiertas
-        ? "✅ Predicciones de Cuartos abiertas."
-        : "🔒 Predicciones de Cuartos cerradas."
+        ? "✅ Predicciones de Semifinales abiertas."
+        : "🔒 Predicciones de Semifinales cerradas."
     );
 
   } catch (error) {
     console.error(
-      "Error al guardar estado:",
+      "Error al cambiar el estado:",
       error
     );
 
@@ -711,8 +702,11 @@ async function guardarEstado() {
    FUNCIONES GLOBALES
 ========================= */
 
-window.guardarEstado = guardarEstado;
-window.guardarResultados = guardarResultados;
+window.guardarEstado =
+  guardarEstado;
+
+window.guardarResultados =
+  guardarResultados;
 
 /* =========================
    INICIAR
@@ -722,4 +716,6 @@ cargarPartidos();
 cargarEstado();
 cargarResultadosGuardados();
 
-console.log("PANEL CUARTOS LISTO");
+console.log(
+  "PANEL SEMIFINALES LISTO"
+);
