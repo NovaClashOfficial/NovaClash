@@ -1,4 +1,4 @@
-   console.log("PICK'EM semifinal V1");
+console.log("PICK'EM SEMIFINALES V1");
 
 import {
   collection,
@@ -10,9 +10,9 @@ import {
 import { db } from "./firebase.js";
 
 import {
-  semifinal,
-  opcionesHipercargas,
-  rondasSemifinal
+  semifinales,
+  marcadoresSemifinales,
+  rondasSemifinales
 } from "./equipos.js";
 
 /* =========================
@@ -49,9 +49,8 @@ async function verificarEstadoPredicciones() {
       document.getElementById("partidos").innerHTML = `
         <div class="predicciones-cerradas">
           <h2>🔒 Las predicciones están cerradas</h2>
-
           <p>
-            Ya no se pueden enviar predicciones de la Semifinal.
+            Ya no se pueden enviar predicciones de Semifinales.
           </p>
         </div>
       `;
@@ -84,7 +83,6 @@ async function verificarEstadoPredicciones() {
     document.getElementById("partidos").innerHTML = `
       <div class="predicciones-cerradas">
         <h2>❌ Error</h2>
-
         <p>
           No se pudo comprobar el estado de las predicciones.
         </p>
@@ -96,39 +94,37 @@ async function verificarEstadoPredicciones() {
 }
 
 /* =========================
-   CREAR OPCIONES DE MVP
+   OPCIONES DE ESTELAR
 ========================= */
 
-function crearGrupoMVP(
+function crearGrupoEstelar(
   numeroPartido,
   rondaId,
   equipo
 ) {
   return `
-    <div class="mvp-grupo">
+    <div class="estelar-grupo">
 
-      <div class="mvp-equipo-titulo">
-        🛡 ${equipo.nombre}
+      <div class="estelar-equipo-titulo">
+        ⭐ ${escaparHTML(equipo.nombre)}
       </div>
 
-      <div class="mvp-jugadores">
+      <div class="estelar-jugadores">
 
-        ${equipo.jugadores.map(jugador => `
-
-          <label class="mvp-card">
+        ${equipo.jugadores.map((jugador) => `
+          <label class="estelar-card">
 
             <input
               type="radio"
-              name="mvp-${numeroPartido}-${rondaId}"
+              name="estelar-${numeroPartido}-${rondaId}"
               value="${escaparHTML(jugador)}"
             >
 
-            <span class="mvp-nombre">
-              ⭐ ${escaparHTML(jugador)}
+            <span>
+              ${escaparHTML(jugador)}
             </span>
 
           </label>
-
         `).join("")}
 
       </div>
@@ -137,55 +133,29 @@ function crearGrupoMVP(
   `;
 }
 
-function crearOpcionesMVP(
+function crearOpcionesEstelar(
   numeroPartido,
   rondaId,
   equipo1,
   equipo2
 ) {
   return `
-
-    ${crearGrupoMVP(
+    ${crearGrupoEstelar(
       numeroPartido,
       rondaId,
       equipo1
     )}
 
-    <div class="mvp-separador">
+    <div class="estelar-separador">
       VS
     </div>
 
-    ${crearGrupoMVP(
+    ${crearGrupoEstelar(
       numeroPartido,
       rondaId,
       equipo2
     )}
-
   `;
-}
-/* =========================
-   CREAR OPCIONES DE HIPERCARGAS
-========================= */
-
-function crearOpcionesHipercargas(
-  numeroPartido,
-  rondaId
-) {
-  return opcionesHipercargas.map((opcion) => `
-    <label class="hipercarga-card">
-
-      <input
-        type="radio"
-        name="hipercargas-${numeroPartido}-${rondaId}"
-        value="${escaparHTML(opcion.valor)}"
-      >
-
-      <span>
-        ⚡ ${escaparHTML(opcion.texto)}
-      </span>
-
-    </label>
-  `).join("");
 }
 
 /* =========================
@@ -197,12 +167,12 @@ function crearRondas(
   equipo1,
   equipo2
 ) {
-  return rondasCuartos.map((ronda) => `
+  return rondasSemifinales.map((ronda) => `
     <section
       class="ronda-prediccion ${
-        ronda.sumaPuntos
-          ? ""
-          : "ronda-desempate"
+        ronda.desempate
+          ? "ronda-desempate"
+          : ""
       }"
     >
 
@@ -213,15 +183,15 @@ function crearRondas(
         </h3>
 
         ${
-          ronda.sumaPuntos
+          ronda.desempate
             ? `
-              <span class="ronda-puntos">
-                Suma puntos
+              <span class="ronda-sin-puntos">
+                Se puntúa solo si se juega
               </span>
             `
             : `
-              <span class="ronda-sin-puntos">
-                No suma puntos
+              <span class="ronda-puntos">
+                +1 punto
               </span>
             `
         }
@@ -229,29 +199,16 @@ function crearRondas(
       </div>
 
       <p class="opcion-titulo">
-        ⭐ MVP de la ronda
+        ⭐ Elegí al jugador estelar
       </p>
 
-      <div class="mvp-opciones">
+      <div class="estelar-opciones">
 
-        ${crearOpcionesMVP(
+        ${crearOpcionesEstelar(
           numeroPartido,
           ronda.id,
           equipo1,
           equipo2
-        )}
-
-      </div>
-
-      <p class="opcion-titulo">
-        ⚡ Hipercargas activadas en la ronda
-      </p>
-
-      <div class="hipercargas-opciones">
-
-        ${crearOpcionesHipercargas(
-          numeroPartido,
-          ronda.id
         )}
 
       </div>
@@ -261,7 +218,7 @@ function crearRondas(
 }
 
 /* =========================
-   CARGAR CUARTOS
+   CARGAR SEMIFINALES
 ========================= */
 
 window.addEventListener(
@@ -277,7 +234,7 @@ window.addEventListener(
 
     contenedor.innerHTML = "";
 
-    cuartos.forEach((partido, indice) => {
+    semifinales.forEach((partido, indice) => {
       const numeroPartido = indice + 1;
 
       const equipo1 = partido[0];
@@ -287,12 +244,12 @@ window.addEventListener(
         "beforeend",
         `
           <article
-            class="partido partido-cuartos"
+            class="partido partido-semifinal"
             data-partido="${numeroPartido}"
           >
 
             <h2 class="partido-titulo">
-              🏆 CUARTOS — PARTIDO ${numeroPartido}
+              🔥 SEMIFINAL — PARTIDO ${numeroPartido}
             </h2>
 
             <p class="opcion-titulo">
@@ -343,29 +300,23 @@ window.addEventListener(
 
               <div class="resultado-opciones">
 
-                <label class="score-card">
+                ${marcadoresSemifinales.map(
+                  (marcador) => `
+                    <label class="score-card">
 
-                  <input
-                    type="radio"
-                    name="resultado-${numeroPartido}"
-                    value="2-0"
-                  >
+                      <input
+                        type="radio"
+                        name="resultado-${numeroPartido}"
+                        value="${escaparHTML(marcador)}"
+                      >
 
-                  <span>2 - 0</span>
+                      <span>
+                        ${escaparHTML(marcador)}
+                      </span>
 
-                </label>
-
-                <label class="score-card">
-
-                  <input
-                    type="radio"
-                    name="resultado-${numeroPartido}"
-                    value="2-1"
-                  >
-
-                  <span>2 - 1</span>
-
-                </label>
+                    </label>
+                  `
+                ).join("")}
 
               </div>
 
@@ -389,13 +340,13 @@ window.addEventListener(
 );
 
 /* =========================
-   MOVERSE AL PARTIDO
+   MOSTRAR ERROR
 ========================= */
 
 function mostrarPartidoConError(indice) {
   const tarjetas =
     document.querySelectorAll(
-      ".partido-cuartos"
+      ".partido-semifinal"
     );
 
   tarjetas[indice]?.scrollIntoView({
@@ -415,26 +366,16 @@ function mostrarPartidoConError(indice) {
 }
 
 /* =========================
-   LEER UNA RONDA
+   LEER ESTELAR
 ========================= */
 
-function leerRonda(
+function leerEstelar(
   numeroPartido,
-  ronda
+  rondaId
 ) {
-  const mvp = document.querySelector(
-    `input[name="mvp-${numeroPartido}-${ronda.id}"]:checked`
+  return document.querySelector(
+    `input[name="estelar-${numeroPartido}-${rondaId}"]:checked`
   );
-
-  const hipercargas =
-    document.querySelector(
-      `input[name="hipercargas-${numeroPartido}-${ronda.id}"]:checked`
-    );
-
-  return {
-    mvp,
-    hipercargas
-  };
 }
 
 /* =========================
@@ -465,14 +406,14 @@ async function enviarPredicciones() {
     fecha:
       new Date().toLocaleString("es-AR"),
 
-    fase: "cuartos",
+    fase: "semifinales",
 
     predicciones: []
   };
 
   for (
     let indice = 0;
-    indice < cuartos.length;
+    indice < semifinales.length;
     indice++
   ) {
     const numeroPartido = indice + 1;
@@ -509,26 +450,16 @@ async function enviarPredicciones() {
 
     const rondas = {};
 
-    for (const ronda of rondasCuartos) {
-      const seleccion =
-        leerRonda(
+    for (const ronda of rondasSemifinales) {
+      const estelar =
+        leerEstelar(
           numeroPartido,
-          ronda
+          ronda.id
         );
 
-      if (!seleccion.mvp) {
+      if (!estelar) {
         alert(
-          `Elegí el MVP de ${ronda.nombre} en el Partido ${numeroPartido}.`
-        );
-
-        mostrarPartidoConError(indice);
-
-        return;
-      }
-
-      if (!seleccion.hipercargas) {
-        alert(
-          `Elegí las hipercargas de ${ronda.nombre} en el Partido ${numeroPartido}.`
+          `Elegí el estelar de ${ronda.nombre} en el Partido ${numeroPartido}.`
         );
 
         mostrarPartidoConError(indice);
@@ -537,19 +468,14 @@ async function enviarPredicciones() {
       }
 
       rondas[ronda.id] = {
-        mvp: seleccion.mvp.value,
-        hipercargas:
-          seleccion.hipercargas.value
+        estelar: estelar.value
       };
     }
 
     datos.predicciones.push({
       partido: numeroPartido,
-
       ganador: ganador.value,
-
       resultado: resultado.value,
-
       rondas
     });
   }
@@ -565,7 +491,7 @@ async function enviarPredicciones() {
     );
 
     alert(
-      "✅ Predicciones de Cuartos enviadas correctamente."
+      "✅ Predicciones de Semifinales enviadas correctamente."
     );
 
     location.reload();
@@ -594,5 +520,5 @@ window.enviarPredicciones =
   enviarPredicciones;
 
 console.log(
-  "SCRIPT DE CUARTOS LISTO"
-);         
+  "SCRIPT DE SEMIFINALES LISTO"
+);
