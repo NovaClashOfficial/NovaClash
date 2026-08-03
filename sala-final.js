@@ -1,36 +1,18 @@
 console.log("SALA FINAL LAB V1");
 
-const jugadoresFinalistas = {
-  "BC-JAIRO": {
-    nombre: "Jairo",
-    equipo: "Black Cat"
-  },
-
-  "BC-DEMI": {
-    nombre: "Demi",
-    equipo: "Black Cat"
-  },
-
-  "BC-ALEX": {
-    nombre: "Alex",
-    equipo: "Black Cat"
-  },
-
-  "C8-PLAYER1": {
-    nombre: "Jugador Community 1",
-    equipo: "Community 8"
-  },
-
-  "C8-PLAYER2": {
-    nombre: "Jugador Community 2",
-    equipo: "Community 8"
-  },
-
-  "C8-PLAYER3": {
-    nombre: "Jugador Community 3",
-    equipo: "Community 8"
-  }
-};
+import {
+  jugadoresFinalistas,
+  modosFinal,
+  mapasPorModo,
+  configuracionModos,
+  reglasFinal,
+  brawlersConBuffies,
+  opcionesBuffies,
+  brawlersGenerales,
+  opcionesBrawlersGenerales,
+  preguntasEncuesta,
+  pasosSalaFinal
+} from "./config-sala-final.js";
 
 const TOTAL_PASOS = 7;
 
