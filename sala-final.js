@@ -14,6 +14,18 @@ import {
   pasosSalaFinal
 } from "./config-sala-final.js";
 
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+import {
+  db
+} from "./firebase.js";
+
 const TOTAL_PASOS =
   pasosSalaFinal.length;
 
@@ -2098,6 +2110,608 @@ function irSiguiente() {
   if (pasoActual < TOTAL_PASOS) {
     pasoActual++;
 
+/* =========================
+   BUSCAR NOMBRE DE MODO
+========================= */
+
+function obtenerNombreModo(modoId) {
+  const modo = modosFinal.find(
+    (item) => item.id === modoId
+  );
+
+  return modo
+    ? `${modo.icono} ${modo.nombre}`
+    : modoId;
+}
+
+/* =========================
+   BUSCAR TEXTO DE REGLA
+========================= */
+
+function obtenerTextoRegla(
+  reglaId,
+  valor
+) {
+  const regla = reglasFinal.find(
+    (item) => item.id === reglaId
+  );
+
+  const opcion = regla?.opciones.find(
+    (item) => item.valor === valor
+  );
+
+  return opcion?.texto || valor;
+}
+
+/* =========================
+   BUSCAR TEXTO DE ENCUESTA
+========================= */
+
+function obtenerTextoEncuesta(
+  preguntaId,
+  valor
+) {
+  const pregunta =
+    preguntasEncuesta.find(
+      (item) => item.id === preguntaId
+    );
+
+  if (
+    pregunta?.tipo === "opciones"
+  ) {
+    return (
+      pregunta.opciones.find(
+        (opcion) =>
+          opcion.valor === valor
+      )?.texto || valor
+    );
+  }
+
+  if (
+    pregunta?.tipo === "estrellas"
+  ) {
+    return `${valor} de 5 estrellas`;
+  }
+
+  return valor;
+}
+
+/* =========================
+   CREAR RESUMEN
+========================= */
+
+function renderizarResumen() {
+  if (
+    !contenidoResumen ||
+    !jugadorActual
+  ) {
+    return;
+  }
+
+  const modosDescartadosHTML =
+    respuestas.modosDescartados
+      .map(
+        (modoId) => `
+          <li>
+            ${escaparHTML(
+              obtenerNombreModo(modoId)
+            )}
+          </li>
+        `
+      )
+      .join("");
+
+  const mapasHTML =
+    Object.entries(respuestas.mapas)
+      .map(([modoId, mapa]) => `
+        <div class="resumen-fila">
+
+          <span>
+            ${escaparHTML(
+              obtenerNombreModo(modoId)
+            )}
+          </span>
+
+          <strong>
+            ${escaparHTML(mapa)}
+          </strong>
+
+        </div>
+      `)
+      .join("");
+
+  const reglasHTML =
+    Object.entries(respuestas.reglas)
+      .map(([reglaId, valor]) => {
+        const regla =
+          reglasFinal.find(
+            (item) =>
+              item.id === reglaId
+          );
+
+        return `
+          <div class="resumen-fila">
+
+            <span>
+              ${escaparHTML(
+                regla?.nombre || reglaId
+              )}
+            </span>
+
+            <strong>
+              ${escaparHTML(
+                obtenerTextoRegla(
+                  reglaId,
+                  valor
+                )
+              )}
+            </strong>
+
+          </div>
+        `;
+      })
+      .join("");
+
+  const buffiesBloqueados =
+    respuestas.buffies.bloqueados
+      .length > 0
+      ? respuestas.buffies.bloqueados
+          .map(
+            (brawler) => `
+              <li>
+                ${escaparHTML(brawler)}
+              </li>
+            `
+          )
+          .join("")
+      : `
+          <li>
+            Ninguno
+          </li>
+        `;
+
+  const encuestaHTML =
+    preguntasEncuesta.map(
+      (pregunta) => {
+        const valor =
+          respuestas.encuesta[
+            pregunta.id
+          ];
+
+        return `
+          <div class="resumen-pregunta">
+
+            <span>
+              ${escaparHTML(
+                pregunta.pregunta
+              )}
+            </span>
+
+            <p>
+              ${escaparHTML(
+                obtenerTextoEncuesta(
+                  pregunta.id,
+                  valor
+                )
+              )}
+            </p>
+
+          </div>
+        `;
+      }
+    ).join("");
+
+  contenidoResumen.innerHTML = `
+    <section class="resumen-bloque">
+
+      <h3>
+        👤 Finalista
+      </h3>
+
+      <div class="resumen-fila">
+        <span>Jugador</span>
+
+        <strong>
+          ${escaparHTML(
+            jugadorActual.nombre
+          )}
+        </strong>
+      </div>
+
+      <div class="resumen-fila">
+        <span>Equipo</span>
+
+        <strong>
+          ${escaparHTML(
+            jugadorActual.equipo
+          )}
+        </strong>
+      </div>
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        🚫 Modos descartados
+      </h3>
+
+      <ul class="resumen-lista">
+        ${modosDescartadosHTML}
+      </ul>
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        🗺️ Mapas elegidos
+      </h3>
+
+      ${mapasHTML}
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        🎯 Desempate
+      </h3>
+
+      ${
+        respuestas.desempate.modo
+          ? `
+            <div class="resumen-fila">
+
+              <span>Modo</span>
+
+              <strong>
+                ${escaparHTML(
+                  obtenerNombreModo(
+                    respuestas.desempate
+                      .modo
+                  )
+                )}
+              </strong>
+
+            </div>
+
+            <div class="resumen-fila">
+
+              <span>Mapa</span>
+
+              <strong>
+                ${escaparHTML(
+                  respuestas.desempate
+                    .mapa
+                )}
+              </strong>
+
+            </div>
+          `
+          : `
+            <p class="resumen-vacio">
+              No se eligió desempate porque
+              todos los modos disponibles
+              fueron descartados.
+            </p>
+          `
+      }
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        📜 Reglas
+      </h3>
+
+      ${reglasHTML}
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        ⚡ Brawlers con buffies
+      </h3>
+
+      <div class="resumen-fila">
+
+        <span>Decisión</span>
+
+        <strong>
+          ${escaparHTML(
+            respuestas.buffies.opcion
+          )}
+        </strong>
+
+      </div>
+
+      <p class="resumen-subtitulo">
+        Bloqueados:
+      </p>
+
+      <ul class="resumen-lista">
+        ${buffiesBloqueados}
+      </ul>
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        🎮 Brawlers generales
+      </h3>
+
+      <div class="resumen-fila">
+
+        <span>Decisión</span>
+
+        <strong>
+          ${escaparHTML(
+            respuestas
+              .brawlersGenerales
+              .opcion
+          )}
+        </strong>
+
+      </div>
+
+      ${
+        respuestas
+          .brawlersGenerales
+          .brawlersEscritos
+          ? `
+            <div class="resumen-texto">
+
+              <strong>
+                Brawlers propuestos
+              </strong>
+
+              <p>
+                ${escaparHTML(
+                  respuestas
+                    .brawlersGenerales
+                    .brawlersEscritos
+                )}
+              </p>
+
+            </div>
+          `
+          : ""
+      }
+
+      ${
+        respuestas
+          .brawlersGenerales
+          .recomendacion
+          ? `
+            <div class="resumen-texto">
+
+              <strong>
+                Recomendación
+              </strong>
+
+              <p>
+                ${escaparHTML(
+                  respuestas
+                    .brawlersGenerales
+                    .recomendacion
+                )}
+              </p>
+
+            </div>
+          `
+          : ""
+      }
+
+    </section>
+
+    <section class="resumen-bloque">
+
+      <h3>
+        💬 Encuesta
+      </h3>
+
+      ${encuestaHTML}
+
+    </section>
+  `;
+}
+
+/* =========================
+   MOSTRAR RESUMEN
+========================= */
+
+function mostrarResumen() {
+  mostrandoResumen = true;
+
+  document
+    .querySelectorAll(".paso")
+    .forEach((paso) => {
+      paso.classList.remove("activo");
+    });
+
+  pantallaResumen.classList.add(
+    "activo"
+  );
+
+  textoPaso.textContent =
+    "Resumen final";
+
+  porcentajePaso.textContent =
+    "100%";
+
+  barraProgreso.style.width =
+    "100%";
+
+  botonAnterior.disabled = false;
+
+  botonSiguiente.textContent =
+    "ENVIAR DECISIONES";
+
+  renderizarResumen();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+/* =========================
+   OCULTAR RESUMEN
+========================= */
+
+function ocultarResumen() {
+  mostrandoResumen = false;
+
+  pantallaResumen.classList.remove(
+    "activo"
+  );
+
+  pasoActual = TOTAL_PASOS;
+
+  actualizarPaso();
+}
+
+/* =========================
+   CREAR ID DE DOCUMENTO
+========================= */
+
+function crearIdVoto(codigo) {
+  return String(codigo)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-");
+}
+
+/* =========================
+   GUARDAR VOTO EN FIREBASE
+========================= */
+
+async function enviarDecisiones() {
+  if (
+    !jugadorActual ||
+    envioRealizado
+  ) {
+    return;
+  }
+
+  const idDocumento =
+    crearIdVoto(
+      jugadorActual.codigo
+    );
+
+  const referencia = doc(
+    db,
+    "salaFinalVotos",
+    idDocumento
+  );
+
+  try {
+    botonSiguiente.disabled = true;
+
+    botonSiguiente.textContent =
+      "ENVIANDO...";
+
+    mensajeEnvio.textContent = "";
+
+    await runTransaction(
+      db,
+      async (transaccion) => {
+        const documento =
+          await transaccion.get(
+            referencia
+          );
+
+        if (documento.exists()) {
+          throw new Error(
+            "VOTO_YA_ENVIADO"
+          );
+        }
+
+        transaccion.set(
+          referencia,
+          {
+            codigo:
+              jugadorActual.codigo,
+
+            nombre:
+              jugadorActual.nombre,
+
+            equipo:
+              jugadorActual.equipo,
+
+            equipoId:
+              jugadorActual.equipoId,
+
+            respuestas:
+              structuredClone(
+                respuestas
+              ),
+
+            completado: true,
+
+            fecha:
+              serverTimestamp()
+          }
+        );
+      }
+    );
+
+    envioRealizado = true;
+
+    mensajeEnvio.textContent =
+      "✅ Tus decisiones fueron enviadas correctamente.";
+
+    mensajeEnvio.className =
+      "mensaje-paso mensaje-exito";
+
+    botonSiguiente.textContent =
+      "✅ DECISIONES ENVIADAS";
+
+    alert(
+      "✅ Votación enviada correctamente. Gracias por participar en la Gran Final de Nova Clash."
+    );
+
+  } catch (error) {
+    console.error(
+      "Error al enviar:",
+      error
+    );
+
+    if (
+      error.message ===
+      "VOTO_YA_ENVIADO"
+    ) {
+      mensajeEnvio.textContent =
+        "Este código ya envió sus decisiones.";
+
+      mensajeEnvio.className =
+        "mensaje-paso mensaje-error";
+
+      botonSiguiente.textContent =
+        "VOTO YA ENVIADO";
+
+      botonSiguiente.disabled = true;
+
+      return;
+    }
+
+    mensajeEnvio.textContent =
+      "No se pudieron enviar las decisiones. Intentá nuevamente.";
+
+    mensajeEnvio.className =
+      "mensaje-paso mensaje-error";
+
+    botonSiguiente.disabled = false;
+
+    botonSiguiente.textContent =
+      "ENVIAR DECISIONES";
+  }
+}
+    
     actualizarPaso();
 
     return;
