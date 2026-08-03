@@ -1,4 +1,4 @@
-console.log("SALA FINAL LAB V1");
+console.log("SALA FINAL LAB V2 - MODOS");
 
 import {
   jugadoresFinalistas,
@@ -14,37 +14,84 @@ import {
   pasosSalaFinal
 } from "./config-sala-final.js";
 
-const TOTAL_PASOS = 7;
+const TOTAL_PASOS =
+  pasosSalaFinal.length;
 
 let pasoActual = 1;
 let jugadorActual = null;
 
+/*
+  Acá se guardarán temporalmente todas
+  las decisiones antes de enviarlas.
+*/
+
+const respuestas = {
+  modosDescartados: [],
+  mapas: {},
+  desempate: {
+    modo: "",
+    mapa: ""
+  },
+  reglas: {},
+  buffies: {
+    opcion: "",
+    bloqueados: []
+  },
+  brawlersGenerales: {
+    opcion: "",
+    bloqueados: []
+  },
+  encuesta: {}
+};
+
+/* =========================
+   ELEMENTOS GENERALES
+========================= */
+
 const pantallaAcceso =
-  document.getElementById("pantalla-acceso");
+  document.getElementById(
+    "pantalla-acceso"
+  );
 
 const pantallaSala =
-  document.getElementById("pantalla-sala");
+  document.getElementById(
+    "pantalla-sala"
+  );
 
 const inputCodigo =
-  document.getElementById("codigo-acceso");
+  document.getElementById(
+    "codigo-acceso"
+  );
 
 const botonIngresar =
-  document.getElementById("btn-ingresar");
+  document.getElementById(
+    "btn-ingresar"
+  );
 
 const mensajeAcceso =
-  document.getElementById("mensaje-acceso");
+  document.getElementById(
+    "mensaje-acceso"
+  );
 
 const nombreJugador =
-  document.getElementById("nombre-jugador");
+  document.getElementById(
+    "nombre-jugador"
+  );
 
 const equipoJugador =
-  document.getElementById("equipo-jugador");
+  document.getElementById(
+    "equipo-jugador"
+  );
 
 const textoPaso =
-  document.getElementById("texto-paso");
+  document.getElementById(
+    "texto-paso"
+  );
 
 const porcentajePaso =
-  document.getElementById("porcentaje-paso");
+  document.getElementById(
+    "porcentaje-paso"
+  );
 
 const barraProgreso =
   document.getElementById(
@@ -52,10 +99,46 @@ const barraProgreso =
   );
 
 const botonAnterior =
-  document.getElementById("btn-anterior");
+  document.getElementById(
+    "btn-anterior"
+  );
 
 const botonSiguiente =
-  document.getElementById("btn-siguiente");
+  document.getElementById(
+    "btn-siguiente"
+  );
+
+/* =========================
+   ELEMENTOS DE MODOS
+========================= */
+
+const contenedorModos =
+  document.getElementById(
+    "opciones-modos"
+  );
+
+const contadorModos =
+  document.getElementById(
+    "contador-modos"
+  );
+
+const mensajeModos =
+  document.getElementById(
+    "mensaje-modos"
+  );
+
+/* =========================
+   ESCAPAR TEXTO
+========================= */
+
+function escaparHTML(texto) {
+  return String(texto ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 /* =========================
    NORMALIZAR CÓDIGO
@@ -74,7 +157,9 @@ function normalizarCodigo(codigo) {
 
 function ingresarSala() {
   const codigo =
-    normalizarCodigo(inputCodigo.value);
+    normalizarCodigo(
+      inputCodigo.value
+    );
 
   if (!codigo) {
     mensajeAcceso.textContent =
@@ -112,6 +197,8 @@ function ingresarSala() {
   equipoJugador.textContent =
     jugadorActual.equipo;
 
+  mensajeAcceso.textContent = "";
+
   pantallaAcceso.classList.remove(
     "activa"
   );
@@ -122,7 +209,219 @@ function ingresarSala() {
 
   pasoActual = 1;
 
+  renderizarModos();
   actualizarPaso();
+}
+
+/* =========================
+   CREAR OPCIONES DE MODOS
+========================= */
+
+function renderizarModos() {
+  if (!contenedorModos) {
+    return;
+  }
+
+  contenedorModos.innerHTML =
+    modosFinal.map((modo) => {
+      const seleccionado =
+        respuestas.modosDescartados
+          .includes(modo.id);
+
+      return `
+        <label
+          class="modo-card ${
+            seleccionado
+              ? "seleccionado"
+              : ""
+          }"
+        >
+
+          <input
+            type="checkbox"
+            name="modos-descartados"
+            value="${escaparHTML(modo.id)}"
+            ${seleccionado ? "checked" : ""}
+          >
+
+          <span class="modo-icono">
+            ${escaparHTML(modo.icono)}
+          </span>
+
+          <span class="modo-nombre">
+            ${escaparHTML(modo.nombre)}
+          </span>
+
+          <span class="modo-estado">
+            ${
+              seleccionado
+                ? "DESCARTADO"
+                : "DISPONIBLE"
+            }
+          </span>
+
+        </label>
+      `;
+    }).join("");
+
+  const opciones =
+    contenedorModos.querySelectorAll(
+      'input[name="modos-descartados"]'
+    );
+
+  opciones.forEach((opcion) => {
+    opcion.addEventListener(
+      "change",
+      controlarSeleccionModo
+    );
+  });
+
+  actualizarEstadoModos();
+}
+
+/* =========================
+   SELECCIONAR MODO
+========================= */
+
+function controlarSeleccionModo(
+  evento
+) {
+  const checkbox = evento.target;
+
+  const limite =
+    configuracionModos
+      .cantidadADescartar;
+
+  const seleccionados =
+    respuestas.modosDescartados;
+
+  if (checkbox.checked) {
+    if (
+      seleccionados.length >= limite
+    ) {
+      checkbox.checked = false;
+
+      mensajeModos.textContent =
+        `Solo podés descartar ${limite} modos.`;
+
+      mensajeModos.className =
+        "mensaje-paso mensaje-error";
+
+      return;
+    }
+
+    seleccionados.push(
+      checkbox.value
+    );
+  } else {
+    respuestas.modosDescartados =
+      seleccionados.filter(
+        (modoId) =>
+          modoId !== checkbox.value
+      );
+  }
+
+  mensajeModos.textContent = "";
+
+  renderizarModos();
+}
+
+/* =========================
+   ACTUALIZAR CONTADOR
+========================= */
+
+function actualizarEstadoModos() {
+  const cantidad =
+    respuestas.modosDescartados.length;
+
+  const limite =
+    configuracionModos
+      .cantidadADescartar;
+
+  contadorModos.textContent =
+    `${cantidad} / ${limite}`;
+
+  contadorModos.classList.toggle(
+    "completo",
+    cantidad === limite
+  );
+
+  /*
+    Bloquea visualmente las opciones restantes
+    cuando ya se eligieron exactamente tres.
+  */
+
+  const tarjetas =
+    contenedorModos.querySelectorAll(
+      ".modo-card"
+    );
+
+  tarjetas.forEach((tarjeta) => {
+    const checkbox =
+      tarjeta.querySelector("input");
+
+    const debeBloquear =
+      cantidad >= limite &&
+      !checkbox.checked;
+
+    checkbox.disabled =
+      debeBloquear;
+
+    tarjeta.classList.toggle(
+      "bloqueado",
+      debeBloquear
+    );
+  });
+}
+
+/* =========================
+   VALIDAR PASO ACTUAL
+========================= */
+
+function validarPasoActual() {
+  /*
+    PASO 1:
+    Tiene que descartar exactamente 3 modos.
+  */
+
+  if (pasoActual === 1) {
+    const cantidad =
+      respuestas.modosDescartados.length;
+
+    const requerida =
+      configuracionModos
+        .cantidadADescartar;
+
+    if (cantidad !== requerida) {
+      mensajeModos.textContent =
+        `Tenés que elegir exactamente ${requerida} modos para descartar.`;
+
+      mensajeModos.className =
+        "mensaje-paso mensaje-error";
+
+      document
+        .getElementById("opciones-modos")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      return false;
+    }
+
+    mensajeModos.textContent =
+      "✅ Modos descartados correctamente.";
+
+    mensajeModos.className =
+      "mensaje-paso mensaje-exito";
+  }
+
+  /*
+    Los demás pasos todavía no tienen
+    validación porque se agregarán después.
+  */
+
+  return true;
 }
 
 /* =========================
@@ -131,7 +430,9 @@ function ingresarSala() {
 
 function actualizarPaso() {
   const pasos =
-    document.querySelectorAll(".paso");
+    document.querySelectorAll(
+      ".paso"
+    );
 
   pasos.forEach((paso) => {
     const numero =
@@ -145,7 +446,10 @@ function actualizarPaso() {
 
   const porcentaje =
     Math.round(
-      (pasoActual / TOTAL_PASOS) * 100
+      (
+        pasoActual /
+        TOTAL_PASOS
+      ) * 100
     );
 
   textoPaso.textContent =
@@ -176,21 +480,35 @@ function actualizarPaso() {
 ========================= */
 
 function irSiguiente() {
+  const valido =
+    validarPasoActual();
+
+  if (!valido) {
+    return;
+  }
+
   if (pasoActual < TOTAL_PASOS) {
     pasoActual++;
+
     actualizarPaso();
 
     return;
   }
 
+  console.log(
+    "Respuestas actuales:",
+    respuestas
+  );
+
   alert(
-    "La pantalla de resumen será el siguiente paso del desarrollo."
+    "La pantalla de resumen será agregada después."
   );
 }
 
 function irAnterior() {
   if (pasoActual > 1) {
     pasoActual--;
+
     actualizarPaso();
   }
 }
@@ -223,4 +541,6 @@ botonAnterior.addEventListener(
   irAnterior
 );
 
-console.log("SALA FINAL LAB LISTA");
+console.log(
+  "SALA FINAL LAB V2 LISTA"
+);
