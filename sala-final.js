@@ -156,6 +156,16 @@ const mensajeReglas =
   document.getElementById(
     "mensaje-reglas"
   );
+
+const contenedorBuffies =
+  document.getElementById(
+    "contenedor-buffies"
+  );
+
+const mensajeBuffies =
+  document.getElementById(
+    "mensaje-buffies"
+  );
 /* =========================
    ESCAPAR TEXTO
 ========================= */
@@ -933,6 +943,292 @@ function activarEventosReglas() {
     );
   });
 }
+
+/* =========================
+   OBTENER OPCIÓN DE BUFFIES
+========================= */
+
+function obtenerOpcionBuffies() {
+  return opcionesBuffies.find(
+    (opcion) =>
+      opcion.valor ===
+      respuestas.buffies.opcion
+  );
+}
+
+/* =========================
+   RENDERIZAR BUFFIES
+========================= */
+
+function renderizarBuffies() {
+  if (!contenedorBuffies) {
+    return;
+  }
+
+  const opcionElegida =
+    obtenerOpcionBuffies();
+
+  let cantidadNecesaria = 0;
+
+  if (
+    opcionElegida &&
+    typeof opcionElegida.cantidadBloqueos ===
+      "number"
+  ) {
+    cantidadNecesaria =
+      opcionElegida.cantidadBloqueos;
+  }
+
+  contenedorBuffies.innerHTML = `
+    <section class="buffies-bloque">
+
+      <h3 class="buffies-subtitulo">
+        ¿Cómo se usarán los brawlers con buffies?
+      </h3>
+
+      <div class="opciones-buffies">
+
+        ${opcionesBuffies.map((opcion) => `
+          <label
+            class="buffie-opcion-card ${
+              respuestas.buffies.opcion ===
+              opcion.valor
+                ? "seleccionado"
+                : ""
+            }"
+          >
+
+            <input
+              type="radio"
+              name="opcion-buffies"
+              value="${escaparHTML(opcion.valor)}"
+              ${
+                respuestas.buffies.opcion ===
+                opcion.valor
+                  ? "checked"
+                  : ""
+              }
+            >
+
+            <span>
+              ${escaparHTML(opcion.texto)}
+            </span>
+
+          </label>
+        `).join("")}
+
+      </div>
+
+    </section>
+
+    ${
+      cantidadNecesaria > 0
+        ? `
+          <section class="buffies-bloque">
+
+            <div class="contador-seleccion">
+
+              <span>
+                Brawlers bloqueados
+              </span>
+
+              <strong
+                id="contador-buffies"
+                class="${
+                  respuestas.buffies.bloqueados
+                    .length === cantidadNecesaria
+                    ? "completo"
+                    : ""
+                }"
+              >
+                ${
+                  respuestas.buffies.bloqueados
+                    .length
+                } / ${cantidadNecesaria}
+              </strong>
+
+            </div>
+
+            <p class="buffies-ayuda">
+              Elegí exactamente
+              ${cantidadNecesaria}
+              brawlers para bloquear.
+            </p>
+
+            <div class="lista-brawlers-buffies">
+
+              ${brawlersConBuffies.map(
+                (brawler) => {
+                  const seleccionado =
+                    respuestas.buffies
+                      .bloqueados
+                      .includes(brawler);
+
+                  const limiteAlcanzado =
+                    respuestas.buffies
+                      .bloqueados.length >=
+                      cantidadNecesaria;
+
+                  const bloqueado =
+                    limiteAlcanzado &&
+                    !seleccionado;
+
+                  return `
+                    <label
+                      class="
+                        brawler-chip
+                        ${
+                          seleccionado
+                            ? "seleccionado"
+                            : ""
+                        }
+                        ${
+                          bloqueado
+                            ? "bloqueado"
+                            : ""
+                        }
+                      "
+                    >
+
+                      <input
+                        type="checkbox"
+                        name="brawler-buffie"
+                        value="${escaparHTML(brawler)}"
+                        ${
+                          seleccionado
+                            ? "checked"
+                            : ""
+                        }
+                        ${
+                          bloqueado
+                            ? "disabled"
+                            : ""
+                        }
+                      >
+
+                      <span>
+                        ${escaparHTML(brawler)}
+                      </span>
+
+                    </label>
+                  `;
+                }
+              ).join("")}
+
+            </div>
+
+          </section>
+        `
+        : ""
+    }
+
+    ${
+      opcionElegida?.cantidadBloqueos ===
+      "todos"
+        ? `
+          <div class="todos-buffies-bloqueados">
+            🚫 Todos los brawlers con buffies
+            quedarán bloqueados.
+          </div>
+        `
+        : ""
+    }
+  `;
+
+  activarEventosBuffies();
+}
+
+/* =========================
+   EVENTOS DE BUFFIES
+========================= */
+
+function activarEventosBuffies() {
+  const opciones =
+    contenedorBuffies.querySelectorAll(
+      'input[name="opcion-buffies"]'
+    );
+
+  opciones.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        respuestas.buffies.opcion =
+          radio.value;
+
+        const opcion =
+          obtenerOpcionBuffies();
+
+        if (
+          opcion?.cantidadBloqueos ===
+          "todos"
+        ) {
+          respuestas.buffies.bloqueados =
+            [...brawlersConBuffies];
+
+        } else {
+          respuestas.buffies.bloqueados =
+            [];
+        }
+
+        mensajeBuffies.textContent = "";
+
+        renderizarBuffies();
+      }
+    );
+  });
+
+  const checkboxes =
+    contenedorBuffies.querySelectorAll(
+      'input[name="brawler-buffie"]'
+    );
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener(
+      "change",
+      () => {
+        const opcion =
+          obtenerOpcionBuffies();
+
+        const limite =
+          Number(
+            opcion?.cantidadBloqueos
+          ) || 0;
+
+        if (checkbox.checked) {
+          if (
+            respuestas.buffies.bloqueados
+              .length >= limite
+          ) {
+            checkbox.checked = false;
+
+            mensajeBuffies.textContent =
+              `Solo podés bloquear ${limite} brawlers.`;
+
+            mensajeBuffies.className =
+              "mensaje-paso mensaje-error";
+
+            return;
+          }
+
+          respuestas.buffies.bloqueados
+            .push(checkbox.value);
+
+        } else {
+          respuestas.buffies.bloqueados =
+            respuestas.buffies.bloqueados
+              .filter(
+                (brawler) =>
+                  brawler !== checkbox.value
+              );
+        }
+
+        mensajeBuffies.textContent = "";
+
+        renderizarBuffies();
+      }
+    );
+  });
+}
 /* =========================
    VALIDAR PASO ACTUAL
 ========================= */
@@ -1102,7 +1398,55 @@ if (pasoActual === 4) {
   mensajeReglas.className =
     "mensaje-paso mensaje-exito";
 }
-  
+
+  /*
+  PASO 5:
+  Configuración de brawlers con buffies.
+*/
+
+if (pasoActual === 5) {
+  const opcion =
+    obtenerOpcionBuffies();
+
+  if (!opcion) {
+    mensajeBuffies.textContent =
+      "Elegí una opción para los brawlers con buffies.";
+
+    mensajeBuffies.className =
+      "mensaje-paso mensaje-error";
+
+    return false;
+  }
+
+  if (
+    typeof opcion.cantidadBloqueos ===
+      "number" &&
+    opcion.cantidadBloqueos > 0
+  ) {
+    const cantidadElegida =
+      respuestas.buffies.bloqueados
+        .length;
+
+    if (
+      cantidadElegida !==
+      opcion.cantidadBloqueos
+    ) {
+      mensajeBuffies.textContent =
+        `Tenés que bloquear exactamente ${opcion.cantidadBloqueos} brawlers.`;
+
+      mensajeBuffies.className =
+        "mensaje-paso mensaje-error";
+
+      return false;
+    }
+  }
+
+  mensajeBuffies.textContent =
+    "✅ Brawlers con buffies configurados.";
+
+  mensajeBuffies.className =
+    "mensaje-paso mensaje-exito";
+}
   return true;
 }
 
@@ -1161,6 +1505,10 @@ if (pasoActual === 3) {
 
   if (pasoActual === 4) {
   renderizarReglas();
+}
+
+  if (pasoActual === 5) {
+  renderizarBuffies();
 }
   window.scrollTo({
     top: 0,
