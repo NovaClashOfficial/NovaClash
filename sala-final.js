@@ -617,6 +617,49 @@ function validarPasoActual() {
     validación porque se agregarán después.
   */
 
+/*
+  PASO 2:
+  Debe elegir un mapa para cada
+  modo que siga disponible.
+*/
+
+if (pasoActual === 2) {
+  const modosDisponibles =
+    obtenerModosDisponibles();
+
+  const modoSinMapa =
+    modosDisponibles.find(
+      (modo) =>
+        !respuestas.mapas[modo.id]
+    );
+
+  if (modoSinMapa) {
+    mensajeMapas.textContent =
+      `Elegí un mapa para ${modoSinMapa.nombre}.`;
+
+    mensajeMapas.className =
+      "mensaje-paso mensaje-error";
+
+    const grupo =
+      contenedorMapas.querySelector(
+        `[data-modo="${modoSinMapa.id}"]`
+      );
+
+    grupo?.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    return false;
+  }
+
+  mensajeMapas.textContent =
+    "✅ Mapas elegidos correctamente.";
+
+  mensajeMapas.className =
+    "mensaje-paso mensaje-exito";
+}
+  
   return true;
 }
 
@@ -665,6 +708,10 @@ function actualizarPaso() {
       ? "VER RESUMEN →"
       : "SIGUIENTE →";
 
+ if (pasoActual === 2) {
+  renderizarMapas();
+}
+  
   window.scrollTo({
     top: 0,
     behavior: "smooth"
