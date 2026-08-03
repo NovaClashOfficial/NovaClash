@@ -620,3 +620,134 @@ button:disabled{
         min-height:68px;
     }
 }
+
+/* ==========================================
+   PASO 2 - ELECCIÓN DE MAPAS
+========================================== */
+
+.contenedor-mapas{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+
+    margin-top:25px;
+}
+
+.grupo-mapas{
+    overflow:hidden;
+
+    border:1px solid rgba(165,95,255,.28);
+    border-radius:16px;
+
+    background:rgba(255,255,255,.025);
+}
+
+.mapa-desplegable{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    width:100%;
+    margin:0;
+    padding:17px 19px;
+
+    border-radius:0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(83,44,170,.72),
+            rgba(41,29,91,.72)
+        );
+
+    box-shadow:none;
+
+    font-size:14px;
+    text-align:left;
+}
+
+.mapa-desplegable:hover{
+    transform:none;
+}
+
+.flecha-mapa{
+    transition:
+        transform .25s ease;
+}
+
+.mapa-desplegable.abierto
+.flecha-mapa{
+    transform:rotate(180deg);
+}
+
+.lista-mapas{
+    display:none;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:10px;
+    padding:15px;
+}
+
+.lista-mapas.activa{
+    display:grid;
+}
+
+.mapa-card{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:50px;
+    padding:11px 13px;
+
+    border:2px solid rgba(255,255,255,.07);
+    border-radius:13px;
+
+    background:rgba(255,255,255,.035);
+
+    color:#e7e1f5;
+    font-size:12px;
+    font-weight:800;
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.mapa-card:hover{
+    border-color:#8cdfff;
+    background:rgba(0,190,255,.09);
+}
+
+.mapa-card input{
+    display:none;
+}
+
+.mapa-card.seleccionado{
+    border-color:#70dcff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #086c9a,
+            #00a6dc
+        );
+
+    color:white;
+
+    box-shadow:
+        0 0 18px rgba(0,190,255,.35);
+}
+
+@media(max-width:650px){
+
+    .lista-mapas{
+        grid-template-columns:1fr;
+    }
+
+    .mapa-desplegable{
+        font-size:13px;
+    }
+}
