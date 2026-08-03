@@ -146,6 +146,16 @@ const mensajeDesempate =
   document.getElementById(
     "mensaje-desempate"
   );
+
+const contenedorReglas =
+  document.getElementById(
+    "contenedor-reglas"
+  );
+
+const mensajeReglas =
+  document.getElementById(
+    "mensaje-reglas"
+  );
 /* =========================
    ESCAPAR TEXTO
 ========================= */
@@ -822,6 +832,108 @@ function activarEventosDesempate() {
     );
   });
 }
+
+/* =========================
+   RENDERIZAR REGLAS
+========================= */
+
+function renderizarReglas() {
+  if (!contenedorReglas) {
+    return;
+  }
+
+  contenedorReglas.innerHTML =
+    reglasFinal.map((regla) => {
+      const valorElegido =
+        respuestas.reglas[regla.id] || "";
+
+      return `
+        <section class="regla-bloque">
+
+          <div class="regla-encabezado">
+
+            <h3>
+              ${escaparHTML(regla.nombre)}
+            </h3>
+
+            <span class="regla-tipo">
+              Individual
+            </span>
+
+          </div>
+
+          <p class="regla-descripcion">
+            ${escaparHTML(regla.descripcion)}
+          </p>
+
+          <div class="regla-opciones">
+
+            ${regla.opciones.map((opcion) => `
+              <label
+                class="regla-card ${
+                  valorElegido === opcion.valor
+                    ? "seleccionado"
+                    : ""
+                }"
+              >
+
+                <input
+                  type="radio"
+                  name="regla-${escaparHTML(regla.id)}"
+                  value="${escaparHTML(opcion.valor)}"
+                  ${
+                    valorElegido === opcion.valor
+                      ? "checked"
+                      : ""
+                  }
+                >
+
+                <span>
+                  ${escaparHTML(opcion.texto)}
+                </span>
+
+              </label>
+            `).join("")}
+
+          </div>
+
+        </section>
+      `;
+    }).join("");
+
+  activarEventosReglas();
+}
+
+/* =========================
+   EVENTOS DE REGLAS
+========================= */
+
+function activarEventosReglas() {
+  const radios =
+    contenedorReglas.querySelectorAll(
+      '.regla-card input[type="radio"]'
+    );
+
+  radios.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        const reglaId =
+          radio.name.replace(
+            "regla-",
+            ""
+          );
+
+        respuestas.reglas[reglaId] =
+          radio.value;
+
+        mensajeReglas.textContent = "";
+
+        renderizarReglas();
+      }
+    );
+  });
+}
 /* =========================
    VALIDAR PASO ACTUAL
 ========================= */
@@ -952,6 +1064,45 @@ if (pasoActual === 3) {
   mensajeDesempate.className =
     "mensaje-paso mensaje-exito";
 }
+
+/*
+  PASO 4:
+  Debe responder todas las reglas.
+*/
+
+if (pasoActual === 4) {
+  const reglaSinRespuesta =
+    reglasFinal.find(
+      (regla) =>
+        !respuestas.reglas[regla.id]
+    );
+
+  if (reglaSinRespuesta) {
+    mensajeReglas.textContent =
+      `Elegí una opción para ${reglaSinRespuesta.nombre}.`;
+
+    mensajeReglas.className =
+      "mensaje-paso mensaje-error";
+
+    const bloque =
+      contenedorReglas.querySelector(
+        `input[name="regla-${reglaSinRespuesta.id}"]`
+      )?.closest(".regla-bloque");
+
+    bloque?.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    return false;
+  }
+
+  mensajeReglas.textContent =
+    "✅ Reglas completadas correctamente.";
+
+  mensajeReglas.className =
+    "mensaje-paso mensaje-exito";
+}
   
   return true;
 }
@@ -1015,6 +1166,9 @@ if (pasoActual === 3) {
   });
 }
 
+if (pasoActual === 4) {
+  renderizarReglas();
+}
 /* =========================
    CAMBIAR PASOS
 ========================= */
