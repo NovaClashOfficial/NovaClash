@@ -38,9 +38,10 @@ const respuestas = {
     bloqueados: []
   },
   brawlersGenerales: {
-    opcion: "",
-    bloqueados: []
-  },
+  opcion: "",
+  brawlersEscritos: "",
+  recomendacion: ""
+},
   encuesta: {}
 };
 
@@ -165,6 +166,16 @@ const contenedorBuffies =
 const mensajeBuffies =
   document.getElementById(
     "mensaje-buffies"
+  );
+
+const contenedorBrawlersGenerales =
+  document.getElementById(
+    "contenedor-brawlers-generales"
+  );
+
+const mensajeBrawlersGenerales =
+  document.getElementById(
+    "mensaje-brawlers-generales"
   );
 /* =========================
    ESCAPAR TEXTO
@@ -1230,6 +1241,199 @@ function activarEventosBuffies() {
   });
 }
 /* =========================
+   RENDERIZAR BRAWLERS GENERALES
+========================= */
+
+function renderizarBrawlersGenerales() {
+  if (!contenedorBrawlersGenerales) {
+    return;
+  }
+
+  const opcion =
+    respuestas.brawlersGenerales.opcion;
+
+  contenedorBrawlersGenerales.innerHTML = `
+    <section class="brawlers-generales-bloque">
+
+      <h3 class="brawlers-generales-titulo">
+        ¿Querés recomendar prohibiciones generales?
+      </h3>
+
+      <p class="brawlers-generales-descripcion">
+        Esta decisión es individual. Podés recomendar no prohibir ninguno
+        o proponer hasta 3 brawlers.
+      </p>
+
+      <div class="opciones-brawlers-generales">
+
+        <label
+          class="brawler-general-opcion ${
+            opcion === "ninguno"
+              ? "seleccionado"
+              : ""
+          }"
+        >
+
+          <input
+            type="radio"
+            name="opcion-brawlers-generales"
+            value="ninguno"
+            ${
+              opcion === "ninguno"
+                ? "checked"
+                : ""
+            }
+          >
+
+          <span>
+            ✅ No prohibir ninguno
+          </span>
+
+        </label>
+
+        <label
+          class="brawler-general-opcion ${
+            opcion === "prohibir-3"
+              ? "seleccionado"
+              : ""
+          }"
+        >
+
+          <input
+            type="radio"
+            name="opcion-brawlers-generales"
+            value="prohibir-3"
+            ${
+              opcion === "prohibir-3"
+                ? "checked"
+                : ""
+            }
+          >
+
+          <span>
+            🚫 Prohibir 3
+          </span>
+
+        </label>
+
+      </div>
+
+      ${
+        opcion === "prohibir-3"
+          ? `
+            <div class="campo-brawlers-escritos">
+
+              <label for="brawlers-escritos">
+                Escribí los 3 brawlers
+              </label>
+
+              <textarea
+                id="brawlers-escritos"
+                rows="4"
+                maxlength="180"
+                placeholder="Ejemplo: Brawler 1, Brawler 2, Brawler 3"
+              >${escaparHTML(
+                respuestas.brawlersGenerales
+                  .brawlersEscritos
+              )}</textarea>
+
+              <small>
+                Separalos con comas.
+              </small>
+
+            </div>
+          `
+          : ""
+      }
+
+      <div class="campo-recomendacion-general">
+
+        <label for="recomendacion-brawlers">
+          Recomendación adicional
+        </label>
+
+        <textarea
+          id="recomendacion-brawlers"
+          rows="4"
+          maxlength="400"
+          placeholder="Explicá por qué deberían prohibirse o permitirse..."
+        >${escaparHTML(
+          respuestas.brawlersGenerales
+            .recomendacion
+        )}</textarea>
+
+      </div>
+
+    </section>
+  `;
+
+  activarEventosBrawlersGenerales();
+}
+
+/* =========================
+   EVENTOS BRAWLERS GENERALES
+========================= */
+
+function activarEventosBrawlersGenerales() {
+  const opciones =
+    contenedorBrawlersGenerales
+      .querySelectorAll(
+        'input[name="opcion-brawlers-generales"]'
+      );
+
+  opciones.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        respuestas.brawlersGenerales.opcion =
+          radio.value;
+
+        if (radio.value === "ninguno") {
+          respuestas.brawlersGenerales
+            .brawlersEscritos = "";
+        }
+
+        mensajeBrawlersGenerales.textContent =
+          "";
+
+        renderizarBrawlersGenerales();
+      }
+    );
+  });
+
+  const textareaBrawlers =
+    document.getElementById(
+      "brawlers-escritos"
+    );
+
+  if (textareaBrawlers) {
+    textareaBrawlers.addEventListener(
+      "input",
+      () => {
+        respuestas.brawlersGenerales
+          .brawlersEscritos =
+          textareaBrawlers.value;
+      }
+    );
+  }
+
+  const textareaRecomendacion =
+    document.getElementById(
+      "recomendacion-brawlers"
+    );
+
+  if (textareaRecomendacion) {
+    textareaRecomendacion.addEventListener(
+      "input",
+      () => {
+        respuestas.brawlersGenerales
+          .recomendacion =
+          textareaRecomendacion.value;
+      }
+    );
+  }
+}
+/* =========================
    VALIDAR PASO ACTUAL
 ========================= */
 
@@ -1447,6 +1651,49 @@ if (pasoActual === 5) {
   mensajeBuffies.className =
     "mensaje-paso mensaje-exito";
 }
+  /*
+  PASO 6:
+  Recomendaciones de brawlers generales.
+*/
+
+if (pasoActual === 6) {
+  const datos =
+    respuestas.brawlersGenerales;
+
+  if (!datos.opcion) {
+    mensajeBrawlersGenerales.textContent =
+      "Elegí si querés prohibir brawlers o no.";
+
+    mensajeBrawlersGenerales.className =
+      "mensaje-paso mensaje-error";
+
+    return false;
+  }
+
+  if (datos.opcion === "prohibir-3") {
+    const nombres =
+      datos.brawlersEscritos
+        .split(",")
+        .map((nombre) => nombre.trim())
+        .filter(Boolean);
+
+    if (nombres.length !== 3) {
+      mensajeBrawlersGenerales.textContent =
+        "Escribí exactamente 3 brawlers separados por comas.";
+
+      mensajeBrawlersGenerales.className =
+        "mensaje-paso mensaje-error";
+
+      return false;
+    }
+  }
+
+  mensajeBrawlersGenerales.textContent =
+    "✅ Recomendación completada.";
+
+  mensajeBrawlersGenerales.className =
+    "mensaje-paso mensaje-exito";
+}
   return true;
 }
 
@@ -1509,6 +1756,9 @@ if (pasoActual === 3) {
 
   if (pasoActual === 5) {
   renderizarBuffies();
+}
+  if (pasoActual === 6) {
+  renderizarBrawlersGenerales();
 }
   window.scrollTo({
     top: 0,
