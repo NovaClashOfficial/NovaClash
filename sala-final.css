@@ -1064,3 +1064,187 @@ button:disabled{
         grid-template-columns:1fr;
     }
 }
+
+/* ==========================================
+   PASO 5 - BRAWLERS CON BUFFIES
+========================================== */
+
+.contenedor-buffies{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    margin-top:25px;
+}
+
+.buffies-bloque{
+    padding:20px;
+
+    border:1px solid rgba(165,95,255,.28);
+    border-radius:17px;
+
+    background:rgba(255,255,255,.025);
+}
+
+.buffies-subtitulo{
+    margin-bottom:16px;
+
+    color:#d8bdff;
+    font-size:17px;
+    text-align:center;
+}
+
+.opciones-buffies{
+    display:grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:11px;
+}
+
+.buffie-opcion-card{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:54px;
+    padding:12px 14px;
+
+    border:2px solid rgba(255,255,255,.08);
+    border-radius:14px;
+
+    background:rgba(255,255,255,.035);
+
+    color:#ece5f8;
+    font-size:12px;
+    font-weight:800;
+    text-align:center;
+
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.buffie-opcion-card:hover{
+    border-color:#ff9b67;
+    background:rgba(255,110,80,.08);
+}
+
+.buffie-opcion-card input{
+    display:none;
+}
+
+.buffie-opcion-card.seleccionado{
+    border-color:#ffad78;
+
+    background:
+        linear-gradient(
+            135deg,
+            #bd3f63,
+            #8738c9
+        );
+
+    color:white;
+
+    box-shadow:
+        0 0 20px rgba(220,70,135,.35);
+}
+
+.buffies-ayuda{
+    margin:15px 0;
+
+    color:#c9c2d6;
+    font-size:12px;
+    text-align:center;
+}
+
+.lista-brawlers-buffies{
+    display:grid;
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:9px;
+}
+
+.brawler-chip{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:45px;
+    padding:9px 10px;
+
+    border:2px solid rgba(255,255,255,.07);
+    border-radius:12px;
+
+    background:rgba(255,255,255,.03);
+
+    color:#e8e2f2;
+    font-size:11px;
+    font-weight:800;
+    text-align:center;
+
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.brawler-chip:hover{
+    border-color:#c485ff;
+    background:rgba(145,65,230,.10);
+}
+
+.brawler-chip input{
+    display:none;
+}
+
+.brawler-chip.seleccionado{
+    border-color:#d9a0ff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6631d7,
+            #a540e8
+        );
+
+    color:white;
+
+    box-shadow:
+        0 0 15px rgba(165,65,235,.32);
+}
+
+.brawler-chip.bloqueado{
+    opacity:.35;
+    cursor:not-allowed;
+}
+
+.todos-buffies-bloqueados{
+    padding:18px;
+
+    border:1px solid rgba(255,80,100,.35);
+    border-radius:15px;
+
+    background:rgba(255,60,85,.07);
+
+    color:#ff9eaa;
+    font-size:13px;
+    font-weight:800;
+    text-align:center;
+}
+
+@media(max-width:650px){
+
+    .opciones-buffies{
+        grid-template-columns:1fr;
+    }
+
+    .lista-brawlers-buffies{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:420px){
+
+    .lista-brawlers-buffies{
+        grid-template-columns:1fr;
+    }
+}
