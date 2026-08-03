@@ -127,6 +127,15 @@ const mensajeModos =
     "mensaje-modos"
   );
 
+const contenedorMapas =
+  document.getElementById(
+    "contenedor-mapas"
+  );
+
+const mensajeMapas =
+  document.getElementById(
+    "mensaje-mapas"
+  );
 /* =========================
    ESCAPAR TEXTO
 ========================= */
@@ -374,6 +383,193 @@ function actualizarEstadoModos() {
   });
 }
 
+/* =========================
+   MODOS DISPONIBLES
+========================= */
+
+function obtenerModosDisponibles() {
+  return modosFinal.filter(
+    (modo) =>
+      !respuestas.modosDescartados.includes(
+        modo.id
+      )
+  );
+}
+
+/* =========================
+   RENDERIZAR MAPAS
+========================= */
+
+function renderizarMapas() {
+  if (!contenedorMapas) {
+    return;
+  }
+
+  const modosDisponibles =
+    obtenerModosDisponibles();
+
+  /*
+    Limpia elecciones de mapas que
+    correspondan a modos descartados.
+  */
+
+  Object.keys(respuestas.mapas).forEach(
+    (modoId) => {
+      const sigueDisponible =
+        modosDisponibles.some(
+          (modo) => modo.id === modoId
+        );
+
+      if (!sigueDisponible) {
+        delete respuestas.mapas[modoId];
+      }
+    }
+  );
+
+  contenedorMapas.innerHTML =
+    modosDisponibles.map((modo) => {
+      const mapas =
+        mapasPorModo[modo.id] || [];
+
+      const mapaElegido =
+        respuestas.mapas[modo.id] || "";
+
+      return `
+        <section class="grupo-mapas">
+
+          <button
+            type="button"
+            class="mapa-desplegable"
+            data-modo="${escaparHTML(modo.id)}"
+          >
+
+            <span>
+              ${escaparHTML(modo.icono)}
+              ${escaparHTML(modo.nombre)}
+            </span>
+
+            <span class="flecha-mapa">
+              ▼
+            </span>
+
+          </button>
+
+          <div
+            class="lista-mapas"
+            data-lista-modo="${escaparHTML(modo.id)}"
+          >
+
+            ${mapas.map((mapa) => `
+              <label class="mapa-card">
+
+                <input
+                  type="radio"
+                  name="mapa-${escaparHTML(modo.id)}"
+                  value="${escaparHTML(mapa)}"
+                  ${
+                    mapaElegido === mapa
+                      ? "checked"
+                      : ""
+                  }
+                >
+
+                <span>
+                  ${escaparHTML(mapa)}
+                </span>
+
+              </label>
+            `).join("")}
+
+          </div>
+
+        </section>
+      `;
+    }).join("");
+
+  activarEventosMapas();
+}
+
+/* =========================
+   EVENTOS DE MAPAS
+========================= */
+
+function activarEventosMapas() {
+  const botones =
+    contenedorMapas.querySelectorAll(
+      ".mapa-desplegable"
+    );
+
+  botones.forEach((boton) => {
+    boton.addEventListener(
+      "click",
+      () => {
+        const modoId =
+          boton.dataset.modo;
+
+        const lista =
+          contenedorMapas.querySelector(
+            `[data-lista-modo="${modoId}"]`
+          );
+
+        lista?.classList.toggle(
+          "activa"
+        );
+
+        boton.classList.toggle(
+          "abierto"
+        );
+      }
+    );
+  });
+
+  const radios =
+    contenedorMapas.querySelectorAll(
+      '.mapa-card input[type="radio"]'
+    );
+
+  radios.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        const modoId =
+          radio.name.replace(
+            "mapa-",
+            ""
+          );
+
+        respuestas.mapas[modoId] =
+          radio.value;
+
+        mensajeMapas.textContent = "";
+
+        actualizarTarjetasMapas();
+      }
+    );
+  });
+
+  actualizarTarjetasMapas();
+}
+
+/* =========================
+   ACTUALIZAR TARJETAS
+========================= */
+
+function actualizarTarjetasMapas() {
+  const tarjetas =
+    contenedorMapas.querySelectorAll(
+      ".mapa-card"
+    );
+
+  tarjetas.forEach((tarjeta) => {
+    const radio =
+      tarjeta.querySelector("input");
+
+    tarjeta.classList.toggle(
+      "seleccionado",
+      radio.checked
+    );
+  });
+}
 /* =========================
    VALIDAR PASO ACTUAL
 ========================= */
