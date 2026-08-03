@@ -837,17 +837,6 @@ function activarEventosDesempate() {
    RENDERIZAR REGLAS
 ========================= */
 function renderizarReglas() {
-  console.log("Reglas recibidas:", reglasFinal);
-
-  if (!contenedorReglas) {
-    console.error(
-      "No existe #contenedor-reglas"
-    );
-
-    return;
-  }
-
-function renderizarReglas() {
   if (!contenedorReglas) {
     return;
   }
