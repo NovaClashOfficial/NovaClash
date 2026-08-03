@@ -136,6 +136,16 @@ const mensajeMapas =
   document.getElementById(
     "mensaje-mapas"
   );
+
+const contenedorDesempate =
+  document.getElementById(
+    "contenedor-desempate"
+  );
+
+const mensajeDesempate =
+  document.getElementById(
+    "mensaje-desempate"
+  );
 /* =========================
    ESCAPAR TEXTO
 ========================= */
@@ -570,6 +580,248 @@ function actualizarTarjetasMapas() {
     );
   });
 }
+
+/* =========================
+   MODOS DE DESEMPATE DISPONIBLES
+========================= */
+
+function obtenerModosDesempateDisponibles() {
+  return modosFinal.filter(
+    (modo) =>
+      modo.habilitadoParaDesempate &&
+      !respuestas.modosDescartados.includes(
+        modo.id
+      )
+  );
+}
+
+/* =========================
+   RENDERIZAR DESEMPATE
+========================= */
+
+function renderizarDesempate() {
+  if (!contenedorDesempate) {
+    return;
+  }
+
+  const modosDisponibles =
+    obtenerModosDesempateDisponibles();
+
+  /*
+    Si el modo elegido ya no está disponible,
+    se limpia junto con su mapa.
+  */
+
+  const modoActualSigueDisponible =
+    modosDisponibles.some(
+      (modo) =>
+        modo.id ===
+        respuestas.desempate.modo
+    );
+
+  if (!modoActualSigueDisponible) {
+    respuestas.desempate.modo = "";
+    respuestas.desempate.mapa = "";
+  }
+
+  /*
+    Si no queda ningún modo posible,
+    no hace falta elegir desempate.
+  */
+
+  if (modosDisponibles.length === 0) {
+    contenedorDesempate.innerHTML = `
+      <div class="sin-desempate">
+
+        <span class="sin-desempate-icono">
+          ⚠️
+        </span>
+
+        <h3>
+          No hay modos de desempate disponibles
+        </h3>
+
+        <p>
+          Atrapagemas, Noqueo y Caza Estelar
+          fueron descartados.
+        </p>
+
+        <p>
+          Este paso será omitido automáticamente.
+        </p>
+
+      </div>
+    `;
+
+    mensajeDesempate.textContent =
+      "✅ No es necesario elegir desempate.";
+
+    mensajeDesempate.className =
+      "mensaje-paso mensaje-exito";
+
+    return;
+  }
+
+  const modoElegido =
+    modosDisponibles.find(
+      (modo) =>
+        modo.id ===
+        respuestas.desempate.modo
+    );
+
+  contenedorDesempate.innerHTML = `
+    <section class="bloque-desempate">
+
+      <h3 class="subtitulo-desempate">
+        Elegí el modo de desempate
+      </h3>
+
+      <div class="opciones-desempate-modo">
+
+        ${modosDisponibles.map((modo) => `
+          <label
+            class="desempate-modo-card ${
+              respuestas.desempate.modo === modo.id
+                ? "seleccionado"
+                : ""
+            }"
+          >
+
+            <input
+              type="radio"
+              name="modo-desempate"
+              value="${escaparHTML(modo.id)}"
+              ${
+                respuestas.desempate.modo === modo.id
+                  ? "checked"
+                  : ""
+              }
+            >
+
+            <span class="desempate-icono">
+              ${escaparHTML(modo.icono)}
+            </span>
+
+            <span class="desempate-nombre">
+              ${escaparHTML(modo.nombre)}
+            </span>
+
+          </label>
+        `).join("")}
+
+      </div>
+
+    </section>
+
+    ${
+      modoElegido
+        ? `
+          <section class="bloque-desempate">
+
+            <h3 class="subtitulo-desempate">
+              Elegí el mapa de desempate
+            </h3>
+
+            <div class="opciones-desempate-mapa">
+
+              ${
+                (
+                  mapasPorModo[
+                    modoElegido.id
+                  ] || []
+                ).map((mapa) => `
+                  <label
+                    class="desempate-mapa-card ${
+                      respuestas.desempate.mapa === mapa
+                        ? "seleccionado"
+                        : ""
+                    }"
+                  >
+
+                    <input
+                      type="radio"
+                      name="mapa-desempate"
+                      value="${escaparHTML(mapa)}"
+                      ${
+                        respuestas.desempate.mapa === mapa
+                          ? "checked"
+                          : ""
+                      }
+                    >
+
+                    <span>
+                      ${escaparHTML(mapa)}
+                    </span>
+
+                  </label>
+                `).join("")
+              }
+
+            </div>
+
+          </section>
+        `
+        : `
+          <div class="aviso-elegir-modo">
+            Elegí primero un modo para ver sus mapas.
+          </div>
+        `
+    }
+  `;
+
+  activarEventosDesempate();
+}
+
+/* =========================
+   EVENTOS DE DESEMPATE
+========================= */
+
+function activarEventosDesempate() {
+  const radiosModo =
+    contenedorDesempate.querySelectorAll(
+      'input[name="modo-desempate"]'
+    );
+
+  radiosModo.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        respuestas.desempate.modo =
+          radio.value;
+
+        /*
+          Al cambiar de modo, se limpia
+          el mapa anterior.
+        */
+
+        respuestas.desempate.mapa = "";
+
+        mensajeDesempate.textContent = "";
+
+        renderizarDesempate();
+      }
+    );
+  });
+
+  const radiosMapa =
+    contenedorDesempate.querySelectorAll(
+      'input[name="mapa-desempate"]'
+    );
+
+  radiosMapa.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        respuestas.desempate.mapa =
+          radio.value;
+
+        mensajeDesempate.textContent = "";
+
+        renderizarDesempate();
+      }
+    );
+  });
+}
 /* =========================
    VALIDAR PASO ACTUAL
 ========================= */
@@ -659,6 +911,47 @@ if (pasoActual === 2) {
   mensajeMapas.className =
     "mensaje-paso mensaje-exito";
 }
+
+/*
+  PASO 3:
+  Elegir modo y mapa de desempate
+  solo si queda algún modo disponible.
+*/
+
+if (pasoActual === 3) {
+  const modosDesempate =
+    obtenerModosDesempateDisponibles();
+
+  if (modosDesempate.length === 0) {
+    return true;
+  }
+
+  if (!respuestas.desempate.modo) {
+    mensajeDesempate.textContent =
+      "Elegí un modo de desempate.";
+
+    mensajeDesempate.className =
+      "mensaje-paso mensaje-error";
+
+    return false;
+  }
+
+  if (!respuestas.desempate.mapa) {
+    mensajeDesempate.textContent =
+      "Elegí un mapa para el desempate.";
+
+    mensajeDesempate.className =
+      "mensaje-paso mensaje-error";
+
+    return false;
+  }
+
+  mensajeDesempate.textContent =
+    "✅ Desempate configurado correctamente.";
+
+  mensajeDesempate.className =
+    "mensaje-paso mensaje-exito";
+}
   
   return true;
 }
@@ -710,6 +1003,10 @@ function actualizarPaso() {
 
  if (pasoActual === 2) {
   renderizarMapas();
+}
+
+if (pasoActual === 3) {
+  renderizarDesempate();
 }
   
   window.scrollTo({
