@@ -1169,15 +1169,14 @@ function actualizarPaso() {
 if (pasoActual === 3) {
   renderizarDesempate();
 }
-  
+
+  if (pasoActual === 4) {
+  renderizarReglas();
+}
   window.scrollTo({
     top: 0,
     behavior: "smooth"
   });
-}
-
-if (pasoActual === 4) {
-  renderizarReglas();
 }
 /* =========================
    CAMBIAR PASOS
