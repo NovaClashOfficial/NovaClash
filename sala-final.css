@@ -1248,3 +1248,151 @@ button:disabled{
         grid-template-columns:1fr;
     }
 }
+
+/* ==========================================
+   PASO 6 - BRAWLERS GENERALES
+========================================== */
+
+.contenedor-brawlers-generales{
+    margin-top:25px;
+}
+
+.brawlers-generales-bloque{
+    padding:22px;
+
+    border:1px solid rgba(165,95,255,.28);
+    border-radius:17px;
+
+    background:rgba(255,255,255,.025);
+}
+
+.brawlers-generales-titulo{
+    color:#d8bdff;
+    font-size:18px;
+    text-align:center;
+}
+
+.brawlers-generales-descripcion{
+    max-width:650px;
+    margin:11px auto 0;
+
+    color:#c9c2d6;
+    font-size:13px;
+    line-height:1.6;
+    text-align:center;
+}
+
+.opciones-brawlers-generales{
+    display:grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:12px;
+    margin-top:20px;
+}
+
+.brawler-general-opcion{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:58px;
+    padding:13px;
+
+    border:2px solid rgba(255,255,255,.08);
+    border-radius:14px;
+
+    background:rgba(255,255,255,.035);
+
+    color:#ece6f6;
+    font-size:12px;
+    font-weight:900;
+    text-align:center;
+
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.brawler-general-opcion:hover{
+    border-color:#8ddfff;
+    background:rgba(0,190,255,.08);
+}
+
+.brawler-general-opcion input{
+    display:none;
+}
+
+.brawler-general-opcion.seleccionado{
+    border-color:#74dcff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #086b98,
+            #00a6dc
+        );
+
+    color:white;
+
+    box-shadow:
+        0 0 18px rgba(0,190,255,.32);
+}
+
+.campo-brawlers-escritos,
+.campo-recomendacion-general{
+    margin-top:20px;
+}
+
+.campo-brawlers-escritos label,
+.campo-recomendacion-general label{
+    display:block;
+    margin-bottom:9px;
+
+    color:#d8bdff;
+    font-size:13px;
+    font-weight:900;
+}
+
+.campo-brawlers-escritos textarea,
+.campo-recomendacion-general textarea{
+    width:100%;
+    resize:vertical;
+
+    padding:14px;
+
+    border:2px solid rgba(160,90,255,.28);
+    border-radius:13px;
+    outline:none;
+
+    background:#17132c;
+    color:white;
+
+    font-family:'Orbitron',sans-serif;
+    font-size:12px;
+    line-height:1.6;
+
+    transition:.2s ease;
+}
+
+.campo-brawlers-escritos textarea:focus,
+.campo-recomendacion-general textarea:focus{
+    border-color:#9f65ff;
+
+    box-shadow:
+        0 0 18px rgba(150,80,255,.25);
+}
+
+.campo-brawlers-escritos small{
+    display:block;
+    margin-top:7px;
+
+    color:#8f899f;
+    font-size:10px;
+}
+
+@media(max-width:650px){
+
+    .opciones-brawlers-generales{
+        grid-template-columns:1fr;
+    }
+}
