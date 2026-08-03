@@ -177,6 +177,15 @@ const mensajeBrawlersGenerales =
   document.getElementById(
     "mensaje-brawlers-generales"
   );
+const contenedorEncuesta =
+  document.getElementById(
+    "contenedor-encuesta"
+  );
+
+const mensajeEncuesta =
+  document.getElementById(
+    "mensaje-encuesta"
+  );
 /* =========================
    ESCAPAR TEXTO
 ========================= */
@@ -1434,6 +1443,258 @@ function activarEventosBrawlersGenerales() {
   }
 }
 /* =========================
+   RENDERIZAR ENCUESTA
+========================= */
+
+function renderizarEncuesta() {
+  if (!contenedorEncuesta) {
+    return;
+  }
+
+  contenedorEncuesta.innerHTML =
+    preguntasEncuesta.map((pregunta) => {
+      const respuesta =
+        respuestas.encuesta[pregunta.id];
+
+      if (pregunta.tipo === "texto") {
+        return `
+          <section
+            class="encuesta-bloque"
+            data-pregunta="${escaparHTML(
+              pregunta.id
+            )}"
+          >
+
+            <h3 class="encuesta-pregunta">
+              ${escaparHTML(
+                pregunta.pregunta
+              )}
+            </h3>
+
+            <textarea
+              class="encuesta-textarea"
+              data-encuesta-texto="${escaparHTML(
+                pregunta.id
+              )}"
+              rows="5"
+              maxlength="600"
+              placeholder="${escaparHTML(
+                pregunta.placeholder || ""
+              )}"
+            >${escaparHTML(
+              respuesta || ""
+            )}</textarea>
+
+            <span class="contador-texto">
+              <span
+                data-contador-texto="${escaparHTML(
+                  pregunta.id
+                )}"
+              >
+                ${String(
+                  respuesta || ""
+                ).length}
+              </span>
+              / 600
+            </span>
+
+          </section>
+        `;
+      }
+
+      if (pregunta.tipo === "estrellas") {
+        return `
+          <section
+            class="encuesta-bloque"
+            data-pregunta="${escaparHTML(
+              pregunta.id
+            )}"
+          >
+
+            <h3 class="encuesta-pregunta">
+              ${escaparHTML(
+                pregunta.pregunta
+              )}
+            </h3>
+
+            <div class="estrellas-encuesta">
+
+              ${pregunta.opciones.map(
+                (numero) => `
+                  <label
+                    class="estrella-card ${
+                      Number(respuesta) >= numero
+                        ? "seleccionada"
+                        : ""
+                    }"
+                  >
+
+                    <input
+                      type="radio"
+                      name="encuesta-${escaparHTML(
+                        pregunta.id
+                      )}"
+                      value="${numero}"
+                      ${
+                        Number(respuesta) === numero
+                          ? "checked"
+                          : ""
+                      }
+                    >
+
+                    <span>★</span>
+
+                  </label>
+                `
+              ).join("")}
+
+            </div>
+
+            <p class="texto-estrellas">
+              ${
+                respuesta
+                  ? `${respuesta} de 5 estrellas`
+                  : "Todavía no calificaste"
+              }
+            </p>
+
+          </section>
+        `;
+      }
+
+      if (pregunta.tipo === "opciones") {
+        return `
+          <section
+            class="encuesta-bloque"
+            data-pregunta="${escaparHTML(
+              pregunta.id
+            )}"
+          >
+
+            <h3 class="encuesta-pregunta">
+              ${escaparHTML(
+                pregunta.pregunta
+              )}
+            </h3>
+
+            <div class="encuesta-opciones">
+
+              ${pregunta.opciones.map(
+                (opcion) => `
+                  <label
+                    class="encuesta-opcion-card ${
+                      respuesta === opcion.valor
+                        ? "seleccionado"
+                        : ""
+                    }"
+                  >
+
+                    <input
+                      type="radio"
+                      name="encuesta-${escaparHTML(
+                        pregunta.id
+                      )}"
+                      value="${escaparHTML(
+                        opcion.valor
+                      )}"
+                      ${
+                        respuesta === opcion.valor
+                          ? "checked"
+                          : ""
+                      }
+                    >
+
+                    <span>
+                      ${escaparHTML(
+                        opcion.texto
+                      )}
+                    </span>
+
+                  </label>
+                `
+              ).join("")}
+
+            </div>
+
+          </section>
+        `;
+      }
+
+      return "";
+    }).join("");
+
+  activarEventosEncuesta();
+}
+
+/* =========================
+   EVENTOS DE ENCUESTA
+========================= */
+
+function activarEventosEncuesta() {
+  const camposTexto =
+    contenedorEncuesta.querySelectorAll(
+      "[data-encuesta-texto]"
+    );
+
+  camposTexto.forEach((campo) => {
+    campo.addEventListener(
+      "input",
+      () => {
+        const preguntaId =
+          campo.dataset.encuestaTexto;
+
+        respuestas.encuesta[preguntaId] =
+          campo.value;
+
+        const contador =
+          contenedorEncuesta.querySelector(
+            `[data-contador-texto="${preguntaId}"]`
+          );
+
+        if (contador) {
+          contador.textContent =
+            campo.value.length;
+        }
+
+        mensajeEncuesta.textContent = "";
+      }
+    );
+  });
+
+  const radios =
+    contenedorEncuesta.querySelectorAll(
+      '.encuesta-bloque input[type="radio"]'
+    );
+
+  radios.forEach((radio) => {
+    radio.addEventListener(
+      "change",
+      () => {
+        const preguntaId =
+          radio.name.replace(
+            "encuesta-",
+            ""
+          );
+
+        const pregunta =
+          preguntasEncuesta.find(
+            (item) =>
+              item.id === preguntaId
+          );
+
+        respuestas.encuesta[preguntaId] =
+          pregunta?.tipo === "estrellas"
+            ? Number(radio.value)
+            : radio.value;
+
+        mensajeEncuesta.textContent = "";
+
+        renderizarEncuesta();
+      }
+    );
+  });
+}
+/* =========================
    VALIDAR PASO ACTUAL
 ========================= */
 
@@ -1694,6 +1955,60 @@ if (pasoActual === 6) {
   mensajeBrawlersGenerales.className =
     "mensaje-paso mensaje-exito";
 }
+  /*
+  PASO 7:
+  Encuesta final.
+*/
+
+if (pasoActual === 7) {
+  const preguntaSinRespuesta =
+    preguntasEncuesta.find(
+      (pregunta) => {
+        const respuesta =
+          respuestas.encuesta[
+            pregunta.id
+          ];
+
+        if (pregunta.tipo === "texto") {
+          return !String(
+            respuesta || ""
+          ).trim();
+        }
+
+        return (
+          respuesta === undefined ||
+          respuesta === null ||
+          respuesta === ""
+        );
+      }
+    );
+
+  if (preguntaSinRespuesta) {
+    mensajeEncuesta.textContent =
+      "Respondé todas las preguntas antes de continuar.";
+
+    mensajeEncuesta.className =
+      "mensaje-paso mensaje-error";
+
+    const bloque =
+      contenedorEncuesta.querySelector(
+        `[data-pregunta="${preguntaSinRespuesta.id}"]`
+      );
+
+    bloque?.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    return false;
+  }
+
+  mensajeEncuesta.textContent =
+    "✅ Encuesta completada. Ya podés ver el resumen.";
+
+  mensajeEncuesta.className =
+    "mensaje-paso mensaje-exito";
+}
   return true;
 }
 
@@ -1759,6 +2074,9 @@ if (pasoActual === 3) {
 }
   if (pasoActual === 6) {
   renderizarBrawlersGenerales();
+}
+  if (pasoActual === 7) {
+  renderizarEncuesta();
 }
   window.scrollTo({
     top: 0,
