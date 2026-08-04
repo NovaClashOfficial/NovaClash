@@ -495,11 +495,6 @@ window.addEventListener(
             </article>
           `
         );
-
-        actualizarRondasVisibles(
-          numeroPartido,
-          ""
-        );
       }
     );
 
