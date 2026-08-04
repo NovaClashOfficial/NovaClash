@@ -8,38 +8,38 @@
 ===================================================== */
 
 export const jugadoresFinalistas = {
-  "BC-CODIGO-1": {
-    nombre: "Jugador Black Cat 1",
+  "BC-J908O": {
+    nombre: "Jairo",
     equipo: "Black Cat",
     equipoId: "black-cat"
   },
 
-  "BC-CODIGO-2": {
-    nombre: "Jugador Black Cat 2",
+  "BC-A908X": {
+    nombre: "Alex",
     equipo: "Black Cat",
     equipoId: "black-cat"
   },
 
-  "BC-CODIGO-3": {
-    nombre: "Jugador Black Cat 3",
+  "BC-D908N": {
+    nombre: "Dairen",
     equipo: "Black Cat",
     equipoId: "black-cat"
   },
 
-  "C8-CODIGO-1": {
-    nombre: "Jugador Community 8 1",
+  "C8-R90919G": {
+    nombre: "Nestor",
     equipo: "Community 8",
     equipoId: "community-8"
   },
 
-  "C8-CODIGO-2": {
-    nombre: "Jugador Community 8 2",
+  "C8-K90819O": {
+    nombre: "Kyro",
     equipo: "Community 8",
     equipoId: "community-8"
   },
 
-  "C8-CODIGO-3": {
-    nombre: "Jugador Community 8 3",
+  "C8-J90919O": {
+    nombre: "Jaramillo",
     equipo: "Community 8",
     equipoId: "community-8"
   }
@@ -119,83 +119,83 @@ export const modosFinal = [
 
 export const mapasPorModo = {
   atrapagemas: [
-    "Mapa Atrapagemas 1",
-    "Mapa Atrapagemas 2",
-    "Mapa Atrapagemas 3",
-    "Mapa Atrapagemas 4",
-    "Mapa Atrapagemas 5",
-    "Mapa Atrapagemas 6",
-    "Mapa Atrapagemas 7"
+    "Mina Rocosa",
+    "Doble Swoosh",
+    "Fuerte de Gemas",
+    "Arcade de Cristal",
+    "Socavar",
+    "Trampa Mortal",
+    "Angulo Agudo"
   ],
 
   "balon-brawl": [
-    "Mapa Balón Brawl 1",
-    "Mapa Balón Brawl 2",
-    "Mapa Balón Brawl 3",
-    "Mapa Balón Brawl 4",
-    "Mapa Balón Brawl 5",
-    "Mapa Balón Brawl 6",
-    "Mapa Balón Brawl 7"
+    "Pinball",
+    "Escenario Central",
+    "Playa Super",
+    "Campos Ocultos",
+    "Triple Regate",
+    "Patio Trasero",
+    "Sueños de Pinball"
   ],
 
   atraco: [
-    "Mapa Atraco 1",
-    "Mapa Atraco 2",
-    "Mapa Atraco 3",
-    "Mapa Atraco 4",
-    "Mapa Atraco 5",
-    "Mapa Atraco 6",
-    "Mapa Atraco 7"
+    "Zona Segura",
+    "Puente Demaciado Lejos",
+    "Para en Boxes",
+    "Cañon Kaboom",
+    "Patata Caliente",
+    "Fiebre de la Caja Fuerte",
+    "Fiebre Fotonica"
   ],
 
   "zona-restringida": [
-    "Mapa Zona Restringida 1",
-    "Mapa Zona Restringida 2",
-    "Mapa Zona Restringida 3",
-    "Mapa Zona Restringida 4",
-    "Mapa Zona Restringida 5",
-    "Mapa Zona Restringida 6",
-    "Mapa Zona Restringida 7"
+    "Anillo de Fuego",
+    "Escarabajos Duelistas",
+    "Zona Abierta",
+    "Division",
+    "Negocio Abierto",
+    "Abra Cadabra",
+    "Trampa para Osos"
   ],
 
   noqueo: [
-    "Mapa Noqueo 1",
-    "Mapa Noqueo 2",
-    "Mapa Noqueo 3",
-    "Mapa Noqueo 4",
-    "Mapa Noqueo 5",
-    "Mapa Noqueo 6",
-    "Mapa Noqueo 7"
+    "Roca de Belle",
+    "Barranco Goldarm",
+    "Al aire Libre",
+    "Doble Piso",
+    "Entre los Rios",
+    "Nuevo Horizonte",
+    "Cactus Corridor"
   ],
 
   "caza-estelar": [
-    "Mapa Caza Estelar 1",
-    "Mapa Caza Estelar 2",
-    "Mapa Caza Estelar 3",
-    "Mapa Caza Estelar 4",
-    "Mapa Caza Estelar 5",
-    "Mapa Caza Estelar 6",
-    "Mapa Caza Estelar 7"
+    "Tiroteo Estelar",
+    "Pastel por Capas",
+    "Escondite",
+    "Canal Grande",
+    "Temporada Seca",
+    "Pradera de Serpientes",
+    "Tiro al blanco"
   ],
 
   "hockey-brawl": [
-    "Mapa Hockey Brawl 1",
-    "Mapa Hockey Brawl 2",
-    "Mapa Hockey Brawl 3",
-    "Mapa Hockey Brawl 4",
-    "Mapa Hockey Brawl 5",
-    "Mapa Hockey Brawl 6",
-    "Mapa Hockey Brawl 7"
+    "Super Centro",
+    "Fiebre de Cabaña",
+    "Nullscapes",
+    "Arabesco",
+    "Centro Helado",
+    "Pase Helado",
+    "Pista Congelada"
   ],
 
   brawloncesto: [
-    "Mapa Brawloncesto 1",
-    "Mapa Brawloncesto 2",
-    "Mapa Brawloncesto 3",
-    "Mapa Brawloncesto 4",
-    "Mapa Brawloncesto 5",
-    "Mapa Brawloncesto 6",
-    "Mapa Brawloncesto 7"
+    "Alley Oop",
+    "Triple Doble",
+    "Ball Hog",
+    "Rebote Rapido",
+    "Salto Inicial",
+    "Tiro Ganador",
+    "Canasta Central"
   ]
 };
 
