@@ -8,9 +8,9 @@ export const finalistas = [
       nombre: "Black Cat",
 
       jugadores: [
-        "Jugador Black Cat 1",
-        "Jugador Black Cat 2",
-        "Jugador Black Cat 3"
+        "DS-Jairo",
+        "CE-Leopard",
+        "CE-Demi"
       ]
     },
 
@@ -18,9 +18,9 @@ export const finalistas = [
       nombre: "Community 8",
 
       jugadores: [
-        "Jugador Community 8 1",
-        "Jugador Community 8 2",
-        "Jugador Community 8 3"
+        "oneKyro",
+        "RNG NestDeadSol",
+        "C8 Moyita"
       ]
     }
   ]
