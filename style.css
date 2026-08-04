@@ -727,3 +727,101 @@ button:disabled{
         font-size:12px;
     }
 }
+
+/* ==========================================
+   CONTADOR GRAN FINAL
+========================================== */
+
+.contador-final{
+    max-width:760px;
+    margin:24px auto 34px;
+    padding:22px;
+
+    border:1px solid rgba(255,210,70,.45);
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(42,28,67,.96),
+            rgba(15,13,29,.96)
+        );
+
+    box-shadow:
+        0 0 28px rgba(255,190,40,.14);
+
+    text-align:center;
+}
+
+.contador-etiqueta{
+    margin-bottom:17px;
+
+    color:#ffe588;
+    font-size:14px;
+    font-weight:900;
+    letter-spacing:1.5px;
+}
+
+.contador-unidades{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
+
+.contador-caja{
+    padding:15px 8px;
+
+    border:1px solid rgba(171,104,255,.35);
+    border-radius:14px;
+
+    background:rgba(255,255,255,.04);
+}
+
+.contador-caja strong{
+    display:block;
+
+    color:#ffffff;
+    font-size:27px;
+
+    text-shadow:
+        0 0 14px rgba(172,93,255,.75);
+}
+
+.contador-caja span{
+    display:block;
+    margin-top:6px;
+
+    color:#bdb5cc;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.contador-fecha{
+    margin-top:17px;
+
+    color:#cbc3da;
+    font-size:12px;
+}
+
+.contador-final.cerrado{
+    border-color:rgba(255,75,75,.55);
+
+    box-shadow:
+        0 0 28px rgba(255,65,65,.15);
+}
+
+.contador-final.cerrado .contador-etiqueta{
+    color:#ff8585;
+}
+
+@media(max-width:600px){
+
+    .contador-unidades{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .contador-caja strong{
+        font-size:24px;
+    }
+}
