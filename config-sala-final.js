@@ -120,82 +120,82 @@ export const modosFinal = [
 export const mapasPorModo = {
   atrapagemas: [
     "Mina Rocosa",
-    "Doble Swoosh",
+    "Hiedra Venenosa",
     "Fuerte de Gemas",
     "Arcade de Cristal",
-    "Socavar",
-    "Trampa Mortal",
-    "Angulo Agudo"
+    "Brrrum Brrrum",
+    "Restaurantes Locales",
+    "Cueva Subterranea"
   ],
 
   "balon-brawl": [
     "Pinball",
-    "Escenario Central",
-    "Playa Super",
-    "Campos Ocultos",
-    "Triple Regate",
-    "Patio Trasero",
-    "Sueños de Pinball"
+    "Palco Central",
+    "SuperPlaya",
+    "Campos Furtivos",
+    "Campo de Hierva",
+    "Triple Drible",
+    "Estadio Brawl"
   ],
 
   atraco: [
-    "Zona Segura",
-    "Puente Demaciado Lejos",
-    "Para en Boxes",
-    "Cañon Kaboom",
+    "Cañon Explosivo",
+    "Refugio",
+    "Maldad Sin Fin",
+    "Aguas Turbulentas",
     "Patata Caliente",
-    "Fiebre de la Caja Fuerte",
-    "Fiebre Fotonica"
+    "Neumaticos Maniaticos",
+    "Caverna Angular"
   ],
 
   "zona-restringida": [
-    "Anillo de Fuego",
-    "Escarabajos Duelistas",
+    "Campo Abierto",
+    "Duelo de Escarabajos",
     "Zona Abierta",
-    "Division",
-    "Negocio Abierto",
-    "Abra Cadabra",
-    "Trampa para Osos"
+    "Pista Ardiente",
+    "Al Limite",
+    "Abracadabra",
+    "Estrategias Paralelas"
   ],
 
   noqueo: [
     "Roca de Belle",
-    "Barranco Goldarm",
-    "Al aire Libre",
-    "Doble Piso",
-    "Entre los Rios",
-    "Nuevo Horizonte",
-    "Cactus Corridor"
+    "Barranco del B.de oro",
+    "Fenix en Llamas",
+    "Hasta el fondo",
+    "A la interperie",
+    "Nuevo Horizontes",
+    "Konnakol"
   ],
 
   "caza-estelar": [
     "Tiroteo Estelar",
-    "Pastel por Capas",
+    "Sequia Sanguinaria",
     "Escondite",
-    "Canal Grande",
-    "Temporada Seca",
-    "Pradera de Serpientes",
-    "Tiro al blanco"
+    "Ninguna Excusa",
+    "Crimen Organizado",
+    "Impacto Inminente",
+    "Sandias Frescas"
   ],
 
   "hockey-brawl": [
-    "Super Centro",
-    "Fiebre de Cabaña",
-    "Nullscapes",
-    "Arabesco",
-    "Centro Helado",
-    "Pase Helado",
-    "Pista Congelada"
+    "Reves Resbaladizo",
+    "Salto Sincronizado",
+    "Caja Confidencial",
+    "Hiperespacio",
+    "Centro congelado",
+    "Jugada Sigilosa",
+    "Arabesco"
   ],
 
   brawloncesto: [
     "Alley Oop",
-    "Triple Doble",
-    "Ball Hog",
-    "Rebote Rapido",
-    "Salto Inicial",
-    "Tiro Ganador",
-    "Canasta Central"
+    "Tres Botes",
+    "Acaparador",
+    "Pase",
+    "Cambio",
+    "Pase de Vuelta",
+    "Hundida"
   ]
 };
 
