@@ -1,4 +1,4 @@
-console.log("PICK'EM SEMIFINALES V1");
+console.log("PICK'EM GRAN FINAL V1");
 
 import {
   collection,
@@ -10,9 +10,9 @@ import {
 import { db } from "./firebase.js";
 
 import {
-  semifinales,
-  marcadoresSemifinales,
-  rondasSemifinales
+  finalistas,
+  marcadoresFinal,
+  rondasFinal
 } from "./equipos.js";
 
 /* =========================
@@ -40,18 +40,27 @@ async function verificarEstadoPredicciones() {
       "predicciones"
     );
 
-    const snap = await getDoc(referencia);
+    const snap =
+      await getDoc(referencia);
 
     if (
       snap.exists() &&
       snap.data().abiertas === false
     ) {
-      document.getElementById("partidos").innerHTML = `
+      document.getElementById(
+        "partidos"
+      ).innerHTML = `
         <div class="predicciones-cerradas">
-          <h2>🔒 Las predicciones están cerradas</h2>
+
+          <h2>
+            🔒 Las predicciones están cerradas
+          </h2>
+
           <p>
-            Ya no se pueden enviar predicciones de Semifinales.
+            Ya no se pueden enviar predicciones
+            de la Gran Final.
           </p>
+
         </div>
       `;
 
@@ -59,7 +68,9 @@ async function verificarEstadoPredicciones() {
         document.getElementById("nombre");
 
       const boton =
-        document.getElementById("btn-enviar");
+        document.getElementById(
+          "btn-enviar"
+        );
 
       if (nombre) {
         nombre.style.display = "none";
@@ -80,17 +91,37 @@ async function verificarEstadoPredicciones() {
       error
     );
 
-    document.getElementById("partidos").innerHTML = `
+    document.getElementById(
+      "partidos"
+    ).innerHTML = `
       <div class="predicciones-cerradas">
+
         <h2>❌ Error</h2>
+
         <p>
-          No se pudo comprobar el estado de las predicciones.
+          No se pudo comprobar el estado
+          de las predicciones.
         </p>
+
       </div>
     `;
 
     return false;
   }
+}
+
+/* =========================
+   RONDAS SEGÚN MARCADOR
+========================= */
+
+function cantidadRondasJugadas(marcador) {
+  const cantidades = {
+    "3-0": 3,
+    "3-1": 4,
+    "3-2": 5
+  };
+
+  return cantidades[marcador] || 0;
 }
 
 /* =========================
@@ -111,21 +142,23 @@ function crearGrupoEstelar(
 
       <div class="estelar-jugadores">
 
-        ${equipo.jugadores.map((jugador) => `
-          <label class="estelar-card">
+        ${equipo.jugadores.map(
+          (jugador) => `
+            <label class="estelar-card">
 
-            <input
-              type="radio"
-              name="estelar-${numeroPartido}-${rondaId}"
-              value="${escaparHTML(jugador)}"
-            >
+              <input
+                type="radio"
+                name="estelar-${numeroPartido}-${rondaId}"
+                value="${escaparHTML(jugador)}"
+              >
 
-            <span>
-              ${escaparHTML(jugador)}
-            </span>
+              <span>
+                ${escaparHTML(jugador)}
+              </span>
 
-          </label>
-        `).join("")}
+            </label>
+          `
+        ).join("")}
 
       </div>
 
@@ -167,58 +200,147 @@ function crearRondas(
   equipo1,
   equipo2
 ) {
-  return rondasSemifinales.map((ronda) => `
-    <section
-      class="ronda-prediccion ${
-        ronda.desempate
-          ? "ronda-desempate"
-          : ""
-      }"
-    >
+  return rondasFinal.map(
+    (ronda, indice) => `
+      <section
+        class="
+          ronda-prediccion
+          ronda-final
+          ${
+            ronda.desempate
+              ? "ronda-desempate"
+              : ""
+          }
+        "
+        data-numero-ronda="${indice + 1}"
+      >
 
-      <div class="ronda-encabezado">
+        <div class="ronda-encabezado">
 
-        <h3>
-          ${escaparHTML(ronda.nombre)}
-        </h3>
+          <h3>
+            ${escaparHTML(ronda.nombre)}
+          </h3>
 
-        ${
-          ronda.desempate
-            ? `
-              <span class="ronda-sin-puntos">
-                Se puntúa solo si se juega
-              </span>
-            `
-            : `
-              <span class="ronda-puntos">
-                +1 punto
-              </span>
-            `
-        }
+          ${
+            ronda.desempate
+              ? `
+                <span class="ronda-sin-puntos">
+                  Solo si el marcador es 3-2
+                </span>
+              `
+              : `
+                <span class="ronda-puntos">
+                  +2 puntos
+                </span>
+              `
+          }
 
-      </div>
+        </div>
 
-      <p class="opcion-titulo">
-        ⭐ Elegí al jugador estelar
-      </p>
+        <p class="opcion-titulo">
+          ⭐ Elegí al jugador estelar
+        </p>
 
-      <div class="estelar-opciones">
+        <div class="estelar-opciones">
 
-        ${crearOpcionesEstelar(
-          numeroPartido,
-          ronda.id,
-          equipo1,
-          equipo2
-        )}
+          ${crearOpcionesEstelar(
+            numeroPartido,
+            ronda.id,
+            equipo1,
+            equipo2
+          )}
 
-      </div>
+        </div>
 
-    </section>
-  `).join("");
+      </section>
+    `
+  ).join("");
 }
 
 /* =========================
-   CARGAR SEMIFINALES
+   ACTUALIZAR RONDAS VISIBLES
+========================= */
+
+function actualizarRondasVisibles(
+  numeroPartido,
+  marcador
+) {
+  const cantidad =
+    cantidadRondasJugadas(marcador);
+
+  const partido =
+    document.querySelector(
+      `[data-partido="${numeroPartido}"]`
+    );
+
+  if (!partido) {
+    return;
+  }
+
+  const rondas =
+    partido.querySelectorAll(
+      ".ronda-final"
+    );
+
+  rondas.forEach((ronda) => {
+    const numeroRonda =
+      Number(
+        ronda.dataset.numeroRonda
+      );
+
+    const visible =
+      numeroRonda <= cantidad;
+
+    ronda.classList.toggle(
+      "ronda-oculta",
+      !visible
+    );
+
+    if (!visible) {
+      ronda
+        .querySelectorAll(
+          'input[type="radio"]'
+        )
+        .forEach((radio) => {
+          radio.checked = false;
+        });
+    }
+  });
+}
+
+/* =========================
+   ACTIVAR EVENTOS DE MARCADOR
+========================= */
+
+function activarEventosMarcador() {
+  const opciones =
+    document.querySelectorAll(
+      'input[name^="resultado-"]'
+    );
+
+  opciones.forEach((opcion) => {
+    opcion.addEventListener(
+      "change",
+      () => {
+        const numeroPartido =
+          Number(
+            opcion.name.replace(
+              "resultado-",
+              ""
+            )
+          );
+
+        actualizarRondasVisibles(
+          numeroPartido,
+          opcion.value
+        );
+      }
+    );
+  });
+}
+
+/* =========================
+   CARGAR GRAN FINAL
 ========================= */
 
 window.addEventListener(
@@ -227,115 +349,161 @@ window.addEventListener(
     const abiertas =
       await verificarEstadoPredicciones();
 
-    if (!abiertas) return;
+    if (!abiertas) {
+      return;
+    }
 
     const contenedor =
-      document.getElementById("partidos");
+      document.getElementById(
+        "partidos"
+      );
 
     contenedor.innerHTML = "";
 
-    semifinales.forEach((partido, indice) => {
-      const numeroPartido = indice + 1;
+    finalistas.forEach(
+      (partido, indice) => {
+        const numeroPartido =
+          indice + 1;
 
-      const equipo1 = partido[0];
-      const equipo2 = partido[1];
+        const equipo1 =
+          partido[0];
 
-      contenedor.insertAdjacentHTML(
-        "beforeend",
-        `
-          <article
-            class="partido partido-semifinal"
-            data-partido="${numeroPartido}"
-          >
+        const equipo2 =
+          partido[1];
 
-            <h2 class="partido-titulo">
-              🔥 SEMIFINAL — PARTIDO ${numeroPartido}
-            </h2>
+        contenedor.insertAdjacentHTML(
+          "beforeend",
+          `
+            <article
+              class="
+                partido
+                partido-final
+              "
+              data-partido="${numeroPartido}"
+            >
 
-            <p class="opcion-titulo">
-              Elegí al ganador del cruce
-            </p>
-
-            <div class="seleccion-equipos">
-
-              <label class="team-card">
-
-                <input
-                  type="radio"
-                  name="ganador-${numeroPartido}"
-                  value="${escaparHTML(equipo1.nombre)}"
-                >
-
-                <span class="team-card-nombre">
-                  ${escaparHTML(equipo1.nombre)}
-                </span>
-
-              </label>
-
-              <div class="vs">
-                VS
+              <div class="final-corona">
+                👑
               </div>
 
-              <label class="team-card">
+              <h2 class="partido-titulo final-titulo">
+                🏆 GRAN FINAL
+              </h2>
 
-                <input
-                  type="radio"
-                  name="ganador-${numeroPartido}"
-                  value="${escaparHTML(equipo2.nombre)}"
-                >
-
-                <span class="team-card-nombre">
-                  ${escaparHTML(equipo2.nombre)}
-                </span>
-
-              </label>
-
-            </div>
-
-            <div class="resultado-contenedor">
-
-              <p class="opcion-titulo">
-                🎯 Marcador final
+              <p class="final-enfrentamiento">
+                ${escaparHTML(equipo1.nombre)}
+                <span>VS</span>
+                ${escaparHTML(equipo2.nombre)}
               </p>
 
-              <div class="resultado-opciones">
+              <div class="final-puntuacion">
 
-                ${marcadoresSemifinales.map(
-                  (marcador) => `
-                    <label class="score-card">
+                <span>
+                  Ganador: +10
+                </span>
 
-                      <input
-                        type="radio"
-                        name="resultado-${numeroPartido}"
-                        value="${escaparHTML(marcador)}"
-                      >
+                <span>
+                  Marcador: +5
+                </span>
 
-                      <span>
-                        ${escaparHTML(marcador)}
-                      </span>
-
-                    </label>
-                  `
-                ).join("")}
+                <span>
+                  Cada estelar: +2
+                </span>
 
               </div>
 
-            </div>
+              <p class="opcion-titulo">
+                Elegí al campeón de Nova Clash
+              </p>
 
-            <div class="rondas-contenedor">
+              <div class="seleccion-equipos">
 
-              ${crearRondas(
-                numeroPartido,
-                equipo1,
-                equipo2
-              )}
+                <label class="team-card team-final">
 
-            </div>
+                  <input
+                    type="radio"
+                    name="ganador-${numeroPartido}"
+                    value="${escaparHTML(equipo1.nombre)}"
+                  >
 
-          </article>
-        `
-      );
-    });
+                  <span class="team-card-nombre">
+                    ${escaparHTML(equipo1.nombre)}
+                  </span>
+
+                </label>
+
+                <div class="vs">
+                  VS
+                </div>
+
+                <label class="team-card team-final">
+
+                  <input
+                    type="radio"
+                    name="ganador-${numeroPartido}"
+                    value="${escaparHTML(equipo2.nombre)}"
+                  >
+
+                  <span class="team-card-nombre">
+                    ${escaparHTML(equipo2.nombre)}
+                  </span>
+
+                </label>
+
+              </div>
+
+              <div class="resultado-contenedor">
+
+                <p class="opcion-titulo">
+                  🎯 Marcador final
+                </p>
+
+                <div class="resultado-opciones">
+
+                  ${marcadoresFinal.map(
+                    (marcador) => `
+                      <label class="score-card score-final">
+
+                        <input
+                          type="radio"
+                          name="resultado-${numeroPartido}"
+                          value="${escaparHTML(marcador)}"
+                        >
+
+                        <span>
+                          ${escaparHTML(marcador)}
+                        </span>
+
+                      </label>
+                    `
+                  ).join("")}
+
+                </div>
+
+              </div>
+
+              <div class="rondas-contenedor">
+
+                ${crearRondas(
+                  numeroPartido,
+                  equipo1,
+                  equipo2
+                )}
+
+              </div>
+
+            </article>
+          `
+        );
+
+        actualizarRondasVisibles(
+          numeroPartido,
+          ""
+        );
+      }
+    );
+
+    activarEventosMarcador();
   }
 );
 
@@ -343,10 +511,12 @@ window.addEventListener(
    MOSTRAR ERROR
 ========================= */
 
-function mostrarPartidoConError(indice) {
+function mostrarPartidoConError(
+  indice
+) {
   const tarjetas =
     document.querySelectorAll(
-      ".partido-semifinal"
+      ".partido-final"
     );
 
   tarjetas[indice]?.scrollIntoView({
@@ -384,16 +554,22 @@ function leerEstelar(
 
 async function enviarPredicciones() {
   const inputNombre =
-    document.getElementById("nombre");
+    document.getElementById(
+      "nombre"
+    );
 
   const botonEnviar =
-    document.getElementById("btn-enviar");
+    document.getElementById(
+      "btn-enviar"
+    );
 
   const nombre =
     inputNombre.value.trim();
 
   if (!nombre) {
-    alert("Escribí tu nombre o Nick.");
+    alert(
+      "Escribí tu nombre o Nick."
+    );
 
     inputNombre.focus();
 
@@ -404,19 +580,22 @@ async function enviarPredicciones() {
     nombre,
 
     fecha:
-      new Date().toLocaleString("es-AR"),
+      new Date().toLocaleString(
+        "es-AR"
+      ),
 
-    fase: "semifinales",
+    fase: "final",
 
     predicciones: []
   };
 
   for (
     let indice = 0;
-    indice < semifinales.length;
+    indice < finalistas.length;
     indice++
   ) {
-    const numeroPartido = indice + 1;
+    const numeroPartido =
+      indice + 1;
 
     const ganador =
       document.querySelector(
@@ -430,27 +609,45 @@ async function enviarPredicciones() {
 
     if (!ganador) {
       alert(
-        `Elegí al ganador del Partido ${numeroPartido}.`
+        "Elegí al campeón de Nova Clash."
       );
 
-      mostrarPartidoConError(indice);
+      mostrarPartidoConError(
+        indice
+      );
 
       return;
     }
 
     if (!resultado) {
       alert(
-        `Elegí el marcador del Partido ${numeroPartido}.`
+        "Elegí el marcador de la Gran Final."
       );
 
-      mostrarPartidoConError(indice);
+      mostrarPartidoConError(
+        indice
+      );
 
       return;
     }
 
+    const rondasJugadas =
+      cantidadRondasJugadas(
+        resultado.value
+      );
+
     const rondas = {};
 
-    for (const ronda of rondasSemifinales) {
+    for (
+      let numeroRonda = 1;
+      numeroRonda <= rondasJugadas;
+      numeroRonda++
+    ) {
+      const ronda =
+        rondasFinal[
+          numeroRonda - 1
+        ];
+
       const estelar =
         leerEstelar(
           numeroPartido,
@@ -459,10 +656,12 @@ async function enviarPredicciones() {
 
       if (!estelar) {
         alert(
-          `Elegí el estelar de ${ronda.nombre} en el Partido ${numeroPartido}.`
+          `Elegí el estelar de ${ronda.nombre}.`
         );
 
-        mostrarPartidoConError(indice);
+        mostrarPartidoConError(
+          indice
+        );
 
         return;
       }
@@ -482,33 +681,38 @@ async function enviarPredicciones() {
 
   try {
     botonEnviar.disabled = true;
+
     botonEnviar.textContent =
       "ENVIANDO...";
 
     await addDoc(
-      collection(db, "predicciones"),
+      collection(
+        db,
+        "predicciones"
+      ),
       datos
     );
 
     alert(
-      "✅ Predicciones de Semifinales enviadas correctamente."
+      "✅ Predicción de la Gran Final enviada correctamente."
     );
 
     location.reload();
 
   } catch (error) {
     console.error(
-      "Error al enviar las predicciones:",
+      "Error al enviar la predicción:",
       error
     );
 
     alert(
-      "❌ No se pudieron enviar las predicciones."
+      "❌ No se pudo enviar la predicción."
     );
 
     botonEnviar.disabled = false;
+
     botonEnviar.textContent =
-      "ENVIAR PREDICCIONES";
+      "ENVIAR PREDICCIÓN";
   }
 }
 
@@ -520,5 +724,5 @@ window.enviarPredicciones =
   enviarPredicciones;
 
 console.log(
-  "SCRIPT DE SEMIFINALES LISTO"
+  "PICK'EM GRAN FINAL LISTO"
 );
