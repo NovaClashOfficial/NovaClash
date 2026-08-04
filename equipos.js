@@ -1,64 +1,46 @@
 /* ==========================================
-   SEMIFINALES - NOVA CLASH
+   GRAN FINAL - NOVA CLASH
 ========================================== */
 
-export const semifinales = [
+export const finalistas = [
   [
     {
       nombre: "Black Cat",
-      jugadores: [
-        "Jairo",
-        "Alex",
-        "Demi"
-      ]
-    },
 
-    {
-      nombre: "Team Yetis",
       jugadores: [
-        "YT|KUROO",
-        "Davss",
-        "Tofin"
-      ]
-    }
-  ],
-
-  [
-    {
-      nombre: "Jema Chicer",
-      jugadores: [
-        "Dvvnnel",
-        "JC|Kalth",
-        "JC|Michu"
+        "Jugador Black Cat 1",
+        "Jugador Black Cat 2",
+        "Jugador Black Cat 3"
       ]
     },
 
     {
       nombre: "Community 8",
+
       jugadores: [
-        "RNG|NestDeadSol",
-        "JARAMILLO",
-        "C8|Moyita"
+        "Jugador Community 8 1",
+        "Jugador Community 8 2",
+        "Jugador Community 8 3"
       ]
     }
   ]
 ];
 
 /* ==========================================
-   MARCADORES POSIBLES
+   MARCADORES DE LA FINAL
 ========================================== */
 
-export const marcadoresSemifinales = [
+export const marcadoresFinal = [
   "3-0",
   "3-1",
   "3-2"
 ];
 
 /* ==========================================
-   RONDAS DE SEMIFINALES
+   RONDAS DE LA FINAL
 ========================================== */
 
-export const rondasSemifinales = [
+export const rondasFinal = [
   {
     id: "ronda1",
     nombre: "Ronda 1",
@@ -85,7 +67,17 @@ export const rondasSemifinales = [
 
   {
     id: "ronda5",
-    nombre: "Ronda 5 (Desempate)",
+    nombre: "Ronda 5",
     desempate: true
   }
 ];
+
+/* ==========================================
+   PUNTUACIÓN DE LA FINAL
+========================================== */
+
+export const puntuacionFinal = {
+  ganador: 10,
+  marcador: 5,
+  estelar: 2
+};
