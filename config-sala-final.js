@@ -276,16 +276,28 @@ export const reglasFinal = [
 ===================================================== */
 
 export const brawlersConBuffies = [
-  "Brawler con buffie 1",
-  "Brawler con buffie 2",
-  "Brawler con buffie 3",
-  "Brawler con buffie 4",
-  "Brawler con buffie 5",
-  "Brawler con buffie 6",
-  "Brawler con buffie 7",
-  "Brawler con buffie 8",
-  "Brawler con buffie 9",
-  "Brawler con buffie 10"
+  "Meg",
+  "Max",
+  "Surge",
+  "Brock",
+  "8 Bit",
+  "Rico",
+  "Edgar",
+  "Collete",
+  "Griff",
+  "Bo",
+  "Nita",
+  "Leon",
+  "Emz",
+  "Frank",
+  "Mortis",
+  "Rico",
+  "Shelly",
+  "Colt",
+  "Spike",
+  "Bibi",
+  "Crow",
+  "Bull"
 ];
 
 export const opcionesBuffies = [
