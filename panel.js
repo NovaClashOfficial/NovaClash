@@ -1,4 +1,4 @@
-console.log("PANEL SEMIFINALES V1");
+console.log("PANEL GRAN FINAL V1");
 
 import {
   onAuthStateChanged
@@ -16,26 +16,34 @@ import {
 } from "./firebase.js";
 
 import {
-  semifinales,
-  marcadoresSemifinales,
-  rondasSemifinales
+  finalistas,
+  marcadoresFinal,
+  rondasFinal
 } from "./equipos.js";
 
 const contenedor =
-  document.getElementById("adminPartidos");
+  document.getElementById(
+    "adminPartidos"
+  );
 
 const mensajePanel =
-  document.getElementById("mensaje-panel");
+  document.getElementById(
+    "mensaje-panel"
+  );
 
 /* =========================
    PROTEGER PANEL
 ========================= */
 
-onAuthStateChanged(auth, (usuario) => {
-  if (!usuario) {
-    window.location.href = "login.html";
+onAuthStateChanged(
+  auth,
+  (usuario) => {
+    if (!usuario) {
+      window.location.href =
+        "login.html";
+    }
   }
-});
+);
 
 /* =========================
    ESCAPAR HTML
@@ -51,6 +59,22 @@ function escaparHTML(texto) {
 }
 
 /* =========================
+   RONDAS SEGÚN MARCADOR
+========================= */
+
+function cantidadRondasJugadas(
+  marcador
+) {
+  const cantidades = {
+    "3-0": 3,
+    "3-1": 4,
+    "3-2": 5
+  };
+
+  return cantidades[marcador] || 0;
+}
+
+/* =========================
    CREAR GRUPO DE ESTELARES
 ========================= */
 
@@ -59,23 +83,24 @@ function crearGrupoEstelar(
   rondaId,
   equipo
 ) {
-  const jugadores = equipo.jugadores.map(
-    (jugador) => `
-      <label class="estelar-card">
+  const jugadores =
+    equipo.jugadores.map(
+      (jugador) => `
+        <label class="estelar-card">
 
-        <input
-          type="radio"
-          name="admin-estelar-${numeroPartido}-${rondaId}"
-          value="${escaparHTML(jugador)}"
-        >
+          <input
+            type="radio"
+            name="admin-estelar-${numeroPartido}-${rondaId}"
+            value="${escaparHTML(jugador)}"
+          >
 
-        <span>
-          ${escaparHTML(jugador)}
-        </span>
+          <span>
+            ${escaparHTML(jugador)}
+          </span>
 
-      </label>
-    `
-  ).join("");
+        </label>
+      `
+    ).join("");
 
   return `
     <div class="estelar-grupo">
@@ -93,7 +118,7 @@ function crearGrupoEstelar(
 }
 
 /* =========================
-   CREAR OPCIONES DE ESTELAR
+   OPCIONES DE ESTELAR
 ========================= */
 
 function crearOpcionesEstelar(
@@ -130,165 +155,283 @@ function crearRondasAdmin(
   equipo1,
   equipo2
 ) {
-  return rondasSemifinales.map((ronda) => `
-    <section
-      class="
-        ronda-prediccion
-        ronda-admin
-        ${ronda.desempate ? "ronda-desempate" : ""}
-      "
-      data-partido="${numeroPartido}"
-      data-ronda="${ronda.id}"
-    >
+  return rondasFinal.map(
+    (ronda, indice) => `
+      <section
+        class="
+          ronda-prediccion
+          ronda-admin
+          ${
+            ronda.desempate
+              ? "ronda-desempate"
+              : ""
+          }
+        "
+        data-partido="${numeroPartido}"
+        data-ronda="${ronda.id}"
+        data-numero-ronda="${indice + 1}"
+      >
 
-      <div class="ronda-encabezado">
+        <div class="ronda-encabezado">
 
-        <h3>
-          ${escaparHTML(ronda.nombre)}
-        </h3>
+          <h3>
+            ${escaparHTML(ronda.nombre)}
+          </h3>
 
-        ${
-          ronda.desempate
-            ? `
-              <span class="ronda-sin-puntos">
-                Solo si hubo desempate
-              </span>
-            `
-            : `
-              <span class="ronda-puntos">
-                Resultado oficial
-              </span>
-            `
-        }
+          ${
+            ronda.desempate
+              ? `
+                <span class="ronda-sin-puntos">
+                  Solo si el marcador fue 3-2
+                </span>
+              `
+              : `
+                <span class="ronda-puntos">
+                  Resultado oficial
+                </span>
+              `
+          }
 
-      </div>
+        </div>
 
-      <p class="opcion-titulo">
-        ⭐ Jugador estelar oficial
-      </p>
+        <p class="opcion-titulo">
+          ⭐ Jugador estelar oficial
+        </p>
 
-      <div class="estelar-opciones">
+        <div class="estelar-opciones">
 
-        ${crearOpcionesEstelar(
-          numeroPartido,
-          ronda.id,
-          equipo1,
-          equipo2
-        )}
+          ${crearOpcionesEstelar(
+            numeroPartido,
+            ronda.id,
+            equipo1,
+            equipo2
+          )}
 
-      </div>
+        </div>
 
-    </section>
-  `).join("");
+      </section>
+    `
+  ).join("");
 }
 
 /* =========================
-   CREAR PARTIDOS
+   ACTUALIZAR RONDAS VISIBLES
+========================= */
+
+function actualizarRondasVisibles(
+  numeroPartido,
+  marcador
+) {
+  const cantidad =
+    cantidadRondasJugadas(
+      marcador
+    );
+
+  const partido =
+    document.querySelector(
+      `[data-partido="${numeroPartido}"]`
+    );
+
+  if (!partido) {
+    return;
+  }
+
+  const rondas =
+    partido.querySelectorAll(
+      ".ronda-admin"
+    );
+
+  rondas.forEach((ronda) => {
+    const numeroRonda =
+      Number(
+        ronda.dataset.numeroRonda
+      );
+
+    const visible =
+      numeroRonda <= cantidad;
+
+    ronda.classList.toggle(
+      "ronda-oculta",
+      !visible
+    );
+
+    if (!visible) {
+      ronda
+        .querySelectorAll(
+          'input[type="radio"]'
+        )
+        .forEach((radio) => {
+          radio.checked = false;
+        });
+    }
+  });
+}
+
+/* =========================
+   CREAR PARTIDO
 ========================= */
 
 function cargarPartidos() {
   contenedor.innerHTML = "";
 
-  semifinales.forEach((partido, indice) => {
-    const numeroPartido = indice + 1;
+  finalistas.forEach(
+    (partido, indice) => {
+      const numeroPartido =
+        indice + 1;
 
-    const equipo1 = partido[0];
-    const equipo2 = partido[1];
+      const equipo1 =
+        partido[0];
 
-    contenedor.insertAdjacentHTML(
-      "beforeend",
-      `
-        <article
-          class="partido partido-semifinal admin-partido"
-          data-partido="${numeroPartido}"
-        >
+      const equipo2 =
+        partido[1];
 
-          <h2 class="partido-titulo">
-            🔥 SEMIFINAL — PARTIDO ${numeroPartido}
-          </h2>
+      contenedor.insertAdjacentHTML(
+        "beforeend",
+        `
+          <article
+            class="
+              partido
+              partido-final
+              admin-partido
+            "
+            data-partido="${numeroPartido}"
+          >
 
-          <p class="opcion-titulo">
-            Ganador oficial
-          </p>
-
-          <div class="seleccion-equipos">
-
-            <label class="team-card">
-
-              <input
-                type="radio"
-                name="admin-ganador-${numeroPartido}"
-                value="${escaparHTML(equipo1.nombre)}"
-              >
-
-              <span class="team-card-nombre">
-                ${escaparHTML(equipo1.nombre)}
-              </span>
-
-            </label>
-
-            <div class="vs">
-              VS
+            <div class="final-corona">
+              👑
             </div>
 
-            <label class="team-card">
+            <h2 class="partido-titulo final-titulo">
+              🏆 RESULTADO OFICIAL DE LA GRAN FINAL
+            </h2>
 
-              <input
-                type="radio"
-                name="admin-ganador-${numeroPartido}"
-                value="${escaparHTML(equipo2.nombre)}"
-              >
-
-              <span class="team-card-nombre">
-                ${escaparHTML(equipo2.nombre)}
-              </span>
-
-            </label>
-
-          </div>
-
-          <div class="resultado-contenedor">
-
-            <p class="opcion-titulo">
-              🎯 Marcador oficial
+            <p class="final-enfrentamiento">
+              ${escaparHTML(equipo1.nombre)}
+              <span>VS</span>
+              ${escaparHTML(equipo2.nombre)}
             </p>
 
-            <div class="resultado-opciones">
+            <p class="opcion-titulo">
+              Campeón oficial
+            </p>
 
-              ${marcadoresSemifinales.map(
-                (marcador) => `
-                  <label class="score-card">
+            <div class="seleccion-equipos">
 
-                    <input
-                      type="radio"
-                      name="admin-resultado-${numeroPartido}"
-                      value="${escaparHTML(marcador)}"
-                    >
+              <label class="team-card team-final">
 
-                    <span>
-                      ${escaparHTML(marcador)}
-                    </span>
+                <input
+                  type="radio"
+                  name="admin-ganador-${numeroPartido}"
+                  value="${escaparHTML(equipo1.nombre)}"
+                >
 
-                  </label>
-                `
-              ).join("")}
+                <span class="team-card-nombre">
+                  ${escaparHTML(equipo1.nombre)}
+                </span>
+
+              </label>
+
+              <div class="vs">
+                VS
+              </div>
+
+              <label class="team-card team-final">
+
+                <input
+                  type="radio"
+                  name="admin-ganador-${numeroPartido}"
+                  value="${escaparHTML(equipo2.nombre)}"
+                >
+
+                <span class="team-card-nombre">
+                  ${escaparHTML(equipo2.nombre)}
+                </span>
+
+              </label>
 
             </div>
 
-          </div>
+            <div class="resultado-contenedor">
 
-          <div class="rondas-contenedor">
+              <p class="opcion-titulo">
+                🎯 Marcador oficial
+              </p>
 
-            ${crearRondasAdmin(
-              numeroPartido,
-              equipo1,
-              equipo2
-            )}
+              <div class="resultado-opciones">
 
-          </div>
+                ${marcadoresFinal.map(
+                  (marcador) => `
+                    <label class="score-card score-final">
 
-        </article>
-      `
+                      <input
+                        type="radio"
+                        name="admin-resultado-${numeroPartido}"
+                        value="${escaparHTML(marcador)}"
+                      >
+
+                      <span>
+                        ${escaparHTML(marcador)}
+                      </span>
+
+                    </label>
+                  `
+                ).join("")}
+
+              </div>
+
+            </div>
+
+            <div class="rondas-contenedor">
+
+              ${crearRondasAdmin(
+                numeroPartido,
+                equipo1,
+                equipo2
+              )}
+
+            </div>
+
+          </article>
+        `
+      );
+
+      actualizarRondasVisibles(
+        numeroPartido,
+        ""
+      );
+    }
+  );
+
+  activarEventosMarcador();
+}
+
+/* =========================
+   EVENTOS DEL MARCADOR
+========================= */
+
+function activarEventosMarcador() {
+  const opciones =
+    document.querySelectorAll(
+      'input[name^="admin-resultado-"]'
+    );
+
+  opciones.forEach((opcion) => {
+    opcion.addEventListener(
+      "change",
+      () => {
+        const numeroPartido =
+          Number(
+            opcion.name.replace(
+              "admin-resultado-",
+              ""
+            )
+          );
+
+        actualizarRondasVisibles(
+          numeroPartido,
+          opcion.value
+        );
+      }
     );
   });
 }
@@ -297,7 +440,10 @@ function cargarPartidos() {
    MARCAR RADIO GUARDADO
 ========================= */
 
-function marcarRadio(nombre, valor) {
+function marcarRadio(
+  nombre,
+  valor
+) {
   if (
     valor === undefined ||
     valor === null
@@ -312,22 +458,9 @@ function marcarRadio(nombre, valor) {
 
   opciones.forEach((opcion) => {
     opcion.checked =
-      opcion.value === String(valor);
+      opcion.value ===
+      String(valor);
   });
-}
-
-/* =========================
-   RONDAS SEGÚN EL MARCADOR
-========================= */
-
-function cantidadRondasJugadas(marcador) {
-  const cantidades = {
-    "3-0": 3,
-    "3-1": 4,
-    "3-2": 5
-  };
-
-  return cantidades[marcador] || 0;
 }
 
 /* =========================
@@ -344,16 +477,19 @@ function leerEstelar(
 }
 
 /* =========================
-   RESALTAR PARTIDO CON ERROR
+   RESALTAR ERROR
 ========================= */
 
-function mostrarPartidoConError(indice) {
+function mostrarPartidoConError(
+  indice
+) {
   const tarjetas =
     document.querySelectorAll(
       ".admin-partido"
     );
 
-  const tarjeta = tarjetas[indice];
+  const tarjeta =
+    tarjetas[indice];
 
   tarjeta?.scrollIntoView({
     behavior: "smooth",
@@ -372,7 +508,7 @@ function mostrarPartidoConError(indice) {
 }
 
 /* =========================
-   CARGAR RESULTADOS GUARDADOS
+   CARGAR RESULTADO GUARDADO
 ========================= */
 
 async function cargarResultadosGuardados() {
@@ -380,7 +516,7 @@ async function cargarResultadosGuardados() {
     const referencia = doc(
       db,
       "resultados",
-      "semifinales"
+      "final"
     );
 
     const snap =
@@ -390,64 +526,85 @@ async function cargarResultadosGuardados() {
       return;
     }
 
-    const datos = snap.data();
+    const datos =
+      snap.data();
 
-    if (!Array.isArray(datos.resultados)) {
+    if (
+      !Array.isArray(
+        datos.resultados
+      )
+    ) {
       return;
     }
 
-    datos.resultados.forEach((resultado) => {
-      const numeroPartido =
-        Number(resultado.partido);
+    datos.resultados.forEach(
+      (resultado) => {
+        const numeroPartido =
+          Number(
+            resultado.partido
+          );
 
-      if (
-        numeroPartido < 1 ||
-        numeroPartido > semifinales.length
-      ) {
-        return;
-      }
-
-      marcarRadio(
-        `admin-ganador-${numeroPartido}`,
-        resultado.ganador
-      );
-
-      marcarRadio(
-        `admin-resultado-${numeroPartido}`,
-        resultado.resultado
-      );
-
-      rondasSemifinales.forEach((ronda) => {
-        const resultadoRonda =
-          resultado.rondas?.[ronda.id];
-
-        if (!resultadoRonda?.estelar) {
+        if (
+          numeroPartido < 1 ||
+          numeroPartido >
+            finalistas.length
+        ) {
           return;
         }
 
         marcarRadio(
-          `admin-estelar-${numeroPartido}-${ronda.id}`,
-          resultadoRonda.estelar
+          `admin-ganador-${numeroPartido}`,
+          resultado.ganador
         );
-      });
-    });
+
+        marcarRadio(
+          `admin-resultado-${numeroPartido}`,
+          resultado.resultado
+        );
+
+        actualizarRondasVisibles(
+          numeroPartido,
+          resultado.resultado
+        );
+
+        rondasFinal.forEach(
+          (ronda) => {
+            const resultadoRonda =
+              resultado.rondas?.[
+                ronda.id
+              ];
+
+            if (
+              !resultadoRonda?.estelar
+            ) {
+              return;
+            }
+
+            marcarRadio(
+              `admin-estelar-${numeroPartido}-${ronda.id}`,
+              resultadoRonda.estelar
+            );
+          }
+        );
+      }
+    );
 
     mensajePanel.textContent =
-      "✅ Resultados guardados cargados.";
+      "✅ Resultado oficial guardado cargado.";
 
   } catch (error) {
     console.error(
-      "Error al cargar resultados:",
+      "Error al cargar el resultado:",
       error
     );
 
     mensajePanel.textContent =
-      "❌ No se pudieron cargar los resultados.";
+      "❌ No se pudo cargar el resultado oficial.";
   }
 }
 
 /* =========================
-   GUARDAR RESULTADOS
+   GUARDAR RESULTADO
 ========================= */
 
 async function guardarResultados() {
@@ -460,7 +617,7 @@ async function guardarResultados() {
 
   for (
     let indice = 0;
-    indice < semifinales.length;
+    indice < finalistas.length;
     indice++
   ) {
     const numeroPartido =
@@ -476,21 +633,26 @@ async function guardarResultados() {
         `input[name="admin-resultado-${numeroPartido}"]:checked`
       );
 
-    /*
-      Permite guardar una semifinal primero
-      y dejar la otra completamente vacía.
-    */
-
-    if (!ganador && !marcador) {
-      continue;
-    }
-
-    if (!ganador || !marcador) {
+    if (!ganador) {
       alert(
-        `Completá el ganador y el marcador de la Semifinal ${numeroPartido}.`
+        "Seleccioná al campeón oficial."
       );
 
-      mostrarPartidoConError(indice);
+      mostrarPartidoConError(
+        indice
+      );
+
+      return;
+    }
+
+    if (!marcador) {
+      alert(
+        "Seleccioná el marcador oficial."
+      );
+
+      mostrarPartidoConError(
+        indice
+      );
 
       return;
     }
@@ -518,33 +680,34 @@ async function guardarResultados() {
 
       if (!estelar) {
         alert(
-          `Seleccioná el jugador estelar de la Ronda ${numeroRonda} en la Semifinal ${numeroPartido}.`
+          `Seleccioná el jugador estelar de la Ronda ${numeroRonda}.`
         );
 
-        mostrarPartidoConError(indice);
+        mostrarPartidoConError(
+          indice
+        );
 
         return;
       }
 
       rondas[rondaId] = {
-        estelar: estelar.value
+        estelar:
+          estelar.value
       };
     }
 
     resultadosOficiales.push({
-      partido: numeroPartido,
-      ganador: ganador.value,
-      resultado: marcador.value,
+      partido:
+        numeroPartido,
+
+      ganador:
+        ganador.value,
+
+      resultado:
+        marcador.value,
+
       rondas
     });
-  }
-
-  if (resultadosOficiales.length === 0) {
-    alert(
-      "Seleccioná al menos un resultado oficial."
-    );
-
-    return;
   }
 
   try {
@@ -557,10 +720,10 @@ async function guardarResultados() {
       doc(
         db,
         "resultados",
-        "semifinales"
+        "final"
       ),
       {
-        fase: "semifinales",
+        fase: "final",
 
         resultados:
           resultadosOficiales,
@@ -573,23 +736,23 @@ async function guardarResultados() {
     );
 
     mensajePanel.textContent =
-      `✅ ${resultadosOficiales.length} semifinal(es) guardada(s).`;
+      "✅ Resultado oficial de la Gran Final guardado.";
 
     alert(
-      "✅ Resultados oficiales de Semifinales guardados."
+      "✅ Resultado oficial de la Gran Final guardado."
     );
 
   } catch (error) {
     console.error(
-      "Error al guardar resultados:",
+      "Error al guardar resultado:",
       error
     );
 
     mensajePanel.textContent =
-      "❌ Error al guardar los resultados.";
+      "❌ Error al guardar el resultado.";
 
     alert(
-      "❌ No se pudieron guardar los resultados."
+      "❌ No se pudo guardar el resultado oficial."
     );
 
   } finally {
@@ -667,7 +830,7 @@ async function guardarEstado() {
       ),
       {
         abiertas,
-        faseActiva: "semifinales"
+        faseActiva: "final"
       },
       {
         merge: true
@@ -676,8 +839,8 @@ async function guardarEstado() {
 
     alert(
       abiertas
-        ? "✅ Predicciones de Semifinales abiertas."
-        : "🔒 Predicciones de Semifinales cerradas."
+        ? "✅ Predicciones de la Gran Final abiertas."
+        : "🔒 Predicciones de la Gran Final cerradas."
     );
 
   } catch (error) {
@@ -717,5 +880,5 @@ cargarEstado();
 cargarResultadosGuardados();
 
 console.log(
-  "PANEL SEMIFINALES LISTO"
+  "PANEL GRAN FINAL LISTO"
 );
