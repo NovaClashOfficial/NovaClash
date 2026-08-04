@@ -2141,10 +2141,6 @@ function irSiguiente() {
 
   mostrarResumen();
 }
-
-  if (pasoActual < TOTAL_PASOS) {
-    pasoActual++;
-
 /* =========================
    BUSCAR NOMBRE DE MODO
 ========================= */
@@ -2746,29 +2742,6 @@ async function enviarDecisiones() {
       "ENVIAR DECISIONES";
   }
 }
-    
-   function irSiguiente() {
-  if (mostrandoResumen) {
-    enviarDecisiones();
-    return;
-  }
-
-  const valido =
-    validarPasoActual();
-
-  if (!valido) {
-    return;
-  }
-
-  if (pasoActual < TOTAL_PASOS) {
-    pasoActual++;
-    actualizarPaso();
-    return;
-  }
-
-  mostrarResumen();
-}
-
 function irAnterior() {
   if (mostrandoResumen) {
     ocultarResumen();
