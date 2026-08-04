@@ -2747,19 +2747,26 @@ async function enviarDecisiones() {
   }
 }
     
-    actualizarPaso();
-
+   function irSiguiente() {
+  if (mostrandoResumen) {
+    enviarDecisiones();
     return;
   }
 
-  console.log(
-    "Respuestas actuales:",
-    respuestas
-  );
+  const valido =
+    validarPasoActual();
 
-  alert(
-    "La pantalla de resumen será agregada después."
-  );
+  if (!valido) {
+    return;
+  }
+
+  if (pasoActual < TOTAL_PASOS) {
+    pasoActual++;
+    actualizarPaso();
+    return;
+  }
+
+  mostrarResumen();
 }
 
 function irAnterior() {
