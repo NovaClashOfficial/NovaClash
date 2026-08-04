@@ -342,10 +342,214 @@ function activarEventosMarcador() {
 /* =========================
    CARGAR GRAN FINAL
 ========================= */
+/* =========================
+   FECHA LÍMITE
+========================= */
+
+/*
+  9 de agosto de 2026
+  17:00 en Argentina (UTC-3)
+*/
+
+const FECHA_CIERRE_FINAL =
+  new Date("2026-08-09T17:00:00-03:00");
+
+let prediccionesCerradasPorFecha =
+  false;
+
+/* =========================
+   FORMATEAR CONTADOR
+========================= */
+
+function formatearContador(numero) {
+  return String(numero).padStart(2, "0");
+}
+
+/* =========================
+   CERRAR POR FECHA
+========================= */
+
+function cerrarPrediccionesPorFecha() {
+  prediccionesCerradasPorFecha = true;
+
+  const contador =
+    document.getElementById(
+      "contador-final"
+    );
+
+  const etiqueta =
+    contador?.querySelector(
+      ".contador-etiqueta"
+    );
+
+  const fecha =
+    document.getElementById(
+      "contador-fecha"
+    );
+
+  const partidos =
+    document.getElementById(
+      "partidos"
+    );
+
+  const nombre =
+    document.getElementById(
+      "nombre"
+    );
+
+  const boton =
+    document.getElementById(
+      "btn-enviar"
+    );
+
+  if (contador) {
+    contador.classList.add(
+      "cerrado"
+    );
+  }
+
+  if (etiqueta) {
+    etiqueta.textContent =
+      "🔒 PREDICCIONES CERRADAS";
+  }
+
+  if (fecha) {
+    fecha.textContent =
+      "El plazo para participar terminó.";
+  }
+
+  [
+    "contador-dias",
+    "contador-horas",
+    "contador-minutos",
+    "contador-segundos"
+  ].forEach((id) => {
+    const elemento =
+      document.getElementById(id);
+
+    if (elemento) {
+      elemento.textContent = "00";
+    }
+  });
+
+  if (partidos) {
+    partidos.innerHTML = `
+      <div class="predicciones-cerradas">
+
+        <h2>
+          🔒 Predicciones cerradas
+        </h2>
+
+        <p>
+          El plazo para enviar predicciones
+          de la Gran Final terminó.
+        </p>
+
+      </div>
+    `;
+  }
+
+  if (nombre) {
+    nombre.style.display = "none";
+  }
+
+  if (boton) {
+    boton.style.display = "none";
+    boton.disabled = true;
+  }
+}
+
+/* =========================
+   ACTUALIZAR CONTADOR
+========================= */
+
+function actualizarContadorFinal() {
+  const ahora =
+    new Date();
+
+  const diferencia =
+    FECHA_CIERRE_FINAL.getTime() -
+    ahora.getTime();
+
+  if (diferencia <= 0) {
+    cerrarPrediccionesPorFecha();
+    return false;
+  }
+
+  const segundosTotales =
+    Math.floor(diferencia / 1000);
+
+  const dias =
+    Math.floor(
+      segundosTotales / 86400
+    );
+
+  const horas =
+    Math.floor(
+      (segundosTotales % 86400) /
+      3600
+    );
+
+  const minutos =
+    Math.floor(
+      (segundosTotales % 3600) /
+      60
+    );
+
+  const segundos =
+    segundosTotales % 60;
+
+  document.getElementById(
+    "contador-dias"
+  ).textContent =
+    formatearContador(dias);
+
+  document.getElementById(
+    "contador-horas"
+  ).textContent =
+    formatearContador(horas);
+
+  document.getElementById(
+    "contador-minutos"
+  ).textContent =
+    formatearContador(minutos);
+
+  document.getElementById(
+    "contador-segundos"
+  ).textContent =
+    formatearContador(segundos);
+
+  return true;
+}
+
+/* =========================
+   INICIAR CONTADOR
+========================= */
+
+function iniciarContadorFinal() {
+  const abierto =
+    actualizarContadorFinal();
+
+  if (!abierto) {
+    return;
+  }
+
+  setInterval(
+    actualizarContadorFinal,
+    1000
+  );
+}
 
 window.addEventListener(
   "DOMContentLoaded",
   async () => {
+        iniciarContadorFinal();
+
+    if (
+      prediccionesCerradasPorFecha
+    ) {
+      return;
+    }
     const abiertas =
       await verificarEstadoPredicciones();
 
@@ -548,6 +752,18 @@ function leerEstelar(
 ========================= */
 
 async function enviarPredicciones() {
+    if (
+    new Date() >=
+    FECHA_CIERRE_FINAL
+  ) {
+    cerrarPrediccionesPorFecha();
+
+    alert(
+      "🔒 El plazo para enviar predicciones terminó."
+    );
+
+    return;
+  }
   const inputNombre =
     document.getElementById(
       "nombre"
