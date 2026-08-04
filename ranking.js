@@ -1,11 +1,11 @@
-console.log("RANKING GENERAL NOVA CLASH V5");
+console.log("RANKING GENERAL NOVA CLASH V6");
 
 import {
   collection,
   getDocs,
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+} from "https://www.a.com/firebasejs/12.5.0/firebase-firestore.js";
 
 import { db } from "./firebase.js";
 
@@ -98,11 +98,13 @@ function crearJugador(nombre) {
     prediccionesOctavos: {},
     prediccionesCuartos: {},
     prediccionesSemifinales: {},
+    prediccionesFinal: {},
 
     puntosGrupos: 0,
     puntosOctavos: 0,
     puntosCuartos: 0,
     puntosSemifinales: 0,
+    puntosFinal: 0,
     bonoCompensacion: 0,
 
     aciertosOctavos: 0,
@@ -115,7 +117,11 @@ function crearJugador(nombre) {
 
     aciertosSemifinales: 0,
     marcadoresSemifinales: 0,
-    estelaresSemifinales: 0
+    estelaresSemifinales: 0,
+
+    aciertosFinal: 0,
+    marcadoresFinal: 0,
+    estelaresFinal: 0
   };
 }
 
@@ -426,6 +432,89 @@ function calcularSemifinales(
   });
 }
 /* ==========================================
+   CALCULAR FINAL
+========================================== */
+
+function calcularFinal(
+  jugador,
+  resultadosFinal
+) {
+  Object.values(
+    jugador.prediccionesFinal
+  ).forEach((prediccion) => {
+    const oficial =
+      resultadosFinal.find(
+        (resultado) =>
+          Number(resultado.partido) ===
+          Number(prediccion.partido)
+      );
+
+    if (!oficial) {
+      return;
+    }
+
+    const ganadorCorrecto =
+      sonIguales(
+        prediccion.ganador,
+        oficial.ganador
+      );
+
+    const marcadorCorrecto =
+      sonIguales(
+        prediccion.resultado,
+        oficial.resultado
+      );
+
+    if (ganadorCorrecto) {
+      jugador.puntosFinal += 10;
+      jugador.aciertosFinal++;
+    }
+
+    if (
+      ganadorCorrecto &&
+      marcadorCorrecto
+    ) {
+      jugador.puntosFinal += 5;
+      jugador.marcadoresFinal++;
+    }
+
+    Object.entries(
+      oficial.rondas || {}
+    ).forEach(
+      ([rondaId, rondaOficial]) => {
+        const rondaPredicha =
+          prediccion.rondas?.[rondaId];
+
+        if (
+          !rondaPredicha ||
+          !rondaOficial
+        ) {
+          return;
+        }
+
+        const estelarPredicho =
+          rondaPredicha.estelar ??
+          rondaPredicha.mvp;
+
+        const estelarOficial =
+          rondaOficial.estelar ??
+          rondaOficial.mvp;
+
+        if (
+          sonIguales(
+            estelarPredicho,
+            estelarOficial
+          )
+        ) {
+          jugador.puntosFinal += 2;
+          jugador.estelaresFinal++;
+        }
+      }
+    );
+  });
+}
+
+/* ==========================================
    CARGAR RANKING
 ========================================== */
 
@@ -487,13 +576,15 @@ async function cargarRanking() {
     const [
       resultadosOctavos,
       resultadosCuartos,
-      resultadosSemifinales
+      resultadosSemifinales,
+      resultadosFinal
     ] = await Promise.all([
       cargarResultadosFase("octavos"),
       cargarResultadosFase("cuartos"),
       cargarResultadosFase(
         "semifinales"
-      )
+      ),
+      cargarResultadosFase("final")
     ]);
 
     console.log(
@@ -724,6 +815,29 @@ async function cargarRanking() {
             }
           );
         }
+
+        /* ==================================
+           FINAL
+        ================================== */
+
+        if (
+          datos.fase ===
+            "final" &&
+          Array.isArray(
+            datos.predicciones
+          )
+        ) {
+          datos.predicciones.forEach(
+            (prediccion) => {
+              guardarPrediccionReciente(
+                jugador
+                  .prediccionesFinal,
+                prediccion,
+                fechaDocumento
+              );
+            }
+          );
+        }
       }
     );
 
@@ -801,6 +915,11 @@ async function cargarRanking() {
           jugador,
           resultadosSemifinales
         );
+
+        calcularFinal(
+          jugador,
+          resultadosFinal
+        );
       }
     );
 
@@ -820,7 +939,8 @@ async function cargarRanking() {
               .bonoCompensacion +
             jugador.puntosCuartos +
             jugador
-              .puntosSemifinales
+              .puntosSemifinales +
+            jugador.puntosFinal
         }))
         .sort((a, b) => {
           if (
@@ -830,6 +950,16 @@ async function cargarRanking() {
             return (
               b.puntosTotales -
               a.puntosTotales
+            );
+          }
+
+          if (
+            b.puntosFinal !==
+            a.puntosFinal
+          ) {
+            return (
+              b.puntosFinal -
+              a.puntosFinal
             );
           }
 
@@ -987,6 +1117,13 @@ async function cargarRanking() {
                   </strong>
                 </p>
 
+                <p>
+                  Final:
+                  <strong>
+                    ${jugador.puntosFinal}
+                  </strong>
+                </p>
+
               </div>
 
             </article>
@@ -1029,5 +1166,5 @@ async function cargarRanking() {
 cargarRanking();
 
 console.log(
-  "RANKING GENERAL V5 LISTO"
+  "RANKING GENERAL V6 LISTO"
 );
