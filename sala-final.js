@@ -32,6 +32,8 @@ const TOTAL_PASOS =
 let pasoActual = 1;
 let jugadorActual = null;
 
+let mostrandoResumen = false;
+let envioRealizado = false;
 /*
   Acá se guardarán temporalmente todas
   las decisiones antes de enviarlas.
@@ -197,6 +199,20 @@ const contenedorEncuesta =
 const mensajeEncuesta =
   document.getElementById(
     "mensaje-encuesta"
+  );
+const pantallaResumen =
+  document.getElementById(
+    "pantalla-resumen"
+  );
+
+const contenidoResumen =
+  document.getElementById(
+    "contenido-resumen"
+  );
+
+const mensajeEnvio =
+  document.getElementById(
+    "mensaje-envio"
   );
 /* =========================
    ESCAPAR TEXTO
@@ -2029,6 +2045,11 @@ if (pasoActual === 7) {
 ========================= */
 
 function actualizarPaso() {
+    pantallaResumen.classList.remove(
+    "activo"
+  );
+
+  mostrandoResumen = false;
   const pasos =
     document.querySelectorAll(
       ".paso"
@@ -2100,12 +2121,26 @@ if (pasoActual === 3) {
 ========================= */
 
 function irSiguiente() {
+  if (mostrandoResumen) {
+    enviarDecisiones();
+    return;
+  }
+
   const valido =
     validarPasoActual();
 
   if (!valido) {
     return;
   }
+
+  if (pasoActual < TOTAL_PASOS) {
+    pasoActual++;
+    actualizarPaso();
+    return;
+  }
+
+  mostrarResumen();
+}
 
   if (pasoActual < TOTAL_PASOS) {
     pasoActual++;
@@ -2728,9 +2763,13 @@ async function enviarDecisiones() {
 }
 
 function irAnterior() {
+  if (mostrandoResumen) {
+    ocultarResumen();
+    return;
+  }
+
   if (pasoActual > 1) {
     pasoActual--;
-
     actualizarPaso();
   }
 }
