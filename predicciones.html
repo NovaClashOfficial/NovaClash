@@ -4,7 +4,11 @@
 <head>
 
   <script>
-  window.location.replace("mantenimiento.html");
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("dev") !== "1") {
+    window.location.replace("mantenimiento.html");
+  }
 </script>
   
 <meta charset="UTF-8">
