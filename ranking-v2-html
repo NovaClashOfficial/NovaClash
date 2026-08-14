@@ -1,1 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ranking | Nova Clash II</title>
+
+<link rel="stylesheet" href="style-v2.css?v=2">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="fondo-v2"></div>
+
+<nav class="navbar-v2">
+
+    <div class="nav-logo-v2">
+        NOVA CLASH <span>II</span>
+    </div>
+
+    <div class="nav-links-v2">
+        <a href="index-v2.html">Inicio</a>
+        <a href="predicciones-v2.html">Pick'Em</a>
+        <a href="ranking-v2.html" class="activo">Ranking</a>
+        <a href="reglas-v2.html">Reglas</a>
+    </div>
+
+</nav>
+
+<main class="ranking-v2">
+
+    <section class="ranking-header-v2">
+
+        <p class="temporada">
+            NOVA CLASH · 2.ª EDICIÓN
+        </p>
+
+        <h1>
+            👑 RANKING
+        </h1>
+
+        <p>
+            Compite en el Pick'Em, suma puntos en cada fase
+            y alcanza la cima de Nova Clash.
+        </p>
+
+    </section>
+
+    <!-- PODIO -->
+
+    <section class="podio-v2">
+
+        <article class="podio-card segundo">
+
+            <span class="podio-posicion">
+                🥈
+            </span>
+
+            <div class="podio-avatar">
+                2
+            </div>
+
+            <h3>
+                Próximamente
+            </h3>
+
+            <strong>
+                0 PTS
+            </strong>
+
+            <p>
+                Segundo lugar
+            </p>
+
+        </article>
+
+        <article class="podio-card primero">
+
+            <div class="corona-lider">
+                👑
+            </div>
+
+            <span class="podio-posicion">
+                🥇
+            </span>
+
+            <div class="podio-avatar">
+                1
+            </div>
+
+            <h3>
+                Esperando líder
+            </h3>
+
+            <strong>
+                0 PTS
+            </strong>
+
+            <p>
+                Líder del Pick'Em
+            </p>
+
+        </article>
+
+        <article class="podio-card tercero">
+
+            <span class="podio-posicion">
+                🥉
+            </span>
+
+            <div class="podio-avatar">
+                3
+            </div>
+
+            <h3>
+                Próximamente
+            </h3>
+
+            <strong>
+                0 PTS
+            </strong>
+
+            <p>
+                Tercer lugar
+            </p>
+
+        </article>
+
+    </section>
+
+    <!-- RANKING GENERAL -->
+
+    <section class="tabla-ranking-v2">
+
+        <div class="ranking-seccion-header">
+
+            <div>
+                <span>
+                    CLASIFICACIÓN GENERAL
+                </span>
+
+                <h2>
+                    TODOS LOS PARTICIPANTES
+                </h2>
+            </div>
+
+            <div class="ranking-actualizacion">
+                Temporada II
+            </div>
+
+        </div>
+
+        <div id="ranking-v2-lista">
+
+            <article class="ranking-fila-v2">
+
+                <span class="ranking-numero">
+                    #1
+                </span>
+
+                <div class="ranking-jugador-v2">
+                    <strong>
+                        Esperando participantes
+                    </strong>
+
+                    <small>
+                        Sin predicciones todavía
+                    </small>
+                </div>
+
+                <div class="ranking-fases-v2">
+                    <span>
+                        Grupos
+                        <strong>0</strong>
+                    </span>
+
+                    <span>
+                        Eliminatorias
+                        <strong>0</strong>
+                    </span>
+                </div>
+
+                <strong class="ranking-total-v2">
+                    0 PTS
+                </strong>
+
+            </article>
+
+        </div>
+
+    </section>
+
+    <!-- INFO -->
+
+    <section class="ranking-info-v2">
+
+        <article>
+
+            <span>
+                🎯
+            </span>
+
+            <div>
+                <h3>
+                    Cada punto importa
+                </h3>
+
+                <p>
+                    Tus aciertos se acumulan durante
+                    toda la competencia.
+                </p>
+            </div>
+
+        </article>
+
+        <article>
+
+            <span>
+                🏆
+            </span>
+
+            <div>
+                <h3>
+                    Llega a la cima
+                </h3>
+
+                <p>
+                    El jugador con más puntos dominará
+                    el ranking de Nova Clash II.
+                </p>
+            </div>
+
+        </article>
+
+    </section>
+
+</main>
+
+<footer class="footer-v2">
+
+    <p>
+        NOVA CLASH II
+    </p>
+
+    <span>
+        COMPITE · PREDICE · CONQUISTA
+    </span>
+
+</footer>
+
+</body>
+
+</html>
