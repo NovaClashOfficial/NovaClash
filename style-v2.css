@@ -1669,3 +1669,141 @@ button{
         align-items:flex-start;
     }
 }
+/* ==========================================
+   REDES NOVA CLASH V2
+========================================== */
+
+.redes-v2{
+    width:min(1000px,92%);
+    margin:auto;
+    padding:90px 0 110px;
+}
+
+.redes-botones-v2{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+    margin-top:40px;
+}
+
+.red-social-v2{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+
+    gap:18px;
+
+    padding:22px;
+
+    border:
+        1px solid
+        rgba(244,197,66,.18);
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34,22,57,.85),
+            rgba(11,8,19,.95)
+        );
+
+    overflow:hidden;
+
+    transition:
+        transform .25s,
+        border-color .25s,
+        box-shadow .25s;
+}
+
+.red-social-v2::before{
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:2px;
+
+    opacity:.55;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6f2cff,
+            #f4c542
+        );
+}
+
+.red-social-v2:hover{
+    transform:translateY(-5px);
+
+    border-color:
+        rgba(244,197,66,.48);
+
+    box-shadow:
+        0 10px 35px
+        rgba(111,44,255,.18);
+}
+
+.red-icono-v2{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:50px;
+    height:50px;
+
+    flex:none;
+
+    border:
+        1px solid
+        rgba(244,197,66,.35);
+
+    border-radius:14px;
+
+    background:
+        rgba(244,197,66,.07);
+
+    color:#f4c542;
+
+    font-size:23px;
+
+    box-shadow:
+        0 0 18px
+        rgba(244,197,66,.08);
+}
+
+.red-social-v2 small{
+    display:block;
+
+    color:#9c91aa;
+
+    font-size:8px;
+    font-weight:900;
+
+    letter-spacing:2px;
+}
+
+.red-social-v2 strong{
+    display:block;
+
+    margin-top:5px;
+
+    color:#ffe38a;
+
+    font-size:15px;
+}
+
+@media(max-width:700px){
+
+    .redes-botones-v2{
+        grid-template-columns:1fr;
+    }
+
+}
