@@ -2,258 +2,359 @@
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>Ranking | Nova Clash II</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<link rel="stylesheet" href="style-v2.css?v=2">
+  <title>Ranking | Nova Clash II</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    rel="stylesheet"
+    href="style-v2.css?v=4"
+  >
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet"
+  >
 </head>
 
 <body>
 
-<div class="fondo-v2"></div>
+  <div class="fondo-v2"></div>
 
-<nav class="navbar-v2">
+  <!-- =========================
+       NAVBAR
+  ========================== -->
+
+  <nav class="navbar-v2">
 
     <div class="nav-logo-v2">
-        NOVA CLASH <span>II</span>
+      NOVA CLASH <span>II</span>
     </div>
 
     <div class="nav-links-v2">
-        <a href="index-v2.html">Inicio</a>
-        <a href="predicciones-v2.html">Pick'Em</a>
-        <a href="ranking-v2.html" class="activo">Ranking</a>
-        <a href="reglas-v2.html">Reglas</a>
+
+      <a href="index-v2.html">
+        Inicio
+      </a>
+
+      <a href="predicciones-v2.html">
+        Pick'Em
+      </a>
+
+      <a
+        href="ranking-v2.html"
+        class="activo"
+      >
+        Ranking
+      </a>
+
+      <a href="reglas-v2.html">
+        Reglas
+      </a>
+
     </div>
 
-</nav>
+  </nav>
 
-<main class="ranking-v2">
+
+  <!-- =========================
+       CONTENIDO
+  ========================== -->
+
+  <main class="ranking-v2">
+
+    <!-- HEADER -->
 
     <section class="ranking-header-v2">
 
-        <p class="temporada">
-            NOVA CLASH · 2.ª EDICIÓN
-        </p>
+      <p class="temporada">
+        NOVA CLASH · 2.ª EDICIÓN
+      </p>
 
-        <h1>
-            👑 RANKING
-        </h1>
+      <h1>
+        👑 RANKING
+      </h1>
 
-        <p>
-            Compite en el Pick'Em, suma puntos en cada fase
-            y alcanza la cima de Nova Clash.
-        </p>
+      <p>
+        Compite en el Pick'Em, suma puntos
+        durante todo el torneo y alcanza
+        la cima de Nova Clash.
+      </p>
 
     </section>
 
-    <!-- PODIO -->
+
+    <!-- =========================
+         PODIO
+    ========================== -->
 
     <section class="podio-v2">
 
-        <article class="podio-card segundo">
+      <!-- SEGUNDO -->
 
-            <span class="podio-posicion">
-                🥈
-            </span>
+      <article
+        class="podio-card segundo"
+        id="podio-segundo"
+      >
 
-            <div class="podio-avatar">
-                2
-            </div>
+        <span class="podio-posicion">
+          🥈
+        </span>
 
-            <h3>
-                Próximamente
-            </h3>
+        <div class="podio-avatar">
+          2
+        </div>
 
-            <strong>
-                0 PTS
-            </strong>
+        <h3 id="nombre-segundo">
+          Esperando jugador
+        </h3>
 
-            <p>
-                Segundo lugar
-            </p>
+        <strong id="puntos-segundo">
+          0 PTS
+        </strong>
 
-        </article>
+        <p>
+          Segundo lugar
+        </p>
 
-        <article class="podio-card primero">
+      </article>
 
-            <div class="corona-lider">
-                👑
-            </div>
 
-            <span class="podio-posicion">
-                🥇
-            </span>
+      <!-- PRIMERO -->
 
-            <div class="podio-avatar">
-                1
-            </div>
+      <article
+        class="podio-card primero"
+        id="podio-primero"
+      >
 
-            <h3>
-                Esperando líder
-            </h3>
+        <div class="corona-lider">
+          👑
+        </div>
 
-            <strong>
-                0 PTS
-            </strong>
+        <span class="podio-posicion">
+          🥇
+        </span>
 
-            <p>
-                Líder del Pick'Em
-            </p>
+        <div class="podio-avatar">
+          1
+        </div>
 
-        </article>
+        <h3 id="nombre-primero">
+          Esperando líder
+        </h3>
 
-        <article class="podio-card tercero">
+        <strong id="puntos-primero">
+          0 PTS
+        </strong>
 
-            <span class="podio-posicion">
-                🥉
-            </span>
+        <p>
+          Líder del Pick'Em
+        </p>
 
-            <div class="podio-avatar">
-                3
-            </div>
+      </article>
 
-            <h3>
-                Próximamente
-            </h3>
 
-            <strong>
-                0 PTS
-            </strong>
+      <!-- TERCERO -->
 
-            <p>
-                Tercer lugar
-            </p>
+      <article
+        class="podio-card tercero"
+        id="podio-tercero"
+      >
 
-        </article>
+        <span class="podio-posicion">
+          🥉
+        </span>
+
+        <div class="podio-avatar">
+          3
+        </div>
+
+        <h3 id="nombre-tercero">
+          Esperando jugador
+        </h3>
+
+        <strong id="puntos-tercero">
+          0 PTS
+        </strong>
+
+        <p>
+          Tercer lugar
+        </p>
+
+      </article>
 
     </section>
 
-    <!-- RANKING GENERAL -->
+
+    <!-- =========================
+         CLASIFICACIÓN GENERAL
+    ========================== -->
 
     <section class="tabla-ranking-v2">
 
-        <div class="ranking-seccion-header">
+      <div class="ranking-seccion-header">
 
-            <div>
-                <span>
-                    CLASIFICACIÓN GENERAL
-                </span>
+        <div>
 
-                <h2>
-                    TODOS LOS PARTICIPANTES
-                </h2>
-            </div>
+          <span>
+            CLASIFICACIÓN GENERAL
+          </span>
 
-            <div class="ranking-actualizacion">
-                Temporada II
-            </div>
+          <h2>
+            TODOS LOS PARTICIPANTES
+          </h2>
 
         </div>
 
-        <div id="ranking-v2-lista">
-
-            <article class="ranking-fila-v2">
-
-                <span class="ranking-numero">
-                    #1
-                </span>
-
-                <div class="ranking-jugador-v2">
-                    <strong>
-                        Esperando participantes
-                    </strong>
-
-                    <small>
-                        Sin predicciones todavía
-                    </small>
-                </div>
-
-                <div class="ranking-fases-v2">
-                    <span>
-                        Grupos
-                        <strong>0</strong>
-                    </span>
-
-                    <span>
-                        Eliminatorias
-                        <strong>0</strong>
-                    </span>
-                </div>
-
-                <strong class="ranking-total-v2">
-                    0 PTS
-                </strong>
-
-            </article>
-
+        <div class="ranking-actualizacion">
+          TEMPORADA II
         </div>
+
+      </div>
+
+
+      <!-- JS pondrá jugadores acá -->
+
+      <div id="ranking-v2-lista">
+
+        <article class="ranking-fila-v2">
+
+          <span class="ranking-numero">
+            #1
+          </span>
+
+          <div class="ranking-jugador-v2">
+
+            <strong>
+              Ranking en preparación
+            </strong>
+
+            <small>
+              Esperando predicciones
+            </small>
+
+          </div>
+
+          <div class="ranking-fases-v2">
+
+            <span>
+              GRUPOS
+              <strong>0</strong>
+            </span>
+
+            <span>
+              ELIMINATORIAS
+              <strong>0</strong>
+            </span>
+
+          </div>
+
+          <strong class="ranking-total-v2">
+            0 PTS
+          </strong>
+
+        </article>
+
+      </div>
 
     </section>
 
-    <!-- INFO -->
+
+    <!-- =========================
+         INFORMACIÓN
+    ========================== -->
 
     <section class="ranking-info-v2">
 
-        <article>
+      <article>
 
-            <span>
-                🎯
-            </span>
+        <span>
+          🎯
+        </span>
 
-            <div>
-                <h3>
-                    Cada punto importa
-                </h3>
+        <div>
 
-                <p>
-                    Tus aciertos se acumulan durante
-                    toda la competencia.
-                </p>
-            </div>
+          <h3>
+            CADA PUNTO IMPORTA
+          </h3>
 
-        </article>
+          <p>
+            Tus aciertos se acumulan durante
+            toda la competencia.
+          </p>
 
-        <article>
+        </div>
 
-            <span>
-                🏆
-            </span>
+      </article>
 
-            <div>
-                <h3>
-                    Llega a la cima
-                </h3>
 
-                <p>
-                    El jugador con más puntos dominará
-                    el ranking de Nova Clash II.
-                </p>
-            </div>
+      <article>
 
-        </article>
+        <span>
+          🏆
+        </span>
+
+        <div>
+
+          <h3>
+            LLEGA A LA CIMA
+          </h3>
+
+          <p>
+            Supera a los demás participantes
+            y conviértete en el líder del Pick'Em.
+          </p>
+
+        </div>
+
+      </article>
 
     </section>
 
-</main>
+  </main>
 
-<footer class="footer-v2">
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer class="footer-v2">
 
     <p>
-        NOVA CLASH II
+      NOVA CLASH II
     </p>
 
     <span>
-        COMPITE · PREDICE · CONQUISTA
+      COMPITE · PREDICE · CONQUISTA
     </span>
 
-</footer>
+  </footer>
+
+
+  <!--
+  Lo activaremos cuando creemos ranking-v2.js:
+
+  <script
+    type="module"
+    src="ranking-v2.js"
+  ></script>
+  -->
 
 </body>
 
