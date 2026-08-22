@@ -4,7 +4,7 @@ export const configuracionV2 = {
 
   faseActiva: "grupos",
 
-  prediccionesAbiertas: false,
+  prediccionesAbiertas: true,
 
   puntos: {
     ganador: 3,
