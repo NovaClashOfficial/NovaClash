@@ -1,5 +1,18 @@
 console.log("EQUIPOS NOVA CLASH V2");
 
+export const configuracionV2 = {
+
+  faseActiva: "grupos",
+
+  prediccionesAbiertas: false,
+
+  puntos: {
+    ganador: 3,
+    marcador: 2,
+    estelar: 1
+  }
+
+};
 /* ==========================================
    EQUIPOS
 ========================================== */
@@ -59,3 +72,35 @@ export const equiposV2 = [
   ]
 
 ];
+
+/* ==========================================
+   ENFRENTAMIENTOS
+========================================== */
+
+export const enfrentamientosV2 = {
+
+  grupos: [
+
+    {
+      id: "grupos-01",
+      equipo1: "equipo-01",
+      equipo2: "equipo-02"
+    },
+
+    {
+      id: "grupos-02",
+      equipo1: "equipo-03",
+      equipo2: "equipo-04"
+    }
+
+  ],
+
+  octavos: [],
+
+  cuartos: [],
+
+  semifinales: [],
+
+  final: []
+
+};
