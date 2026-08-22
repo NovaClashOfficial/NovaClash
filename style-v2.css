@@ -1807,3 +1807,295 @@ button{
     }
 
 }
+/* ==========================================
+   PARTIDOS PICK'EM V2
+========================================== */
+
+#partidos-v2{
+    display:grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:22px;
+
+    margin-top:30px;
+}
+
+.partido-v2{
+    padding:24px;
+
+    border:
+        1px solid
+        rgba(244,197,66,.18);
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34,22,57,.90),
+            rgba(11,8,19,.96)
+        );
+}
+
+.partido-v2-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:10px;
+
+    padding-bottom:16px;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.06);
+}
+
+.partido-v2-header span{
+    color:#f4c542;
+
+    font-size:12px;
+    font-weight:900;
+}
+
+.partido-v2-header small{
+    color:#8f86a0;
+
+    font-size:8px;
+    letter-spacing:1px;
+}
+
+.enfrentamiento-v2{
+    display:grid;
+    grid-template-columns:
+        1fr auto 1fr;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-top:22px;
+}
+
+.equipo-v2-card{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:70px;
+
+    padding:13px;
+
+    border:
+        2px solid
+        rgba(255,255,255,.07);
+
+    border-radius:15px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.equipo-v2-card input{
+    display:none;
+}
+
+.equipo-v2-card span{
+    color:#eee8f5;
+
+    font-size:13px;
+    font-weight:900;
+
+    text-align:center;
+}
+
+.equipo-v2-card:hover{
+    border-color:
+        rgba(152,92,255,.65);
+
+    background:
+        rgba(111,44,255,.12);
+}
+
+.equipo-v2-card:has(input:checked){
+    border-color:#f4c542;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(111,44,255,.55),
+            rgba(244,197,66,.16)
+        );
+
+    box-shadow:
+        0 0 20px
+        rgba(244,197,66,.12);
+}
+
+.vs-v2{
+    color:#f4c542;
+
+    font-size:15px;
+    font-weight:900;
+}
+
+.marcador-v2{
+    margin-top:22px;
+}
+
+.marcador-v2 > p{
+    margin-bottom:12px;
+
+    color:#93899f;
+
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:2px;
+}
+
+.marcadores-v2{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:9px;
+}
+
+.score-v2{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:43px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    border-radius:12px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    cursor:pointer;
+}
+
+.score-v2 input{
+    display:none;
+}
+
+.score-v2 span{
+    color:#cfc6db;
+
+    font-size:12px;
+    font-weight:900;
+}
+
+.score-v2:has(input:checked){
+    border-color:#f4c542;
+
+    background:
+        rgba(244,197,66,.10);
+}
+
+.score-v2:has(input:checked) span{
+    color:#ffe38a;
+}
+
+.envio-pickem-v2{
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-top:40px;
+}
+
+#nombre-v2{
+    width:100%;
+    max-width:450px;
+
+    padding:16px 18px;
+
+    border:
+        1px solid
+        rgba(244,197,66,.22);
+
+    border-radius:14px;
+
+    outline:none;
+
+    background:
+        rgba(24,16,38,.95);
+
+    color:white;
+
+    font-family:
+        'Orbitron',
+        sans-serif;
+}
+
+#nombre-v2:focus{
+    border-color:#f4c542;
+
+    box-shadow:
+        0 0 20px
+        rgba(244,197,66,.12);
+}
+
+.pickem-vacio-v2{
+    grid-column:1 / -1;
+
+    padding:50px 20px;
+
+    text-align:center;
+
+    border:
+        1px dashed
+        rgba(244,197,66,.22);
+
+    border-radius:18px;
+}
+
+.pickem-vacio-v2 span{
+    font-size:40px;
+}
+
+.pickem-vacio-v2 h3{
+    margin-top:15px;
+
+    color:#ffe38a;
+}
+
+.pickem-vacio-v2 p{
+    margin-top:10px;
+
+    color:#91899d;
+
+    font-size:12px;
+}
+
+@media(max-width:760px){
+
+    #partidos-v2{
+        grid-template-columns:1fr;
+    }
+
+    .enfrentamiento-v2{
+        grid-template-columns:1fr;
+    }
+
+    .marcadores-v2{
+        grid-template-columns:1fr;
+    }
+
+}
