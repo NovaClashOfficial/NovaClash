@@ -1,464 +1,126 @@
-console.log("PICK'EM NOVA CLASH V2");
+<!DOCTYPE html>
+<html lang="es">
 
-import {
-  equiposV2,
-  enfrentamientosV2,
-  configuracionV2
-} from "./equipos-v2.js";
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-/* ==========================================
-   ELEMENTOS
-========================================== */
+  <title>Pick'Em | Nova Clash II</title>
 
-const contenedor =
-  document.getElementById("partidos-v2");
+  <link rel="stylesheet" href="style-v2.css?v=5">
 
-const tituloFase =
-  document.getElementById("titulo-fase-v2");
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-const estadoTexto =
-  document.getElementById("estado-pickem-texto");
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
 
-/* ==========================================
-   NORMALIZAR TEXTO
-========================================== */
+<body>
 
-function escaparHTML(texto) {
-  return String(texto ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+<div class="fondo-v2"></div>
 
-/* ==========================================
-   BUSCAR EQUIPO
-========================================== */
+<!-- NAVBAR -->
 
-function obtenerEquipo(idEquipo) {
-  return equiposV2.find(
-    (equipo) => equipo.id === idEquipo
-  );
-}
+<nav class="navbar-v2">
 
-/* ==========================================
-   NOMBRE DE FASE
-========================================== */
+  <div class="nav-logo-v2">
+    NOVA CLASH <span>II</span>
+  </div>
 
-function obtenerNombreFase(fase) {
-  const nombres = {
-    grupos: "FASE DE GRUPOS",
-    octavos: "OCTAVOS DE FINAL",
-    cuartos: "CUARTOS DE FINAL",
-    semifinales: "SEMIFINALES",
-    final: "GRAN FINAL"
-  };
+  <div class="nav-links-v2">
+    <a href="index-v2.html">Inicio</a>
+    <a href="predicciones-v2.html" class="activo">Pick'Em</a>
+    <a href="ranking-v2.html">Ranking</a>
+    <a href="reglas-v2.html">Reglas</a>
+  </div>
 
-  return nombres[fase] || fase.toUpperCase();
-}
+</nav>
 
-/* ==========================================
-   MARCADORES
-========================================== */
+<!-- CONTENIDO -->
 
-function obtenerMarcadores(fase) {
-  if (
-    fase === "semifinales" ||
-    fase === "final"
-  ) {
-    return [
-      "3-0",
-      "3-1",
-      "3-2"
-    ];
-  }
+<main class="pickem-v2">
 
-  return [
-    "2-0",
-    "2-1"
-  ];
-}
+  <section class="pickem-header">
 
-/* ==========================================
-   CREAR OPCIONES DE MARCADOR
-========================================== */
+    <p class="temporada">
+      NOVA CLASH · 2.ª EDICIÓN
+    </p>
 
-function crearMarcadores(
-  numeroPartido,
-  fase
-) {
-  const marcadores =
-    obtenerMarcadores(fase);
+    <h1>🏆 PICK'EM</h1>
 
-  return marcadores.map(
-    (marcador) => `
-      <label class="score-v2">
+    <p>
+      Predice cada enfrentamiento del torneo,
+      suma puntos y conviértete en el campeón del Pick'Em.
+    </p>
 
-        <input
-          type="radio"
-          name="marcador-${numeroPartido}"
-          value="${marcador}"
-        >
+  </section>
 
-        <span>
-          ${marcador}
-        </span>
+  <!-- ESTADO -->
 
-      </label>
-    `
-  ).join("");
-}
+  <section class="estado-pickem-v2">
 
-/* ==========================================
-   CREAR PARTIDO
-========================================== */
+    <span class="estado-punto"></span>
 
-function crearPartido(
-  partido,
-  indice,
-  fase
-) {
-  const equipo1 =
-    obtenerEquipo(partido.equipo1);
+    <div>
+      <strong id="estado-pickem-texto">
+        CARGANDO...
+      </strong>
+      <p id="titulo-fase-v2">
+        FASE DE GRUPOS
+      </p>
+    </div>
 
-  const equipo2 =
-    obtenerEquipo(partido.equipo2);
+  </section>
 
-  if (!equipo1 || !equipo2) {
-    console.warn(
-      "Partido inválido:",
-      partido
-    );
+  <!-- PARTIDOS -->
 
-    return "";
-  }
+  <section class="fase-pickem-v2">
 
-  const numeroPartido =
-    indice + 1;
+    <div id="partidos-v2">
 
-  return `
-    <article
-      class="partido-v2"
-      data-partido="${numeroPartido}"
+      <!-- Los partidos aparecerán automáticamente -->
+
+    </div>
+
+  </section>
+
+  <!-- ENVIAR -->
+
+  <section class="envio-pickem-v2">
+
+    <h2>ENVIAR PREDICCIONES</h2>
+
+    <input
+      id="nombre-v2"
+      type="text"
+      placeholder="Escribe tu nombre o Nick"
+      maxlength="30"
+      autocomplete="off"
     >
 
-      <div class="partido-v2-header">
+    <button
+      id="btn-enviar-v2"
+      class="btn-principal"
+      type="button"
+      onclick="enviarPrediccionesV2()"
+    >
+      ENVIAR PREDICCIONES
+    </button>
 
-        <span>
-          PARTIDO ${numeroPartido}
-        </span>
+  </section>
 
-        <small>
-          ${escaparHTML(
-            obtenerNombreFase(fase)
-          )}
-        </small>
+</main>
 
-      </div>
+<footer class="footer-v2">
 
-      <div class="enfrentamiento-v2">
+  <p>NOVA CLASH II</p>
 
-        <label class="equipo-v2-card">
+  <span>COMPITE · PREDICE · CONQUISTA</span>
 
-          <input
-            type="radio"
-            name="ganador-${numeroPartido}"
-            value="${escaparHTML(
-              equipo1.nombre
-            )}"
-          >
+</footer>
 
-          <span>
-            ${escaparHTML(
-              equipo1.nombre
-            )}
-          </span>
+<!-- IMPORTANTE -->
+<script type="module" src="predicciones-v2.js?v=1"></script>
 
-        </label>
-
-        <div class="vs-v2">
-          VS
-        </div>
-
-        <label class="equipo-v2-card">
-
-          <input
-            type="radio"
-            name="ganador-${numeroPartido}"
-            value="${escaparHTML(
-              equipo2.nombre
-            )}"
-          >
-
-          <span>
-            ${escaparHTML(
-              equipo2.nombre
-            )}
-          </span>
-
-        </label>
-
-      </div>
-
-      <div class="marcador-v2">
-
-        <p>
-          MARCADOR FINAL
-        </p>
-
-        <div class="marcadores-v2">
-
-          ${crearMarcadores(
-            numeroPartido,
-            fase
-          )}
-
-        </div>
-
-      </div>
-
-    </article>
-  `;
-}
-
-/* ==========================================
-   CARGAR PICK'EM
-========================================== */
-
-function cargarPickem() {
-  if (!contenedor) {
-    console.error(
-      "No existe #partidos-v2"
-    );
-
-    return;
-  }
-
-  const fase =
-    configuracionV2.faseActiva;
-
-  const partidos =
-    enfrentamientosV2[fase] || [];
-
-  tituloFase.textContent =
-    obtenerNombreFase(fase);
-
-  if (
-    configuracionV2.prediccionesAbiertas
-  ) {
-    estadoTexto.textContent =
-      "PREDICCIONES ABIERTAS";
-
-    estadoTexto.classList.add(
-      "abiertas"
-    );
-  } else {
-    estadoTexto.textContent =
-      "PREDICCIONES CERRADAS";
-
-    estadoTexto.classList.add(
-      "cerradas"
-    );
-  }
-
-  if (partidos.length === 0) {
-    contenedor.innerHTML = `
-      <div class="pickem-vacio-v2">
-
-        <span>
-          🏆
-        </span>
-
-        <h3>
-          TODAVÍA NO HAY PARTIDOS
-        </h3>
-
-        <p>
-          Los enfrentamientos de esta fase
-          todavía no fueron cargados.
-        </p>
-
-      </div>
-    `;
-
-    return;
-  }
-
-  contenedor.innerHTML =
-    partidos.map(
-      (partido, indice) =>
-        crearPartido(
-          partido,
-          indice,
-          fase
-        )
-    ).join("");
-
-  if (
-    !configuracionV2.prediccionesAbiertas
-  ) {
-    bloquearPredicciones();
-  }
-}
-
-/* ==========================================
-   BLOQUEAR PREDICCIONES
-========================================== */
-
-function bloquearPredicciones() {
-  const inputs =
-    document.querySelectorAll(
-      "#partidos-v2 input"
-    );
-
-  inputs.forEach((input) => {
-    input.disabled = true;
-  });
-
-  const boton =
-    document.getElementById(
-      "btn-enviar-v2"
-    );
-
-  if (boton) {
-    boton.disabled = true;
-    boton.textContent =
-      "PREDICCIONES CERRADAS";
-  }
-}
-
-/* ==========================================
-   LEER PREDICCIONES
-========================================== */
-
-function leerPredicciones() {
-  const fase =
-    configuracionV2.faseActiva;
-
-  const partidos =
-    enfrentamientosV2[fase] || [];
-
-  const predicciones = [];
-
-  for (
-    let indice = 0;
-    indice < partidos.length;
-    indice++
-  ) {
-    const numeroPartido =
-      indice + 1;
-
-    const ganador =
-      document.querySelector(
-        `input[name="ganador-${numeroPartido}"]:checked`
-      );
-
-    const marcador =
-      document.querySelector(
-        `input[name="marcador-${numeroPartido}"]:checked`
-      );
-
-    if (!ganador) {
-      alert(
-        `Elegí al ganador del Partido ${numeroPartido}.`
-      );
-
-      return null;
-    }
-
-    if (!marcador) {
-      alert(
-        `Elegí el marcador del Partido ${numeroPartido}.`
-      );
-
-      return null;
-    }
-
-    predicciones.push({
-      partido: numeroPartido,
-      ganador: ganador.value,
-      marcador: marcador.value
-    });
-  }
-
-  return predicciones;
-}
-
-/* ==========================================
-   ENVIAR
-========================================== */
-
-function enviarPrediccionesV2() {
-  if (
-    !configuracionV2.prediccionesAbiertas
-  ) {
-    alert(
-      "Las predicciones están cerradas."
-    );
-
-    return;
-  }
-
-  const nombreInput =
-    document.getElementById(
-      "nombre-v2"
-    );
-
-  if (!nombreInput) {
-    return;
-  }
-
-  const nombre =
-    nombreInput.value.trim();
-
-  if (!nombre) {
-    alert(
-      "Escribí tu nombre o Nick."
-    );
-
-    nombreInput.focus();
-
-    return;
-  }
-
-  const predicciones =
-    leerPredicciones();
-
-  if (!predicciones) {
-    return;
-  }
-
-  const datos = {
-    nombre,
-    fase:
-      configuracionV2.faseActiva,
-
-    predicciones
-  };
-
-  console.log(
-    "Predicciones listas:",
-    datos
-  );
-
-  alert(
-    "✅ Prueba completada. Todavía no se guardó en Firebase."
-  );
-}
-
-/* ==========================================
-   INICIAR
-========================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  cargarPickem
-);
-
-window.enviarPrediccionesV2 =
-  enviarPrediccionesV2;
-
-console.log(
-  "PICK'EM V2 LISTO"
-);
+</body>
+</html>
