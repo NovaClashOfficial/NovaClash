@@ -1,5 +1,5 @@
 console.log("🔥 NOVA CLASH II - PICK'EM V2");
-
+let grupoActivo = "A";
 import {
   equiposV2,
   enfrentamientosV2,
@@ -9,7 +9,26 @@ import {
 /* ==========================
    ELEMENTOS
 ========================== */
+<!-- PESTAÑAS DE GRUPOS -->
+<div class="tabs-grupos-v2">
 
+  <button class="tab-grupo activa" onclick="cambiarGrupo('A')">
+    GRUPO A
+  </button>
+
+  <button class="tab-grupo" onclick="cambiarGrupo('B')">
+    GRUPO B
+  </button>
+
+  <button class="tab-grupo" onclick="cambiarGrupo('C')">
+    GRUPO C
+  </button>
+
+  <button class="tab-grupo" onclick="cambiarGrupo('D')">
+    GRUPO D
+  </button>
+
+</div>
 const contenedor = document.getElementById("partidos-v2");
 const tituloFase = document.getElementById("titulo-fase-v2");
 const estadoTexto = document.getElementById("estado-pickem-texto");
@@ -145,34 +164,16 @@ function crearPartido(partido, numero){
    CARGAR PARTIDOS
 ========================== */
 
-function cargarPartidos(){
+function cargarPartidos() {
 
-  tituloFase.textContent =
-    nombresFase[configuracionV2.faseActiva];
+  const partidos = enfrentamientosV2.grupos.filter(
+    p => p.grupo === grupoActivo
+  );
 
-  estadoTexto.textContent =
-    configuracionV2.prediccionesAbiertas
-      ? "PREDICCIONES ABIERTAS"
-      : "PREDICCIONES CERRADAS";
-
-  const partidos =
-    enfrentamientosV2[configuracionV2.faseActiva];
-
-  if(!partidos || partidos.length===0){
-
-    contenedor.innerHTML = `
-      <div class="pickem-vacio-v2">
-
-        <h3>🏆 No hay partidos disponibles</h3>
-
-        <p>Pronto aparecerán los enfrentamientos.</p>
-
-      </div>
-    `;
-
-    return;
-
-  }
+  contenedor.innerHTML = partidos.map(
+    (p, i) => crearPartido(p, i + 1)
+  ).join("");
+}
 
   contenedor.innerHTML =
     partidos.map((p,i)=>crearPartido(p,i+1)).join("");
@@ -265,3 +266,18 @@ window.enviarPrediccionesV2 = function(){
 ========================== */
 
 document.addEventListener("DOMContentLoaded", cargarPartidos);
+
+window.cambiarGrupo = function(grupo) {
+
+  grupoActivo = grupo;
+
+  document.querySelectorAll(".tab-grupo").forEach(btn=>{
+    btn.classList.remove("activa");
+
+    if(btn.textContent.includes(grupo)){
+      btn.classList.add("activa");
+    }
+  });
+
+  cargarPartidos();
+}
