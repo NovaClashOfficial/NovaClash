@@ -2099,3 +2099,27 @@ button{
     }
 
 }
+/* PESTAÑAS GRUPOS */
+
+.tabs-grupos-v2{
+  display:flex;
+  gap:10px;
+  margin:25px 0;
+  overflow-x:auto;
+}
+
+.tab-grupo{
+  background:#2b184f;
+  color:white;
+  border:1px solid #6f2cff;
+  border-radius:12px;
+  padding:12px 18px;
+  font-family:'Orbitron',sans-serif;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.tab-grupo.activa{
+  background:linear-gradient(90deg,#6f2cff,#f4c542);
+  color:black;
+}
