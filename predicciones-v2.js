@@ -1,283 +1,248 @@
-console.log("🔥 NOVA CLASH II - PICK'EM V2");
-let grupoActivo = "A";
 import {
   equiposV2,
   enfrentamientosV2,
   configuracionV2
 } from "./equipos-v2.js";
 
-/* ==========================
-   ELEMENTOS
-========================== */
-<!-- PESTAÑAS DE GRUPOS -->
-<div class="tabs-grupos-v2">
+console.log("🏆 PICK'EM V2 CARGADO");
 
-  <button class="tab-grupo activa" onclick="cambiarGrupo('A')">
-    GRUPO A
-  </button>
+let grupoActivo = "A";
 
-  <button class="tab-grupo" onclick="cambiarGrupo('B')">
-    GRUPO B
-  </button>
-
-  <button class="tab-grupo" onclick="cambiarGrupo('C')">
-    GRUPO C
-  </button>
-
-  <button class="tab-grupo" onclick="cambiarGrupo('D')">
-    GRUPO D
-  </button>
-
-</div>
 const contenedor = document.getElementById("partidos-v2");
-const tituloFase = document.getElementById("titulo-fase-v2");
-const estadoTexto = document.getElementById("estado-pickem-texto");
-const botonEnviar = document.getElementById("btn-enviar-v2");
+const tabla = document.getElementById("tabla-posiciones-v2");
 
-/* ==========================
-   BUSCAR EQUIPO
-========================== */
+const grupoTexto = document.getElementById("grupo-actual-v2");
+const contador = document.getElementById("contador-progreso-v2");
+const barra = document.getElementById("barra-progreso-v2-fill");
 
-function obtenerEquipo(id) {
-  return equiposV2.find(e => e.id === id);
+/* =========================
+   EQUIPO
+========================= */
+
+function obtenerEquipo(id){
+  return equiposV2.find(e=>e.id===id);
 }
 
-/* ==========================
-   NOMBRE DE FASE
-========================== */
-
-const nombresFase = {
-  grupos: "FASE DE GRUPOS",
-  octavos: "OCTAVOS DE FINAL",
-  cuartos: "CUARTOS DE FINAL",
-  semifinales: "SEMIFINALES",
-  final: "GRAN FINAL"
-};
-
-/* ==========================
-   MARCADORES
-========================== */
-
-function obtenerMarcadores() {
-
-  if (
-    configuracionV2.faseActiva === "semifinales" ||
-    configuracionV2.faseActiva === "final"
-  ) {
-    return ["3-0","3-1","3-2"];
-  }
-
-  return ["2-0","2-1"];
-
-}
-
-/* ==========================
-   CREAR PARTIDO
-========================== */
+/* =========================
+   TARJETA PARTIDO
+========================= */
 
 function crearPartido(partido, numero){
 
-  const equipo1 = obtenerEquipo(partido.equipo1);
-  const equipo2 = obtenerEquipo(partido.equipo2);
-
-  if(!equipo1 || !equipo2){
-    return "";
-  }
-
-  const marcadores = obtenerMarcadores();
+  const e1 = obtenerEquipo(partido.equipo1);
+  const e2 = obtenerEquipo(partido.equipo2);
 
   return `
 
   <article class="partido-v2">
 
-    <div class="partido-v2-header">
+      <div class="partido-v2-header">
 
-      <span>PARTIDO ${numero}</span>
+          <span>PARTIDO ${numero}</span>
 
-      <small>${nombresFase[configuracionV2.faseActiva]}</small>
-
-    </div>
-
-    <div class="enfrentamiento-v2">
-
-      <label class="equipo-v2-card">
-
-        <input
-          type="radio"
-          name="ganador-${numero}"
-          value="${equipo1.nombre}"
-        >
-
-        <span>${equipo1.nombre}</span>
-
-      </label>
-
-      <div class="vs-v2">VS</div>
-
-      <label class="equipo-v2-card">
-
-        <input
-          type="radio"
-          name="ganador-${numero}"
-          value="${equipo2.nombre}"
-        >
-
-        <span>${equipo2.nombre}</span>
-
-      </label>
-
-    </div>
-
-    <div class="marcador-v2">
-
-      <p>MARCADOR FINAL</p>
-
-      <div class="marcadores-v2">
-
-        ${marcadores.map(score=>`
-
-          <label class="score-v2">
-
-            <input
-              type="radio"
-              name="marcador-${numero}"
-              value="${score}"
-            >
-
-            <span>${score}</span>
-
-          </label>
-
-        `).join("")}
+          <small>GRUPO ${grupoActivo}</small>
 
       </div>
 
-    </div>
+      <div class="enfrentamiento-v2">
+
+          <label class="equipo-v2-card">
+
+              <input
+                type="radio"
+                name="ganador-${numero}"
+                value="${e1.id}"
+              >
+
+              <img src="${e1.logo}" class="logo-team-v2">
+
+              <span>${e1.nombre}</span>
+
+          </label>
+
+          <div class="vs-v2">VS</div>
+
+          <label class="equipo-v2-card">
+
+              <input
+                type="radio"
+                name="ganador-${numero}"
+                value="${e2.id}"
+              >
+
+              <img src="${e2.logo}" class="logo-team-v2">
+
+              <span>${e2.nombre}</span>
+
+          </label>
+
+      </div>
+
+      <div class="marcador-v2">
+
+          <p>MARCADOR FINAL</p>
+
+          <div class="marcadores-v2">
+
+              <label class="score-v2">
+                  <input type="radio" name="marcador-${numero}" value="2-0">
+                  <span>2-0</span>
+              </label>
+
+              <label class="score-v2">
+                  <input type="radio" name="marcador-${numero}" value="2-1">
+                  <span>2-1</span>
+              </label>
+
+          </div>
+
+      </div>
+
+      <div class="puntos-posibles-v2">
+
+          <span>🎯 Si acertás:</span>
+
+          <strong>+5 PUNTOS</strong>
+
+      </div>
 
   </article>
 
   `;
+}
+
+/* =========================
+   TABLA DEL GRUPO
+========================= */
+
+function cargarTabla(){
+
+  const equipos = equiposV2.filter(e=>e.grupo===grupoActivo);
+
+  tabla.innerHTML = equipos.map((equipo,i)=>`
+
+      <div class="fila-tabla-v2 ${i<configuracionV2.equiposQueClasifican ? "clasifica" : ""}">
+
+          <span class="puesto">${i+1}</span>
+
+          <div class="info-equipo">
+
+              <img src="${equipo.logo}" class="logo-tabla-v2">
+
+              <strong>${equipo.nombre}</strong>
+
+          </div>
+
+          <span class="pts">0 PTS</span>
+
+      </div>
+
+  `).join("");
 
 }
 
-/* ==========================
+/* =========================
    CARGAR PARTIDOS
-========================== */
+========================= */
 
-function cargarPartidos() {
+function cargarGrupo(){
+
+  grupoTexto.textContent = `GRUPO ${grupoActivo}`;
 
   const partidos = enfrentamientosV2.grupos.filter(
-    p => p.grupo === grupoActivo
+    p=>p.grupo===grupoActivo
   );
 
+  contador.textContent = `0 / ${partidos.length} PARTIDOS`;
+
+  barra.style.width = "0%";
+
   contenedor.innerHTML = partidos.map(
-    (p, i) => crearPartido(p, i + 1)
+    (p,i)=>crearPartido(p,i+1)
   ).join("");
-}
 
-  contenedor.innerHTML =
-    partidos.map((p,i)=>crearPartido(p,i+1)).join("");
-
-  if(!configuracionV2.prediccionesAbiertas){
-
-    document
-      .querySelectorAll("#partidos-v2 input")
-      .forEach(i=>i.disabled=true);
-
-    botonEnviar.disabled = true;
-
-    botonEnviar.textContent = "PREDICCIONES CERRADAS";
-
-  }
+  cargarTabla();
 
 }
 
-/* ==========================
-   LEER PREDICCIONES
-========================== */
+/* =========================
+   CAMBIAR GRUPO
+========================= */
 
-function obtenerPredicciones(){
-
-  const partidos =
-    enfrentamientosV2[configuracionV2.faseActiva];
-
-  const lista = [];
-
-  for(let i=1;i<=partidos.length;i++){
-
-    const ganador =
-      document.querySelector(`input[name="ganador-${i}"]:checked`);
-
-    const marcador =
-      document.querySelector(`input[name="marcador-${i}"]:checked`);
-
-    if(!ganador){
-      alert(`Elegí el ganador del Partido ${i}.`);
-      return null;
-    }
-
-    if(!marcador){
-      alert(`Elegí el marcador del Partido ${i}.`);
-      return null;
-    }
-
-    lista.push({
-      partido:i,
-      ganador:ganador.value,
-      marcador:marcador.value
-    });
-
-  }
-
-  return lista;
-
-}
-
-/* ==========================
-   ENVIAR
-========================== */
-
-window.enviarPrediccionesV2 = function(){
-
-  const nombre =
-    document.getElementById("nombre-v2").value.trim();
-
-  if(nombre===""){
-    alert("Escribí tu nombre.");
-    return;
-  }
-
-  const predicciones = obtenerPredicciones();
-
-  if(!predicciones) return;
-
-  console.log({
-    nombre,
-    fase: configuracionV2.faseActiva,
-    predicciones
-  });
-
-  alert("✅ Predicciones listas (todavía no se guardan en Firebase).");
-
-}
-
-/* ==========================
-   INICIO
-========================== */
-
-document.addEventListener("DOMContentLoaded", cargarPartidos);
-
-window.cambiarGrupo = function(grupo) {
+window.cambiarGrupo = function(grupo){
 
   grupoActivo = grupo;
 
   document.querySelectorAll(".tab-grupo").forEach(btn=>{
-    btn.classList.remove("activa");
 
-    if(btn.textContent.includes(grupo)){
-      btn.classList.add("activa");
-    }
+      btn.classList.remove("activa");
+
+      if(btn.dataset.grupo===grupo){
+          btn.classList.add("activa");
+      }
+
   });
 
-  cargarPartidos();
+  cargarGrupo();
+
 }
+
+/* =========================
+   PROGRESO
+========================= */
+
+document.addEventListener("change",()=>{
+
+  const total = enfrentamientosV2.grupos.filter(
+    p=>p.grupo===grupoActivo
+  ).length;
+
+  let completos = 0;
+
+  for(let i=1;i<=total;i++){
+
+      const g = document.querySelector(`input[name="ganador-${i}"]:checked`);
+      const m = document.querySelector(`input[name="marcador-${i}"]:checked`);
+
+      if(g && m) completos++;
+
+  }
+
+  contador.textContent = `${completos} / ${total} PARTIDOS`;
+
+  barra.style.width = `${(completos/total)*100}%`;
+
+});
+
+/* =========================
+   ENVIAR
+========================= */
+
+window.enviarPrediccionesV2 = function(){
+
+  const nombre = document.getElementById("nombre-v2").value.trim();
+
+  if(nombre===""){
+      alert("Escribe tu nombre.");
+      return;
+  }
+
+  alert(`✅ Predicciones de ${nombre} listas para enviarse.`);
+
+};
+
+/* =========================
+   PESTAÑAS
+========================= */
+
+document.querySelectorAll(".tab-grupo").forEach(btn=>{
+
+  btn.addEventListener("click",()=>{
+
+      cambiarGrupo(btn.dataset.grupo);
+
+  });
+
+});
+
+cargarGrupo();
