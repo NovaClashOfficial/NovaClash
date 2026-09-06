@@ -6,23 +6,23 @@ console.log("🏆 NOVA CLASH II - EQUIPOS V2");
 
 export const configuracionV2 = {
 
-    temporada: "Nova Clash II",
+    temporada:"Nova Clash II",
 
-    faseActiva: "grupos",
+    faseActiva:"grupos",
 
-    prediccionesAbiertas: true,
+    prediccionesAbiertas:true,
 
-    equiposQueClasifican: 4,
+    equiposQueClasifican:4,
 
-    puntosVictoria: 3,
+    // NUEVO
+    puntosMinimosClasificacion:5,
 
-    puntosDerrota: 0,
+    opcionesClasificacion:[5,8,10],
 
-    criterioDesempate: [
-        "puntos",
-        "diferencia",
-        "victorias"
-    ]
+    // CAMBIO IMPORTANTE
+    puntosVictoria:2,
+
+    puntosDerrota:0
 
 };
 
