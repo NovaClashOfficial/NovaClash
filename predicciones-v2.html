@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Pick'Em | Nova Clash II</title>
 
-  <link rel="stylesheet" href="style-v2.css?v=5">
+  <link rel="stylesheet" href="style-v2.css?v=7">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,14 +42,14 @@
   <section class="pickem-header">
 
     <p class="temporada">
-      NOVA CLASH · 2.ª EDICIÓN
+      NOVA CLASH · SEGUNDA EDICIÓN
     </p>
 
-    <h1>🏆 PICK'EM</h1>
+    <h1>🏆 PICK'EM CHAMPIONS</h1>
 
     <p>
-      Predice cada enfrentamiento del torneo,
-      suma puntos y conviértete en el campeón del Pick'Em.
+      Predice todos los partidos de la fase de grupos y conviértete
+      en el campeón del Pick'Em de Nova Clash II.
     </p>
 
   </section>
@@ -62,25 +61,84 @@
     <span class="estado-punto"></span>
 
     <div>
+
       <strong id="estado-pickem-texto">
-        CARGANDO...
+        PREDICCIONES ABIERTAS
       </strong>
+
       <p id="titulo-fase-v2">
         FASE DE GRUPOS
       </p>
+
     </div>
+
+  </section>
+
+  <!-- PROGRESO -->
+
+  <section class="progreso-grupo-v2">
+
+    <div class="progreso-top-v2">
+
+      <span id="grupo-actual-v2">
+        GRUPO A
+      </span>
+
+      <span id="contador-progreso-v2">
+        0 / 15 PARTIDOS
+      </span>
+
+    </div>
+
+    <div class="barra-progreso-v2">
+      <div id="barra-progreso-v2-fill"></div>
+    </div>
+
+  </section>
+
+  <!-- PESTAÑAS -->
+
+  <section class="tabs-grupos-v2">
+
+    <button class="tab-grupo activa" data-grupo="A">
+      GRUPO A
+    </button>
+
+    <button class="tab-grupo" data-grupo="B">
+      GRUPO B
+    </button>
+
+    <button class="tab-grupo" data-grupo="C">
+      GRUPO C
+    </button>
+
+    <button class="tab-grupo" data-grupo="D">
+      GRUPO D
+    </button>
 
   </section>
 
   <!-- PARTIDOS -->
 
-  <section class="fase-pickem-v2">
+  <section id="partidos-v2" class="lista-partidos-v2">
 
-    <div id="partidos-v2">
+  </section>
 
-      <!-- Los partidos aparecerán automáticamente -->
+  <!-- TABLA -->
+
+  <section class="tabla-grupo-v2">
+
+    <div class="tabla-header-v2">
+
+      <h2>CLASIFICACIÓN DEL GRUPO</h2>
+
+      <span id="clasificacion-grupo-v2">
+        CLASIFICAN LOS 4 PRIMEROS
+      </span>
 
     </div>
+
+    <div id="tabla-posiciones-v2"></div>
 
   </section>
 
@@ -91,19 +149,13 @@
     <h2>ENVIAR PREDICCIONES</h2>
 
     <input
-      id="nombre-v2"
       type="text"
+      id="nombre-v2"
       placeholder="Escribe tu nombre o Nick"
       maxlength="30"
-      autocomplete="off"
     >
 
-    <button
-      id="btn-enviar-v2"
-      class="btn-principal"
-      type="button"
-      onclick="enviarPrediccionesV2()"
-    >
+    <button id="btn-enviar-v2" onclick="enviarPrediccionesV2()">
       ENVIAR PREDICCIONES
     </button>
 
@@ -112,15 +164,11 @@
 </main>
 
 <footer class="footer-v2">
-
   <p>NOVA CLASH II</p>
-
   <span>COMPITE · PREDICE · CONQUISTA</span>
-
 </footer>
 
-<!-- IMPORTANTE -->
-<script type="module" src="predicciones-v2.js"></script>
+<script type="module" src="predicciones-v2.js?v=1"></script>
 
 </body>
 </html>
